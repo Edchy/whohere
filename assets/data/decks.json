@@ -1,0 +1,242 @@
+[
+  {
+    "id": "first-date",
+    "title": "First Date",
+    "description": "Break the ice and go deeper — great for a first date or getting to know someone new.",
+    "mode": "partner",
+    "category": "fun",
+    "cardCount": 10,
+    "color": "#EC4899",
+    "icon": "🌹",
+    "cards": [
+      {
+        "id": "fd-1",
+        "question": "What's something you're really proud of but rarely get to talk about?",
+        "difficulty": 2
+      },
+      {
+        "id": "fd-2",
+        "question": "What does your perfect Sunday look like?",
+        "difficulty": 1
+      },
+      {
+        "id": "fd-3",
+        "question": "What's a place you've been to that genuinely surprised you?",
+        "followUp": "Would you go back?",
+        "difficulty": 1
+      },
+      {
+        "id": "fd-4",
+        "question": "What's something most people get wrong about you when they first meet you?",
+        "difficulty": 2
+      },
+      {
+        "id": "fd-5",
+        "question": "What's your current obsession — could be anything?",
+        "difficulty": 1
+      },
+      {
+        "id": "fd-6",
+        "question": "What's the best piece of advice you've ever ignored?",
+        "difficulty": 2
+      },
+      {
+        "id": "fd-7",
+        "question": "If you could live anywhere for one year, where would it be?",
+        "followUp": "What would a typical day look like?",
+        "difficulty": 1
+      },
+      {
+        "id": "fd-8",
+        "question": "What's something that used to matter a lot to you that doesn't anymore?",
+        "difficulty": 3
+      },
+      {
+        "id": "fd-9",
+        "question": "What's a skill you wish you'd started learning earlier?",
+        "difficulty": 1
+      },
+      {
+        "id": "fd-10",
+        "question": "What's one thing that always makes you feel like yourself again when you've lost track of that?",
+        "difficulty": 3
+      }
+    ]
+  },
+  {
+    "id": "deep-friends",
+    "title": "Deep Friends",
+    "description": "For friends who want to go beyond small talk. Vulnerability welcome.",
+    "mode": "group",
+    "category": "deep",
+    "cardCount": 10,
+    "color": "#8B5CF6",
+    "icon": "🔮",
+    "cards": [
+      {
+        "id": "df-1",
+        "question": "What's something you've never told anyone in this group?",
+        "difficulty": 3
+      },
+      {
+        "id": "df-2",
+        "question": "Which of your beliefs has changed the most in the last five years?",
+        "difficulty": 3
+      },
+      {
+        "id": "df-3",
+        "question": "What do you think your friends misunderstand about you?",
+        "difficulty": 2
+      },
+      {
+        "id": "df-4",
+        "question": "When did you last feel genuinely proud of yourself?",
+        "difficulty": 2
+      },
+      {
+        "id": "df-5",
+        "question": "What's something you've been putting off that you know you should deal with?",
+        "difficulty": 2
+      },
+      {
+        "id": "df-6",
+        "question": "What's a version of yourself you've had to let go of?",
+        "difficulty": 3
+      },
+      {
+        "id": "df-7",
+        "question": "If your life right now were a chapter in a book, what would the chapter be called?",
+        "difficulty": 2
+      },
+      {
+        "id": "df-8",
+        "question": "What's a fear you haven't admitted to most people?",
+        "difficulty": 3
+      },
+      {
+        "id": "df-9",
+        "question": "What do you wish someone had told you five years ago?",
+        "difficulty": 2
+      },
+      {
+        "id": "df-10",
+        "question": "What's something that's been weighing on you lately that you haven't spoken about?",
+        "difficulty": 3
+      }
+    ]
+  },
+  {
+    "id": "solo-reflection",
+    "title": "Solo Reflection",
+    "description": "Take some time for yourself. Honest questions, no audience required.",
+    "mode": "solo",
+    "category": "reflective",
+    "cardCount": 8,
+    "color": "#14B8A6",
+    "icon": "🪞",
+    "cards": [
+      {
+        "id": "sr-1",
+        "question": "What do you want more of in your life right now?",
+        "difficulty": 2
+      },
+      {
+        "id": "sr-2",
+        "question": "What habit is quietly holding you back?",
+        "difficulty": 2
+      },
+      {
+        "id": "sr-3",
+        "question": "What would you do differently if you weren't afraid of what people think?",
+        "difficulty": 3
+      },
+      {
+        "id": "sr-4",
+        "question": "Who in your life makes you feel most like yourself?",
+        "difficulty": 1
+      },
+      {
+        "id": "sr-5",
+        "question": "What are you grateful for that you rarely say out loud?",
+        "difficulty": 2
+      },
+      {
+        "id": "sr-6",
+        "question": "What part of your life needs more honesty?",
+        "difficulty": 3
+      },
+      {
+        "id": "sr-7",
+        "question": "What's the kindest thing you've done for yourself recently?",
+        "difficulty": 1
+      },
+      {
+        "id": "sr-8",
+        "question": "If you could give your current self one permission, what would it be?",
+        "difficulty": 2
+      }
+    ]
+  },
+  {
+    "id": "party-mode",
+    "title": "Party Mode",
+    "description": "Light, fun, and a little chaotic. Perfect for a group at the bar or a train ride.",
+    "mode": "group",
+    "category": "fun",
+    "cardCount": 10,
+    "color": "#F97316",
+    "icon": "🎉",
+    "cards": [
+      {
+        "id": "pm-1",
+        "question": "What's the most questionable decision you've made that turned out great?",
+        "difficulty": 1
+      },
+      {
+        "id": "pm-2",
+        "question": "What's your most embarrassing talent?",
+        "difficulty": 1
+      },
+      {
+        "id": "pm-3",
+        "question": "What's the most ridiculous hill you would die on?",
+        "difficulty": 1
+      },
+      {
+        "id": "pm-4",
+        "question": "If you had to describe yourself using only a food and a movie, what would they be?",
+        "difficulty": 1
+      },
+      {
+        "id": "pm-5",
+        "question": "What's something you believed as a kid that you're almost embarrassed about now?",
+        "difficulty": 1
+      },
+      {
+        "id": "pm-6",
+        "question": "What's the most out-of-character thing you've ever done?",
+        "difficulty": 2
+      },
+      {
+        "id": "pm-7",
+        "question": "Which fictional character do you think you'd be best friends with?",
+        "difficulty": 1
+      },
+      {
+        "id": "pm-8",
+        "question": "What's an unpopular opinion you hold with zero shame?",
+        "difficulty": 1
+      },
+      {
+        "id": "pm-9",
+        "question": "What's something everyone else seems to love that you just don't get?",
+        "difficulty": 1
+      },
+      {
+        "id": "pm-10",
+        "question": "If your life had a theme song right now, what would it be?",
+        "difficulty": 1
+      }
+    ]
+  }
+]
