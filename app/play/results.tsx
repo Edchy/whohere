@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, spacing, typography } from '../../src/constants/theme';
 
 export default function ResultsScreen() {
@@ -9,25 +10,29 @@ export default function ResultsScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        <Text style={styles.emoji}>🎉</Text>
-        <Text style={styles.title}>You made it through!</Text>
-        <Text style={styles.subtitle}>
-          Hope it got interesting. The best conversations start here.
-        </Text>
+        <View style={styles.top}>
+          <Text style={styles.label}>FINISHED</Text>
+          <Text style={styles.title}>That's all{'\n'}the cards.</Text>
+          <Text style={styles.subtitle}>
+            The best conversations start here — where the cards end.
+          </Text>
+        </View>
 
         <View style={styles.actions}>
           <TouchableOpacity
             style={styles.primaryButton}
             onPress={() => router.replace('/')}
+            activeOpacity={0.7}
           >
-            <Text style={styles.primaryButtonText}>Pick another deck</Text>
+            <Text style={styles.primaryButtonText}>choose another mode</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.secondaryButton}
             onPress={() => router.back()}
+            activeOpacity={0.7}
           >
-            <Text style={styles.secondaryButtonText}>Play again</Text>
+            <Text style={styles.secondaryButtonText}>play again</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -42,43 +47,52 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: spacing.xl,
+    justifyContent: 'space-between',
   },
-  emoji: {
-    fontSize: 64,
+  top: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  label: {
+    ...typography.label,
+    color: colors.accent,
+    letterSpacing: 2,
     marginBottom: spacing.lg,
   },
   title: {
-    ...typography.displayMedium,
+    fontSize: 48,
+    fontWeight: '300',
     color: colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: spacing.md,
+    lineHeight: 56,
+    letterSpacing: -1,
+    marginBottom: spacing.lg,
   },
   subtitle: {
     ...typography.body,
     color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xxl,
+    fontStyle: 'italic',
+    lineHeight: 24,
   },
   actions: {
-    width: '100%',
-    gap: spacing.md,
+    gap: spacing.sm,
+    paddingBottom: spacing.md,
   },
   primaryButton: {
-    backgroundColor: colors.accent,
-    height: 52,
+    height: 56,
     borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   primaryButtonText: {
     ...typography.bodyMedium,
-    color: '#000',
+    color: colors.accent,
+    letterSpacing: 0.5,
   },
   secondaryButton: {
-    height: 52,
+    height: 56,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
@@ -86,7 +100,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   secondaryButtonText: {
-    ...typography.bodyMedium,
+    ...typography.body,
     color: colors.textSecondary,
   },
 });

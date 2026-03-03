@@ -1,29 +1,29 @@
 export const colors = {
   // Backgrounds
-  background: '#0F0F0F',
-  surface: '#1A1A1A',
-  card: '#242424',
+  background: '#0D0D0D',
+  surface: '#141414',
+  card: '#1A1A1A',
+  cardBorder: '#242424',
 
-  // Text
-  textPrimary: '#FFFFFF',
-  textSecondary: '#A0A0A0',
-  textMuted: '#666666',
+  // Text — warm off-white
+  textPrimary: '#F5F0E8',
+  textSecondary: '#8A8480',
+  textMuted: '#4A4540',
 
-  // Accents
-  accent: '#E8C547',       // warm yellow — main CTA
-  accentSoft: '#F5E4A0',
+  // Accent — warm gold/amber
+  accent: '#C8A97A',
+  accentSoft: '#3D2F1E',
+  accentDim: '#C8A97A22',
 
-  // Deck colors (used per deck)
-  deckPurple: '#8B5CF6',
-  deckPink: '#EC4899',
-  deckOrange: '#F97316',
-  deckTeal: '#14B8A6',
-  deckBlue: '#3B82F6',
-  deckRed: '#EF4444',
+  // Mode tints (very subtle)
+  datingTint: '#C8A97A',   // warm amber
+  friendsTint: '#A0A0A0',  // neutral
+  soloTint: '#7A9FB0',     // slightly cooler blue
 
   // UI
-  border: '#2A2A2A',
-  overlay: 'rgba(0,0,0,0.6)',
+  border: '#222222',
+  overlay: 'rgba(0,0,0,0.92)',
+  destructive: '#8B3A3A',
 };
 
 export const spacing = {
@@ -33,21 +33,28 @@ export const spacing = {
   lg: 24,
   xl: 32,
   xxl: 48,
+  xxxl: 64,
 };
 
 export const radius = {
-  sm: 8,
-  md: 16,
-  lg: 24,
+  sm: 6,
+  md: 12,
+  lg: 20,
+  xl: 28,
   full: 9999,
 };
 
 export const typography = {
-  displayLarge: { fontSize: 36, fontWeight: '700' as const, lineHeight: 44 },
-  displayMedium: { fontSize: 28, fontWeight: '700' as const, lineHeight: 36 },
-  heading: { fontSize: 22, fontWeight: '600' as const, lineHeight: 30 },
-  body: { fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
-  bodyMedium: { fontSize: 16, fontWeight: '500' as const, lineHeight: 24 },
-  caption: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18 },
-  label: { fontSize: 12, fontWeight: '600' as const, lineHeight: 16, letterSpacing: 0.8 },
+  // Serif — for card questions
+  cardQuestion: { fontSize: 28, fontWeight: '400' as const, lineHeight: 40, letterSpacing: 0.2 },
+  cardPrefix: { fontSize: 16, fontWeight: '400' as const, lineHeight: 24, fontStyle: 'italic' as const, letterSpacing: 0.5 },
+
+  // Sans — for UI
+  displayLarge: { fontSize: 40, fontWeight: '300' as const, lineHeight: 48, letterSpacing: -0.5 },
+  displayMedium: { fontSize: 28, fontWeight: '300' as const, lineHeight: 36, letterSpacing: -0.3 },
+  heading: { fontSize: 20, fontWeight: '400' as const, lineHeight: 28 },
+  body: { fontSize: 15, fontWeight: '400' as const, lineHeight: 22 },
+  bodyMedium: { fontSize: 15, fontWeight: '500' as const, lineHeight: 22 },
+  caption: { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
+  label: { fontSize: 11, fontWeight: '500' as const, lineHeight: 14, letterSpacing: 1.2 },
 };

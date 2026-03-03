@@ -1,6 +1,7 @@
 export type CardDifficulty = 1 | 2 | 3;
 export type DeckMode = 'solo' | 'partner' | 'group' | 'any';
 export type DeckCategory = 'fun' | 'deep' | 'spicy' | 'reflective';
+export type PlayMode = 'dating' | 'friends' | 'solo';
 
 export type Card = {
   id: string;
