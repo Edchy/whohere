@@ -27,8 +27,8 @@ export default function DecksScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <Text style={styles.title}>All decks</Text>
-        <Text style={styles.subtitle}>{allDecks.length} packs available</Text>
+        <Text style={styles.title}>Decks</Text>
+        <Text style={styles.subtitle}>Choose a category and play</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -39,7 +39,9 @@ export default function DecksScreen() {
             onPress={() => handleDeckPress(deck)}
             activeOpacity={0.6}
           >
-            <View style={[styles.dot, { backgroundColor: deck.color }]} />
+            <View style={[styles.iconBox, { borderColor: deck.color + '40' }]}>
+              <Text style={[styles.icon, { color: deck.color }]}>{deck.icon}</Text>
+            </View>
             <View style={styles.rowContent}>
               <Text style={styles.rowTitle}>{deck.title}</Text>
               <Text style={styles.rowDesc}>{deck.description}</Text>
@@ -91,11 +93,17 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
     gap: spacing.md,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+  iconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     flexShrink: 0,
+  },
+  icon: {
+    fontSize: 20,
   },
   rowContent: {
     flex: 1,

@@ -21,6 +21,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { runOnJS } from "react-native-worklets";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, radius, spacing, typography } from "../../src/constants/theme";
 import { useHaptics } from "../../src/hooks/useHaptics";
@@ -36,7 +37,6 @@ const SWIPE_VELOCITY = 400;
 // Next card resting state offsets (peeks behind top card)
 const NEXT_TRANSLATE_Y = 20;
 const NEXT_SCALE = 0.94;
-const NEXT_OPACITY = 0.65;
 
 function CardFace({
   card,
@@ -45,11 +45,15 @@ function CardFace({
   card: Card;
   deck: Deck;
 }) {
+  const icon = card.deckIcon ?? deck.icon;
+  const title = card.deckTitle ?? deck.title;
+  const color = card.deckColor ?? deck.color;
+
   return (
     <>
       <View style={styles.modeRow}>
-        <Text style={[styles.modeIndicator, { color: deck.color }]}>
-          {deck.icon}{"  "}{deck.title.toUpperCase()}
+        <Text style={[styles.modeIndicator, { color }]}>
+          {icon}{"  "}{title.toUpperCase()}
         </Text>
       </View>
       <View style={styles.questionBlock}>
@@ -69,10 +73,7 @@ function CardFace({
               key={d}
               style={[
                 styles.dot,
-                {
-                  backgroundColor:
-                    d <= card.difficulty ? deck.color : colors.border,
-                },
+                { backgroundColor: d <= card.difficulty ? color : colors.border },
               ]}
             />
           ))}
@@ -99,10 +100,9 @@ export default function PlayScreen() {
   const [topIndex, setTopIndex] = useState(0);
   const animating = useSharedValue(false);
 
-  // dragX: translation of the top card being dragged
   const dragX = useSharedValue(0);
-  // nextProgress: 0 = next card at resting offset, 1 = fully in place
   const nextProgress = useSharedValue(0);
+  const prevProgress = useSharedValue(0);
 
   useEffect(() => {
     if (!activeDeck && deckId) {
@@ -123,16 +123,20 @@ export default function PlayScreen() {
   const commitNext = useCallback(() => {
     nextCardStore();
     setTopIndex((i) => i + 1);
+    // Reset instantly — top card already off screen, next card was at progress=1
     dragX.value = 0;
     nextProgress.value = 0;
+    prevProgress.value = 0;
     animating.value = false;
   }, [nextCardStore]);
 
   const commitPrev = useCallback(() => {
     prevCardStore();
     setTopIndex((i) => i - 1);
+    // Reset instantly — top card already off screen, prev card was at progress=1
     dragX.value = 0;
     nextProgress.value = 0;
+    prevProgress.value = 0;
     animating.value = false;
   }, [prevCardStore]);
 
@@ -149,21 +153,20 @@ export default function PlayScreen() {
     ],
   }));
 
-  // Next card rises up as the top card is dragged left
   const nextCardStyle = useAnimatedStyle(() => ({
     transform: [
-      {
-        translateY: interpolate(
-          nextProgress.value,
-          [0, 1],
-          [NEXT_TRANSLATE_Y, 0]
-        ),
-      },
-      {
-        scale: interpolate(nextProgress.value, [0, 1], [NEXT_SCALE, 1]),
-      },
+      { translateY: interpolate(nextProgress.value, [0, 1], [NEXT_TRANSLATE_Y, 0]) },
+      { scale: interpolate(nextProgress.value, [0, 1], [NEXT_SCALE, 1]) },
     ],
-    opacity: interpolate(nextProgress.value, [0, 1], [NEXT_OPACITY, 1]),
+    opacity: interpolate(nextProgress.value, [0, 1], [0, 1]),
+  }));
+
+  const prevCardStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(prevProgress.value, [0, 1], [NEXT_TRANSLATE_Y, 0]) },
+      { scale: interpolate(prevProgress.value, [0, 1], [NEXT_SCALE, 1]) },
+    ],
+    opacity: interpolate(prevProgress.value, [0, 1], [0, 1]),
   }));
 
   const deck = activeDeck;
@@ -189,24 +192,25 @@ export default function PlayScreen() {
       const isLast = idx === cardCount - 1;
 
       if (isFirst && e.translationX > 0) {
-        // Rubber-band at first card going right
+        // Rubber-band at first card — nowhere to go back
         dragX.value = e.translationX * 0.08;
         nextProgress.value = 0;
+        prevProgress.value = 0;
       } else if (isLast && e.translationX < 0) {
-        // Allow swiping last card away (to results)
+        // Last card swiping left to results — no next card behind it
         dragX.value = e.translationX;
-        nextProgress.value = 0; // no next card
+        nextProgress.value = 0;
+        prevProgress.value = 0;
+      } else if (e.translationX < 0) {
+        // Dragging left — reveal next card
+        dragX.value = e.translationX;
+        nextProgress.value = Math.min(1, -e.translationX / (SCREEN_WIDTH * 0.55));
+        prevProgress.value = 0;
       } else {
+        // Dragging right — reveal previous card
         dragX.value = e.translationX;
-        // Drive next card up proportionally as we drag left
-        if (e.translationX < 0) {
-          nextProgress.value = Math.min(
-            1,
-            -e.translationX / (SCREEN_WIDTH * 0.55)
-          );
-        } else {
-          nextProgress.value = 0;
-        }
+        nextProgress.value = 0;
+        prevProgress.value = Math.min(1, e.translationX / (SCREEN_WIDTH * 0.55));
       }
     })
     .onEnd((e) => {
@@ -221,33 +225,26 @@ export default function PlayScreen() {
 
       if (goLeft) {
         animating.value = true;
-        // Snap next card to full size in parallel as top flies out
         nextProgress.value = withSpring(1, { damping: 18, stiffness: 220 });
-        dragX.value = withTiming(
-          -SCREEN_WIDTH * 1.5,
-          { duration: 240 },
-          () => {
-            if (isLast) {
-              commitFinish();
-            } else {
-              commitNext();
-            }
+        prevProgress.value = 0;
+        dragX.value = withTiming(-SCREEN_WIDTH * 1.5, { duration: 240 }, () => {
+          if (isLast) {
+            runOnJS(commitFinish)();
+          } else {
+            runOnJS(commitNext)();
           }
-        );
+        });
       } else if (goRight) {
         animating.value = true;
-        nextProgress.value = withSpring(0, { damping: 22, stiffness: 220 });
-        dragX.value = withTiming(
-          SCREEN_WIDTH * 1.5,
-          { duration: 240 },
-          () => {
-            commitPrev();
-          }
-        );
+        prevProgress.value = withSpring(1, { damping: 18, stiffness: 220 });
+        nextProgress.value = 0;
+        dragX.value = withTiming(SCREEN_WIDTH * 1.5, { duration: 240 }, () => {
+          runOnJS(commitPrev)();
+        });
       } else {
-        // Snap back — bouncy spring
         dragX.value = withSpring(0, { damping: 20, stiffness: 300 });
         nextProgress.value = withSpring(0, { damping: 20, stiffness: 300 });
+        prevProgress.value = withSpring(0, { damping: 20, stiffness: 300 });
       }
     });
 
@@ -272,6 +269,7 @@ export default function PlayScreen() {
 
   const topCard: Card | undefined = deck.cards[topIndex];
   const nextCardData: Card | undefined = deck.cards[topIndex + 1];
+  const prevCardData: Card | undefined = deck.cards[topIndex - 1];
   const isLast = topIndex === deck.cards.length - 1;
   const progress = (topIndex + 1) / deck.cards.length;
 
@@ -300,13 +298,28 @@ export default function PlayScreen() {
         </View>
 
         <View style={styles.cardArea}>
-          {/* Next card — behind the top card, rises up as top is dragged */}
+          {/* Show prev or next card behind the top card depending on drag direction.
+              Never show both — avoids z-order conflicts and double-card flash. */}
+          {prevCardData && (
+            <Animated.View
+              style={[
+                styles.card,
+                {
+                  borderColor: (prevCardData.deckColor ?? deck.color) + "40",
+                  backgroundColor: colors.surface,
+                },
+                prevCardStyle,
+              ]}
+            >
+              <CardFace card={prevCardData} deck={deck} />
+            </Animated.View>
+          )}
           {nextCardData && (
             <Animated.View
               style={[
                 styles.card,
                 {
-                  borderColor: deck.color + "40",
+                  borderColor: (nextCardData.deckColor ?? deck.color) + "40",
                   backgroundColor: colors.surface,
                 },
                 nextCardStyle,
@@ -321,7 +334,7 @@ export default function PlayScreen() {
             <Animated.View
               style={[
                 styles.card,
-                { borderColor: deck.color + "70" },
+                { borderColor: (topCard.deckColor ?? deck.color) + "70" },
                 topCardStyle,
               ]}
             >

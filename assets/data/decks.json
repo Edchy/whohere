@@ -1,102 +1,130 @@
 [
   {
-    "id": "dating",
-    "title": "On a Date",
-    "description": "Flirty curiosity. Vulnerability welcome.",
-    "mode": "partner",
-    "category": "deep",
-    "cardCount": 15,
-    "color": "#C8A97A",
-    "icon": "💕",
-    "cards": [
-      { "id": "d-1", "question": "…hides something surprising under a calm surface?", "difficulty": 2 },
-      { "id": "d-2", "question": "…you'd trust first in a genuine emergency?", "difficulty": 1 },
-      { "id": "d-3", "question": "…reminds you of a younger version of yourself?", "difficulty": 2 },
-      { "id": "d-4", "question": "…could have gotten you to break a rule?", "difficulty": 2 },
-      { "id": "d-5", "question": "…you'd be most nervous to introduce to your parents?", "difficulty": 1 },
-      { "id": "d-6", "question": "…seems like they're carrying something they haven't told anyone?", "difficulty": 3 },
-      { "id": "d-7", "question": "…has a secret that would make a great short story?", "difficulty": 2 },
-      { "id": "d-8", "question": "…you'd want on your side in an argument you couldn't win?", "difficulty": 1 },
-      { "id": "d-9", "question": "…has reinvented themselves at least once?", "difficulty": 2 },
-      { "id": "d-10", "question": "…seems most at ease with who they are?", "difficulty": 1 },
-      { "id": "d-11", "question": "…you'd want to know the backstory of?", "difficulty": 2 },
-      { "id": "d-12", "question": "…reminds you of someone you've lost touch with?", "difficulty": 3 },
-      { "id": "d-13", "question": "…is the most different from what they appear?", "difficulty": 3 },
-      { "id": "d-14", "question": "…looks like they've made a decision they're still not sure about?", "difficulty": 2 },
-      { "id": "d-15", "question": "…could have been your closest friend in a different life?", "difficulty": 3 }
-    ]
-  },
-  {
-    "id": "friends",
-    "title": "With Friends",
-    "description": "Absurd, funny, a little chaotic.",
-    "mode": "group",
-    "category": "fun",
-    "cardCount": 15,
-    "color": "#A0A0A0",
-    "icon": "👯",
-    "cards": [
-      { "id": "f-1", "question": "…could have started a cult and genuinely succeeded?", "difficulty": 1 },
-      { "id": "f-2", "question": "…has the most unread emails right now?", "difficulty": 1 },
-      { "id": "f-3", "question": "…would go viral on the internet by complete accident?", "difficulty": 1 },
-      { "id": "f-4", "question": "…would survive the longest if society collapsed?", "difficulty": 1 },
-      { "id": "f-5", "question": "…has a hobby that would surprise everyone who knows them?", "difficulty": 1 },
-      { "id": "f-6", "question": "…has a drawer full of things they should have thrown away years ago?", "difficulty": 1 },
-      { "id": "f-7", "question": "…waited until embarrassingly late to learn something everyone else just knows?", "difficulty": 1 },
-      { "id": "f-8", "question": "…looks like they'd be the most interesting person at any party they attend?", "difficulty": 1 },
-      { "id": "f-9", "question": "…has the most complicated relationship with their phone?", "difficulty": 1 },
-      { "id": "f-10", "question": "…is definitely lying to themselves about something right now?", "difficulty": 2 },
-      { "id": "f-11", "question": "…would be the last to know they were the villain of the story?", "difficulty": 2 },
-      { "id": "f-12", "question": "…looks like they'd be brilliant at something completely unexpected?", "difficulty": 1 },
-      { "id": "f-13", "question": "…would be the main character in a true crime documentary?", "difficulty": 1 },
-      { "id": "f-14", "question": "…has a secret relationship with someone in the same building?", "difficulty": 2 },
-      { "id": "f-15", "question": "…would respond best to an unexpected act of kindness right now?", "difficulty": 2 }
-    ]
-  },
-  {
-    "id": "solo",
-    "title": "Alone",
-    "description": "Slow observation. Meditative.",
+    "id": "meditative",
+    "title": "Meditative",
+    "description": "Slow down. Look inward. No rush.",
     "mode": "solo",
     "category": "reflective",
-    "cardCount": 12,
+    "cardCount": 4,
     "color": "#7A9FB0",
-    "icon": "🧍",
+    "icon": "❈",
     "cards": [
-      { "id": "s-1", "question": "…pulled your attention first?", "followUp": "What made you choose them?", "difficulty": 1 },
-      { "id": "s-2", "question": "…seems furthest from home right now?", "difficulty": 2 },
-      { "id": "s-3", "question": "…looks most at ease with being alone?", "difficulty": 1 },
-      { "id": "s-4", "question": "…seems to be carrying a decision they haven't made yet?", "difficulty": 2 },
-      { "id": "s-5", "question": "…reminds you of someone from a different chapter of your life?", "difficulty": 2 },
-      { "id": "s-6", "question": "…looks like they have a rich inner life no one around them knows about?", "difficulty": 3 },
-      { "id": "s-7", "question": "…you'd most want to know the story behind?", "difficulty": 2 },
-      { "id": "s-8", "question": "…seems happiest right now?", "followUp": "What makes you think so?", "difficulty": 1 },
-      { "id": "s-9", "question": "…you'd trust immediately, without knowing why?", "difficulty": 2 },
-      { "id": "s-10", "question": "…looks like they contain a contradiction?", "difficulty": 3 },
-      { "id": "s-11", "question": "…is the most different from how they want to appear?", "difficulty": 3 },
-      { "id": "s-12", "question": "…if you had to give them a name right now, what would it be?", "difficulty": 1 }
+      {
+        "id": "med-1",
+        "question": "…looks most at peace with exactly where they are?",
+        "difficulty": 1
+      },
+      {
+        "id": "med-2",
+        "question": "…seems to be sitting with a question they haven't answered yet?",
+        "difficulty": 2
+      },
+      {
+        "id": "med-3",
+        "question": "…looks like they've recently let something go?",
+        "difficulty": 2
+      },
+      {
+        "id": "med-4",
+        "question": "…you'd trust to sit in silence with, without it feeling strange?",
+        "difficulty": 1
+      }
     ]
   },
   {
-    "id": "deep",
-    "title": "Deep Cuts",
-    "description": "Harder questions. For when you're ready.",
-    "mode": "any",
+    "id": "dark-backgrounds",
+    "title": "Dark Backgrounds",
+    "description": "Everyone has a past. Some are darker than they look.",
+    "mode": "group",
     "category": "deep",
-    "cardCount": 10,
-    "color": "#8B5CF6",
-    "icon": "🔮",
+    "cardCount": 4,
+    "color": "#6B4E71",
+    "icon": "☽",
     "cards": [
-      { "id": "dc-1", "question": "…is most like you when no one's watching?", "difficulty": 3 },
-      { "id": "dc-2", "question": "…looks like they've survived something they never talk about?", "difficulty": 3 },
-      { "id": "dc-3", "question": "…carries a version of themselves they've had to let go of?", "difficulty": 3 },
-      { "id": "dc-4", "question": "…you'd trust with your most embarrassing truth?", "difficulty": 3 },
-      { "id": "dc-5", "question": "…seems like they're only just becoming who they were meant to be?", "difficulty": 3 },
-      { "id": "dc-6", "question": "…if you could give them one thing, what would it be?", "difficulty": 2 },
-      { "id": "dc-7", "question": "…looks like they love something with a quiet, private intensity?", "difficulty": 3 },
-      { "id": "dc-8", "question": "…you'd believe immediately if they said something no one else would?", "difficulty": 3 },
-      { "id": "dc-9", "question": "…seems to be in a version of their life they didn't fully plan for?", "difficulty": 3 },
-      { "id": "dc-10", "question": "…is the hardest to read, and what does that make you feel?", "difficulty": 3 }
+      {
+        "id": "db-1",
+        "question": "…looks like they've survived something they'll never fully explain?",
+        "difficulty": 3
+      },
+      {
+        "id": "db-2",
+        "question": "…seems to know exactly how this story ends — and isn't worried?",
+        "difficulty": 3
+      },
+      {
+        "id": "db-3",
+        "question": "…looks like they've been the villain in at least one person's life?",
+        "difficulty": 3
+      },
+      {
+        "id": "db-4",
+        "question": "…you'd believe immediately if they said they used to be someone else entirely?",
+        "difficulty": 2
+      }
+    ]
+  },
+  {
+    "id": "secret-agent",
+    "title": "Secret Agent",
+    "description": "Trust no one. Read everyone.",
+    "mode": "partner",
+    "category": "fun",
+    "cardCount": 4,
+    "color": "#C8A97A",
+    "icon": "✥",
+    "cards": [
+      {
+        "id": "sa-1",
+        "question": "…you'd recruit first if you were building a team for something slightly illegal?",
+        "difficulty": 2
+      },
+      {
+        "id": "sa-2",
+        "question": "…looks like they're already running a cover story?",
+        "difficulty": 2
+      },
+      {
+        "id": "sa-3",
+        "question": "…would be the last person anyone suspected — and that's exactly the point?",
+        "difficulty": 2
+      },
+      {
+        "id": "sa-4",
+        "question": "…you'd trust to disappear without a trace if they had to?",
+        "difficulty": 1
+      }
+    ]
+  },
+  {
+    "id": "spicy",
+    "title": "Spicy",
+    "description": "Flirty, forward, a little dangerous.",
+    "mode": "partner",
+    "category": "spicy",
+    "cardCount": 4,
+    "color": "#E07A5F",
+    "icon": "♦",
+    "cards": [
+      {
+        "id": "sp-1",
+        "question": "…you'd want to be stuck in a lift with for forty-five minutes?",
+        "difficulty": 2
+      },
+      {
+        "id": "sp-2",
+        "question": "…looks like they'd make the first move, and get away with it?",
+        "difficulty": 2
+      },
+      {
+        "id": "sp-3",
+        "question": "…you'd want sitting next to you on a long flight?",
+        "difficulty": 1
+      },
+      {
+        "id": "sp-4",
+        "question": "…looks like they've been told they're too much — and took it as a compliment?",
+        "difficulty": 3
+      }
     ]
   }
 ]

@@ -1,6 +1,6 @@
 export type CardDifficulty = 1 | 2 | 3;
 export type DeckMode = 'solo' | 'partner' | 'group' | 'any';
-export type DeckCategory = 'fun' | 'deep' | 'spicy' | 'reflective';
+export type DeckCategory = 'fun' | 'deep' | 'spicy' | 'reflective' | 'meditative';
 export type PlayMode = 'dating' | 'friends' | 'solo';
 
 export type Card = {
@@ -8,6 +8,9 @@ export type Card = {
   question: string;
   followUp?: string;
   difficulty: CardDifficulty;
+  deckIcon?: string;
+  deckTitle?: string;
+  deckColor?: string;
 };
 
 export type Deck = {
