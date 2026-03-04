@@ -1,29 +1,29 @@
 export const colors = {
   // Backgrounds
-  background: '#0D0D0D',
-  surface: '#141414',
-  card: '#1A1A1A',
-  cardBorder: '#242424',
+  background: '#FFFFFF',
+  surface: '#F5F5F5',
+  card: '#FAFAFA',
+  cardBorder: '#E0E0E0',
 
-  // Text — warm off-white
-  textPrimary: '#F5F0E8',
-  textSecondary: '#8A8480',
-  textMuted: '#4A4540',
+  // Text
+  textPrimary: '#CC0000',
+  textSecondary: '#990000',
+  textMuted: '#CCAAAA',
 
-  // Accent — warm gold/amber
-  accent: '#C8A97A',
-  accentSoft: '#3D2F1E',
-  accentDim: '#C8A97A22',
+  // Accent — red
+  accent: '#CC0000',
+  accentSoft: '#FFE5E5',
+  accentDim: '#CC000022',
 
-  // Mode tints (very subtle)
-  datingTint: '#C8A97A',   // warm amber
-  friendsTint: '#A0A0A0',  // neutral
-  soloTint: '#7A9FB0',     // slightly cooler blue
+  // Mode tints
+  datingTint: '#CC0000',
+  friendsTint: '#AA2222',
+  soloTint: '#DD4444',
 
   // UI
-  border: '#222222',
-  overlay: 'rgba(0,0,0,0.92)',
-  destructive: '#8B3A3A',
+  border: '#E8D0D0',
+  overlay: 'rgba(255,255,255,0.92)',
+  destructive: '#880000',
 };
 
 export const spacing = {
