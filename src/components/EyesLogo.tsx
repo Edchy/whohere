@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { colors } from '../constants/theme';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -97,7 +98,7 @@ function Eye({ eyeW, eyeH, borderW, irisSize, shineSize, irisAnimStyle, translat
         borderRadius: eyeW * 0.5,
         backgroundColor: '#FAFAF8',
         borderWidth: borderW,
-        borderColor: '#1A1A1A',
+        borderColor: colors.accent,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
@@ -109,7 +110,7 @@ function Eye({ eyeW, eyeH, borderW, irisSize, shineSize, irisAnimStyle, translat
             width: irisSize,
             height: irisSize,
             borderRadius: irisSize / 2,
-            backgroundColor: '#1A1A1A',
+            backgroundColor: colors.accent,
             alignItems: 'center',
             justifyContent: 'center',
           },

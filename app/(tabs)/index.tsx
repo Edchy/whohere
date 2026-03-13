@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
 
   rowLabel: {
-    fontFamily: "Paquito-Medium",
+    fontFamily: "Supreme-Extrabold",
     fontSize: 38,
     lineHeight: 48,
     letterSpacing: -1,

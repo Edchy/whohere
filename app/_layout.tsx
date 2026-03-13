@@ -6,7 +6,7 @@ import { colors } from '../src/constants/theme';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    'Paquito-Medium': require('../assets/fonts/Paquito-Medium.otf'),
+    'Supreme-Extrabold': require('../assets/fonts/Supreme-Extrabold.otf'),
   });
 
   if (!fontsLoaded) return null;

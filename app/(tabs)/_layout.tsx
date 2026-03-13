@@ -46,8 +46,6 @@ const tabStyles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     backgroundColor: colors.background,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
     paddingBottom: 28,
     paddingTop: spacing.sm,
     paddingHorizontal: spacing.lg,
