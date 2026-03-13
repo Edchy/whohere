@@ -9,7 +9,8 @@
       "Bash(do sips:*)",
       "Bash(grep -E \"pixel|$f\")",
       "Bash(done)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(find /Users/eddietovebeppearonelsa/Desktop/whohere/project/src/components -type f -name \"*.tsx\" -o -name \"*.ts\" 2>/dev/null | head -20)"
     ]
   }
 }
