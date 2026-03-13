@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { colors, spacing, typography } from '../../src/constants/theme';
+import { colors, radius, spacing, typography } from '../../src/constants/theme';
 
 const ICONS: Record<string, [string, string]> = {
   index:    ['play-outline',         'play'],
@@ -60,7 +60,7 @@ export default function TabsLayout() {
 const tabStyles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
-    borderRadius: 32,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
     marginHorizontal: spacing.lg,

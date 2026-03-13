@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, spacing } from "../../src/constants/theme";
+import { colors, radius, spacing } from "../../src/constants/theme";
 import AppHeader from "../../src/components/AppHeader";
 
 const MODES = [
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   row: {
     paddingVertical: spacing.xl,
     paddingHorizontal: spacing.lg,
-    borderRadius: 4,
+    borderRadius: radius.md,
   },
 
   rowGap: {},
