@@ -27,9 +27,7 @@ import { colors, radius, spacing, typography } from "../../src/constants/theme";
 import { useHaptics } from "../../src/hooks/useHaptics";
 import { useGameStore } from "../../src/store/gameStore";
 import { Card, Deck } from "../../src/types";
-import decksData from "../../assets/data/decks.json";
-
-const allDecks = decksData as Deck[];
+import allDecks from "../../assets/data/decks/index";
 const CARD_HEIGHT = 400;
 const SWIPE_DISTANCE = 60;
 const SWIPE_VELOCITY = 400;
@@ -38,13 +36,7 @@ const SWIPE_VELOCITY = 400;
 const NEXT_TRANSLATE_Y = 20;
 const NEXT_SCALE = 0.94;
 
-function CardFace({
-  card,
-  deck,
-}: {
-  card: Card;
-  deck: Deck;
-}) {
+function CardFace({ card, deck }: { card: Card; deck: Deck }) {
   const icon = card.deckIcon ?? deck.icon;
   const title = card.deckTitle ?? deck.title;
   const color = card.deckColor ?? deck.color;
@@ -53,32 +45,22 @@ function CardFace({
     <>
       <View style={styles.modeRow}>
         <Text style={[styles.modeIndicator, { color }]}>
-          {icon}{"  "}{title.toUpperCase()}
+          {icon}
+          {"  "}
+          {title.toUpperCase()}
         </Text>
       </View>
       <View style={styles.questionBlock}>
-        <Text style={styles.whoHere}>Who here…</Text>
+        <Text style={styles.whoHere}>Vem här…</Text>
         <Text style={styles.question}>{card.question}</Text>
       </View>
       {card.followUp && (
         <View style={styles.followUpBlock}>
-          <Text style={styles.followUpLabel}>then ask —</Text>
+          <Text style={styles.followUpLabel}>följdfråga —</Text>
           <Text style={styles.followUp}>{card.followUp}</Text>
         </View>
       )}
-      <View style={styles.cardFooter}>
-        <View style={styles.difficultyRow}>
-          {[1, 2, 3].map((d) => (
-            <View
-              key={d}
-              style={[
-                styles.dot,
-                { backgroundColor: d <= card.difficulty ? color : colors.border },
-              ]}
-            />
-          ))}
-        </View>
-      </View>
+      <View style={styles.cardFooter} />
     </>
   );
 }
@@ -155,7 +137,13 @@ export default function PlayScreen() {
 
   const nextCardStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateY: interpolate(nextProgress.value, [0, 1], [NEXT_TRANSLATE_Y, 0]) },
+      {
+        translateY: interpolate(
+          nextProgress.value,
+          [0, 1],
+          [NEXT_TRANSLATE_Y, 0],
+        ),
+      },
       { scale: interpolate(nextProgress.value, [0, 1], [NEXT_SCALE, 1]) },
     ],
     opacity: interpolate(nextProgress.value, [0, 1], [0, 1]),
@@ -163,7 +151,13 @@ export default function PlayScreen() {
 
   const prevCardStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateY: interpolate(prevProgress.value, [0, 1], [NEXT_TRANSLATE_Y, 0]) },
+      {
+        translateY: interpolate(
+          prevProgress.value,
+          [0, 1],
+          [NEXT_TRANSLATE_Y, 0],
+        ),
+      },
       { scale: interpolate(prevProgress.value, [0, 1], [NEXT_SCALE, 1]) },
     ],
     opacity: interpolate(prevProgress.value, [0, 1], [0, 1]),
@@ -204,13 +198,19 @@ export default function PlayScreen() {
       } else if (e.translationX < 0) {
         // Dragging left — reveal next card
         dragX.value = e.translationX;
-        nextProgress.value = Math.min(1, -e.translationX / (SCREEN_WIDTH * 0.55));
+        nextProgress.value = Math.min(
+          1,
+          -e.translationX / (SCREEN_WIDTH * 0.55),
+        );
         prevProgress.value = 0;
       } else {
         // Dragging right — reveal previous card
         dragX.value = e.translationX;
         nextProgress.value = 0;
-        prevProgress.value = Math.min(1, e.translationX / (SCREEN_WIDTH * 0.55));
+        prevProgress.value = Math.min(
+          1,
+          e.translationX / (SCREEN_WIDTH * 0.55),
+        );
       }
     })
     .onEnd((e) => {
@@ -260,7 +260,7 @@ export default function PlayScreen() {
   if (discretion) {
     return (
       <Pressable style={styles.discretionScreen} onPress={toggleDiscretion}>
-        <Text style={styles.discretionHint}>tap to continue</Text>
+        <Text style={styles.discretionHint}>tryck för att fortsätta</Text>
       </Pressable>
     );
   }
@@ -339,9 +339,8 @@ export default function PlayScreen() {
               ]}
             >
               <CardFace card={topCard} deck={deck} />
-              <View style={styles.swipeHintRow}>
-                <Text style={styles.swipeHint}>swipe →</Text>
-              </View>
+              {topIndex > 0 && <View style={styles.dotLeft} />}
+              {!isLast && <View style={styles.dotRight} />}
             </Animated.View>
           </GestureDetector>
         </View>
@@ -364,7 +363,7 @@ export default function PlayScreen() {
               style={[styles.finishBtn, { borderColor: deck.color }]}
             >
               <Text style={[styles.finishBtnText, { color: deck.color }]}>
-                finish
+                klar
               </Text>
             </TouchableOpacity>
           )}
@@ -458,16 +457,29 @@ const styles = StyleSheet.create({
   },
   difficultyRow: { flexDirection: "row", gap: 6 },
   dot: { width: 6, height: 6, borderRadius: 3 },
-  swipeHintRow: {
+  intensityRow: { flexDirection: "row", gap: spacing.sm, flexWrap: "wrap" },
+  intensityChip: { flexDirection: "row", alignItems: "center", gap: 5 },
+  intensityLabel: { fontSize: 10, fontWeight: "500", letterSpacing: 0.8, textTransform: "uppercase" },
+  intensityDots: { flexDirection: "row", gap: 3 },
+  dotLeft: {
+    position: "absolute",
+    bottom: spacing.xl,
+    left: spacing.xl,
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: colors.textMuted,
+    opacity: 0.5,
+  },
+  dotRight: {
     position: "absolute",
     bottom: spacing.xl,
     right: spacing.xl,
-  },
-  swipeHint: {
-    ...typography.caption,
-    color: colors.textMuted,
-    fontStyle: "italic",
-    letterSpacing: 0.5,
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: colors.textMuted,
+    opacity: 0.5,
   },
   nav: {
     flexDirection: "row",

@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import {
   Animated,
+  Dimensions,
   Pressable,
   StyleSheet,
   Text,
@@ -11,74 +12,95 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, spacing, radius } from "../../src/constants/theme";
 import AppHeader from "../../src/components/AppHeader";
 
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+const BTN = Math.round(SCREEN_WIDTH * 0.42);
+
 const MODES = [
   {
     id: "partner",
-    label: "På date",
-    sublabel: "Lär känna varandra",
-    number: "I",
+    label: "På\ndate",
+    sublabel: "Lär känna varandra genom att betrakta andra",
     color: colors.datingTint,
+    alignSelf: "flex-start" as const,
+    sublabelAlign: "flex-start" as const,
   },
   {
     id: "group",
-    label: "Med vänner",
-    sublabel: "Fantasi och intuition",
-    number: "II",
+    label: "Med\nvänner",
+    sublabel: "Fantasi och intuition i en ohelig kombination",
     color: colors.friendsTint,
+    alignSelf: "flex-end" as const,
+    sublabelAlign: "flex-end" as const,
   },
   {
     id: "solo",
-    label: "På egen hand",
-    sublabel: "Din inre värld",
-    number: "III",
+    label: "På egen\nhand",
+    sublabel: "Upptäck din inre värld genom utblickar och insikter",
     color: colors.soloTint,
+    alignSelf: "flex-start" as const,
+    sublabelAlign: "flex-start" as const,
   },
 ];
 
-function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
+function ModeButton({ mode }: { mode: (typeof MODES)[0] }) {
   const router = useRouter();
   const scale = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
+  const overlay = useRef(new Animated.Value(0)).current;
 
   const onPressIn = () => {
     Animated.parallel([
-      Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, speed: 40, bounciness: 0 }),
-      Animated.timing(opacity, { toValue: 0.7, duration: 80, useNativeDriver: true }),
+      Animated.spring(scale, {
+        toValue: 0.95,
+        useNativeDriver: true,
+        speed: 40,
+        bounciness: 0,
+      }),
+      Animated.timing(overlay, {
+        toValue: 1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
   const onPressOut = () => {
     Animated.parallel([
-      Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 30, bounciness: 0 }),
-      Animated.timing(opacity, { toValue: 1, duration: 120, useNativeDriver: true }),
+      Animated.spring(scale, {
+        toValue: 1,
+        useNativeDriver: true,
+        speed: 30,
+        bounciness: 4,
+      }),
+      Animated.timing(overlay, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
   return (
-    <Animated.View style={{ transform: [{ scale }], opacity }}>
-      <Pressable
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
-        style={styles.modeRow}
-      >
-        {/* Roman numeral — floats left, very small, top-aligned */}
-        <Text style={[styles.numeral, { color: mode.color }]}>{mode.number}</Text>
+    <View style={[styles.modeGroup, { alignSelf: mode.alignSelf }]}>
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <Pressable
+          onPressIn={onPressIn}
+          onPressOut={onPressOut}
+          onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
+          style={[styles.btn, { backgroundColor: mode.color }]}
+        >
+          <Animated.View
+            style={[styles.btnOverlay, { opacity: overlay }]}
+            pointerEvents="none"
+          />
+          <Text style={styles.btnLabel}>{mode.label}</Text>
+        </Pressable>
+      </Animated.View>
 
-        {/* Main label — huge editorial type */}
-        <View style={styles.modeTextBlock}>
-          <Text style={styles.modeLabel} numberOfLines={1} adjustsFontSizeToFit>
-            {mode.label}
-          </Text>
-          <Text style={[styles.modeSublabel, { color: mode.color }]}>
-            {mode.sublabel}
-          </Text>
-        </View>
-
-        {/* Thin separator, last item omitted */}
-        {index < MODES.length - 1 && <View style={styles.separator} />}
-      </Pressable>
-    </Animated.View>
+      <Text style={[styles.sublabel, { alignSelf: mode.sublabelAlign }]}>
+        {mode.sublabel}
+      </Text>
+    </View>
   );
 }
 
@@ -86,21 +108,13 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <AppHeader />
+
       <View style={styles.container}>
-
-        {/* BOTTOM: Mode list */}
-        <View style={styles.modesSection}>
-          <Text style={styles.tagline}>
-            Titta dig omkring.{"\n"}Välj någon. Diskutera varför.
-          </Text>
-          <Text style={styles.modesSectionLabel}>Välj ett läge</Text>
-          <View style={styles.modesList}>
-            {MODES.map((mode, i) => (
-              <ModeRow key={mode.id} mode={mode} index={i} />
-            ))}
-          </View>
+        <View style={styles.buttonsColumn}>
+          {MODES.map((mode) => (
+            <ModeButton key={mode.id} mode={mode} />
+          ))}
         </View>
-
       </View>
     </SafeAreaView>
   );
@@ -113,69 +127,48 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    justifyContent: "center",
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
-    justifyContent: "flex-end",
+    paddingVertical: spacing.lg,
   },
 
-  tagline: {
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.textSecondary,
-    fontStyle: "italic",
-    letterSpacing: 0.2,
+  buttonsColumn: {
+    gap: spacing.md,
   },
 
-  // — Modes —
-  modesSection: {
-    gap: spacing.sm,
+  modeGroup: {
+    gap: spacing.xs,
   },
-  modesSectionLabel: {
-    fontSize: 10,
-    fontWeight: "500",
-    letterSpacing: 2,
-    color: colors.textMuted,
-    textTransform: "uppercase",
-    marginBottom: 4,
+
+  btn: {
+    width: BTN,
+    height: BTN,
+    borderRadius: radius.full,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
   },
-  modesList: {
-    gap: 0,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
+
+  btnOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.12)",
+    borderRadius: radius.full,
   },
-  modeRow: {
-    paddingVertical: spacing.md,
-    paddingRight: spacing.xs,
-    position: "relative",
-  },
-  numeral: {
-    fontSize: 10,
-    fontWeight: "500",
-    letterSpacing: 1.5,
-    marginBottom: 2,
-  },
-  modeTextBlock: {
-    gap: 2,
-  },
-  modeLabel: {
+
+  btnLabel: {
     fontFamily: "Tanker-Regular",
-    fontSize: 44,
-    lineHeight: 46,
-    color: colors.textPrimary,
+    fontSize: 30,
+    lineHeight: 32,
+    color: colors.background,
     letterSpacing: -0.5,
+    textAlign: "center",
   },
-  modeSublabel: {
-    fontSize: 12,
+
+  sublabel: {
+    fontSize: 11,
     fontStyle: "italic",
-    letterSpacing: 0.2,
-    lineHeight: 16,
-  },
-  separator: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: colors.border,
+    letterSpacing: 0.3,
+    lineHeight: 15,
+    color: colors.textSecondary,
   },
 });

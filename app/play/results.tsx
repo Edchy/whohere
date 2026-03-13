@@ -11,10 +11,10 @@ export default function ResultsScreen() {
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
         <View style={styles.top}>
-          <Text style={styles.label}>FINISHED</Text>
-          <Text style={styles.title}>That's all{'\n'}the cards.</Text>
+          <Text style={styles.label}>KLART</Text>
+          <Text style={styles.title}>Det var{'\n'}alla kort.</Text>
           <Text style={styles.subtitle}>
-            The best conversations start here — where the cards end.
+            De bästa samtalen börjar här — där korten tar slut.
           </Text>
         </View>
 
@@ -24,7 +24,7 @@ export default function ResultsScreen() {
             onPress={() => router.replace('/')}
             activeOpacity={0.7}
           >
-            <Text style={styles.primaryButtonText}>choose another mode</Text>
+            <Text style={styles.primaryButtonText}>välj ett annat läge</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -32,7 +32,7 @@ export default function ResultsScreen() {
             onPress={() => router.back()}
             activeOpacity={0.7}
           >
-            <Text style={styles.secondaryButtonText}>play again</Text>
+            <Text style={styles.secondaryButtonText}>spela igen</Text>
           </TouchableOpacity>
         </View>
       </View>

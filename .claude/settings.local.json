@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(ls:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python3 -c \"from PIL import Image; print\\(''PIL ok''\\)\")",
+      "Bash(for f:*)",
+      "Bash(do sips:*)",
+      "Bash(grep -E \"pixel|$f\")",
+      "Bash(done)"
     ]
   }
 }

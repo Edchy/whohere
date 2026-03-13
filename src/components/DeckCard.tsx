@@ -25,7 +25,7 @@ export function DeckCard({ deck, onPress }: Props) {
           <View style={[styles.badge, { backgroundColor: deck.color + '33' }]}>
             <Text style={[styles.badgeText, { color: deck.color }]}>{deck.mode}</Text>
           </View>
-          <Text style={styles.count}>{deck.cardCount} cards</Text>
+          <Text style={styles.count}>{deck.cards.length} cards</Text>
         </View>
       </View>
     </TouchableOpacity>
