@@ -8,23 +8,25 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, typography, radius } from '../../src/constants/theme';
+import AppHeader from '../../src/components/AppHeader';
 
 export default function SettingsScreen() {
   const [hapticsEnabled, setHapticsEnabled] = React.useState(true);
 
   return (
     <SafeAreaView style={styles.safe}>
+      <AppHeader hideSettings />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.title}>Settings</Text>
+          <Text style={styles.title}>Inställningar</Text>
         </View>
 
         <View style={styles.group}>
-          <Text style={styles.groupLabel}>PREFERENCES</Text>
+          <Text style={styles.groupLabel}>INSTÄLLNINGAR</Text>
           <View style={styles.row}>
             <View style={styles.rowContent}>
-              <Text style={styles.rowTitle}>Haptics</Text>
-              <Text style={styles.rowSub}>Vibrate when changing cards</Text>
+              <Text style={styles.rowTitle}>Haptik</Text>
+              <Text style={styles.rowSub}>Vibrera när du byter kort</Text>
             </View>
             <Switch
               value={hapticsEnabled}
@@ -37,14 +39,14 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.group}>
-          <Text style={styles.groupLabel}>ABOUT</Text>
+          <Text style={styles.groupLabel}>OM APPEN</Text>
           <View style={styles.infoBlock}>
-            <Text style={styles.appName}>Who here?</Text>
-            <Text style={styles.appTagline}>A game about how we read people.</Text>
+            <Text style={styles.appName}>Vem här?</Text>
+            <Text style={styles.appTagline}>Ett spel om hur vi läser varandra.</Text>
             <View style={styles.divider} />
             <Text style={styles.appDesc}>
-              Three modes. No internet. No accounts.{'\n'}
-              Just the app and the people around you.
+              Tre lägen. Inget internet. Inga konton.{'\n'}
+              Bara appen och människorna runt dig.
             </Text>
             <Text style={styles.version}>v1.0.0</Text>
           </View>

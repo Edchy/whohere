@@ -11,9 +11,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, spacing, typography } from '../../src/constants/theme';
 import { useGameStore } from '../../src/store/gameStore';
 import { Deck } from '../../src/types';
-import decksData from '../../assets/data/decks.json';
-
-const allDecks = decksData as Deck[];
+import allDecks from '../../assets/data/decks/index';
+import AppHeader from '../../src/components/AppHeader';
 
 export default function DecksScreen() {
   const router = useRouter();
@@ -26,12 +25,13 @@ export default function DecksScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Decks</Text>
-        <Text style={styles.subtitle}>Choose a category and play</Text>
-      </View>
+      <AppHeader />
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Kortlekar</Text>
+          <Text style={styles.subtitle}>Välj en kategori och börja spela</Text>
+        </View>
         {allDecks.map((deck) => (
           <TouchableOpacity
             key={deck.id}
@@ -47,8 +47,8 @@ export default function DecksScreen() {
               <Text style={styles.rowDesc}>{deck.description}</Text>
             </View>
             <View style={styles.rowRight}>
-              <Text style={[styles.rowCount, { color: deck.color }]}>{deck.cardCount}</Text>
-              <Text style={styles.rowCountLabel}>cards</Text>
+              <Text style={[styles.rowCount, { color: deck.color }]}>{deck.cards.length}</Text>
+              <Text style={styles.rowCountLabel}>kort</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  header: {
+  sectionHeader: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  title: {
+  sectionTitle: {
     fontSize: 32,
     fontWeight: '300',
     color: colors.textPrimary,

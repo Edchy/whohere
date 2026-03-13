@@ -1,146 +1,107 @@
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useRef } from "react";
 import {
-  ScrollView,
+  Animated,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, spacing, typography, radius } from "../../src/constants/theme";
-import { useGameStore } from "../../src/store/gameStore";
-import { Card, Deck } from "../../src/types";
-import decksData from "../../assets/data/decks.json";
-
-const allDecks = decksData as Deck[];
-
-function getDeckById(id: string): Deck | undefined {
-  return allDecks.find((d) => d.id === id);
-}
-
-// Build a merged virtual deck from cards across multiple source decks
-function buildCuratedDeck(
-  id: string,
-  title: string,
-  color: string,
-  icon: string,
-  deckIds: string[],
-): Deck {
-  const cards: Card[] = deckIds.flatMap((deckId) => {
-    const source = getDeckById(deckId);
-    if (!source) return [];
-    return source.cards.map((card) => ({
-      ...card,
-      deckIcon: source.icon,
-      deckTitle: source.title,
-      deckColor: source.color,
-    }));
-  });
-  return {
-    id,
-    title,
-    description: "",
-    mode: "any",
-    category: "fun",
-    cardCount: cards.length,
-    color,
-    icon,
-    cards,
-  };
-}
+import { colors, spacing, radius } from "../../src/constants/theme";
+import AppHeader from "../../src/components/AppHeader";
 
 const MODES = [
   {
     id: "partner",
-    label: "On a date",
-    sublabel: "Flirty. Curious. Revealing.",
-    emoji: "💕",
+    label: "På date",
+    sublabel: "Lär känna varandra",
+    number: "I",
     color: colors.datingTint,
-    // Spicy + Secret Agent
-    deckIds: ["spicy", "secret-agent"],
-    curatedId: "curated-date",
-    curatedTitle: "On a date",
-    curatedIcon: "💕",
   },
   {
     id: "group",
-    label: "With friends",
-    sublabel: "Absurd. Funny. A little chaotic.",
-    emoji: "👯",
+    label: "Med vänner",
+    sublabel: "Fantasi och intuition",
+    number: "II",
     color: colors.friendsTint,
-    // Dark Backgrounds + Secret Agent
-    deckIds: ["dark-backgrounds", "secret-agent"],
-    curatedId: "curated-friends",
-    curatedTitle: "With friends",
-    curatedIcon: "👯",
   },
   {
     id: "solo",
-    label: "Alone",
-    sublabel: "Slow. Observant. Meditative.",
-    emoji: "🧍",
+    label: "På egen hand",
+    sublabel: "Din inre värld",
+    number: "III",
     color: colors.soloTint,
-    // Meditative + Spicy
-    deckIds: ["meditative", "spicy"],
-    curatedId: "curated-alone",
-    curatedTitle: "Alone",
-    curatedIcon: "🧍",
   },
 ];
 
-export default function HomeScreen() {
+function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
   const router = useRouter();
-  const startGame = useGameStore((s) => s.startGame);
+  const scale = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
 
-  const handleModePress = (mode: (typeof MODES)[0]) => {
-    const deck = buildCuratedDeck(
-      mode.curatedId,
-      mode.curatedTitle,
-      mode.color,
-      mode.curatedIcon,
-      mode.deckIds,
-    );
-    startGame(deck, "any");
-    router.push(`/play/${mode.curatedId}`);
+  const onPressIn = () => {
+    Animated.parallel([
+      Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, speed: 40, bounciness: 0 }),
+      Animated.timing(opacity, { toValue: 0.7, duration: 80, useNativeDriver: true }),
+    ]).start();
+  };
+
+  const onPressOut = () => {
+    Animated.parallel([
+      Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 30, bounciness: 0 }),
+      Animated.timing(opacity, { toValue: 1, duration: 120, useNativeDriver: true }),
+    ]).start();
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        showsVerticalScrollIndicator={false}
+    <Animated.View style={{ transform: [{ scale }], opacity }}>
+      <Pressable
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
+        style={styles.modeRow}
       >
-        <View style={styles.header}>
-          <Text style={styles.wordmark}>Who here?</Text>
-          <Text style={styles.tagline}>A game about how we read people.</Text>
+        {/* Roman numeral — floats left, very small, top-aligned */}
+        <Text style={[styles.numeral, { color: mode.color }]}>{mode.number}</Text>
+
+        {/* Main label — huge editorial type */}
+        <View style={styles.modeTextBlock}>
+          <Text style={styles.modeLabel} numberOfLines={1} adjustsFontSizeToFit>
+            {mode.label}
+          </Text>
+          <Text style={[styles.modeSublabel, { color: mode.color }]}>
+            {mode.sublabel}
+          </Text>
         </View>
 
-        <View style={styles.modes}>
-          {MODES.map((mode, i) => (
-            <TouchableOpacity
-              key={mode.id}
-              style={[
-                styles.modeCard,
-                i < MODES.length - 1 && styles.modeCardBorder,
-              ]}
-              onPress={() => handleModePress(mode)}
-              activeOpacity={0.6}
-            >
-              <View style={styles.modeLeft}>
-                <Text style={styles.modeEmoji}>{mode.emoji}</Text>
-                <View>
-                  <Text style={styles.modeLabel}>{mode.label}</Text>
-                  <Text style={styles.modeSublabel}>{mode.sublabel}</Text>
-                </View>
-              </View>
-              <Text style={[styles.modeArrow, { color: mode.color }]}>→</Text>
-            </TouchableOpacity>
-          ))}
+        {/* Thin separator, last item omitted */}
+        {index < MODES.length - 1 && <View style={styles.separator} />}
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+export default function HomeScreen() {
+  return (
+    <SafeAreaView style={styles.safe}>
+      <AppHeader />
+      <View style={styles.container}>
+
+        {/* BOTTOM: Mode list */}
+        <View style={styles.modesSection}>
+          <Text style={styles.tagline}>
+            Titta dig omkring.{"\n"}Välj någon. Diskutera varför.
+          </Text>
+          <Text style={styles.modesSectionLabel}>Välj ett läge</Text>
+          <View style={styles.modesList}>
+            {MODES.map((mode, i) => (
+              <ModeRow key={mode.id} mode={mode} index={i} />
+            ))}
+          </View>
         </View>
 
-        <Text style={styles.hint}>Look around. Pick someone. Discuss why.</Text>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -150,77 +111,71 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  scroll: {
+  container: {
+    flex: 1,
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxxl,
-    flexGrow: 1,
-    justifyContent: "center",
+    paddingBottom: spacing.lg,
+    justifyContent: "flex-end",
   },
-  header: {
-    marginBottom: spacing.xxxl,
-    marginTop: spacing.xl,
-  },
-  wordmark: {
-    fontSize: 44,
-    fontWeight: "300",
-    color: colors.accent,
-    letterSpacing: -1,
-    lineHeight: 52,
-    marginBottom: spacing.sm,
-  },
+
   tagline: {
-    ...typography.body,
+    fontSize: 13,
+    lineHeight: 20,
     color: colors.textSecondary,
     fontStyle: "italic",
+    letterSpacing: 0.2,
   },
-  modes: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.lg,
-    overflow: "hidden",
-    marginBottom: spacing.xl,
+
+  // — Modes —
+  modesSection: {
+    gap: spacing.sm,
   },
-  modeCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    backgroundColor: colors.card,
+  modesSectionLabel: {
+    fontSize: 10,
+    fontWeight: "500",
+    letterSpacing: 2,
+    color: colors.textMuted,
+    textTransform: "uppercase",
+    marginBottom: 4,
   },
-  modeCardBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+  modesList: {
+    gap: 0,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
   },
-  modeLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
+  modeRow: {
+    paddingVertical: spacing.md,
+    paddingRight: spacing.xs,
+    position: "relative",
   },
-  modeEmoji: {
-    fontSize: 28,
-    width: 40,
+  numeral: {
+    fontSize: 10,
+    fontWeight: "500",
+    letterSpacing: 1.5,
+    marginBottom: 2,
+  },
+  modeTextBlock: {
+    gap: 2,
   },
   modeLabel: {
-    ...typography.bodyMedium,
+    fontFamily: "Tanker-Regular",
+    fontSize: 44,
+    lineHeight: 46,
     color: colors.textPrimary,
-    marginBottom: 2,
-    fontSize: 17,
+    letterSpacing: -0.5,
   },
   modeSublabel: {
-    ...typography.caption,
-    color: colors.textSecondary,
+    fontSize: 12,
     fontStyle: "italic",
+    letterSpacing: 0.2,
+    lineHeight: 16,
   },
-  modeArrow: {
-    fontSize: 20,
-    fontWeight: "300",
-  },
-  hint: {
-    ...typography.caption,
-    color: colors.textMuted,
-    textAlign: "center",
-    fontStyle: "italic",
-    letterSpacing: 0.3,
+  separator: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.border,
   },
 });

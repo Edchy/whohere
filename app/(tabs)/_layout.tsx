@@ -6,9 +6,9 @@ import { colors, spacing, typography } from '../../src/constants/theme';
 function CustomTabBar({ state, descriptors, navigation }: any) {
   return (
     <View style={tabStyles.bar}>
-      {state.routes.map((route: any, index: number) => {
+      {state.routes.filter((route: any) => route.name !== 'settings').map((route: any) => {
         const { options } = descriptors[route.key];
-        const focused = state.index === index;
+        const focused = state.routes[state.index]?.key === route.key;
         const label: string = options.title ?? route.name;
 
         return (
@@ -35,9 +35,9 @@ export default function TabsLayout() {
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Play' }} />
-      <Tabs.Screen name="decks" options={{ title: 'Decks' }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
+      <Tabs.Screen name="index" options={{ title: 'Spela' }} />
+      <Tabs.Screen name="decks" options={{ title: 'Kortlekar' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Inställningar' }} />
     </Tabs>
   );
 }
