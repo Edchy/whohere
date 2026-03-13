@@ -6,16 +6,14 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, typography, radius } from '../../src/constants/theme';
-import AppHeader from '../../src/components/AppHeader';
+import ScreenLayout from '../../src/components/ScreenLayout';
 
 export default function SettingsScreen() {
   const [hapticsEnabled, setHapticsEnabled] = React.useState(true);
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <AppHeader />
+    <ScreenLayout>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.title}>Inställningar</Text>
@@ -52,17 +50,13 @@ export default function SettingsScreen() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   scroll: {
-    padding: spacing.lg,
+    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxxl,
   },
   header: {

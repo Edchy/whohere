@@ -62,7 +62,7 @@ const tabStyles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.accent,
     marginHorizontal: spacing.lg,
     marginBottom: 24,
     paddingBottom: 12,

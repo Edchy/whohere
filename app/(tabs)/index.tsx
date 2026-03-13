@@ -7,9 +7,8 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, radius, spacing } from "../../src/constants/theme";
-import AppHeader from "../../src/components/AppHeader";
+import ScreenLayout from "../../src/components/ScreenLayout";
 
 const MODES = [
   {
@@ -76,9 +75,7 @@ function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={styles.safe}>
-      <AppHeader />
-
+    <ScreenLayout>
       <View style={styles.container}>
         <View style={styles.modeList}>
           {MODES.map((mode, index) => (
@@ -86,19 +83,13 @@ export default function HomeScreen() {
           ))}
         </View>
       </View>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-
   container: {
     flex: 1,
-    justifyContent: "center",
     paddingHorizontal: spacing.lg,
     gap: spacing.sm,
   },
