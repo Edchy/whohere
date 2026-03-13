@@ -2,105 +2,75 @@ import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import {
   Animated,
-  Dimensions,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, spacing, radius } from "../../src/constants/theme";
+import { colors, spacing } from "../../src/constants/theme";
 import AppHeader from "../../src/components/AppHeader";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-const BTN = Math.round(SCREEN_WIDTH * 0.42);
 
 const MODES = [
   {
     id: "partner",
-    label: "På\ndate",
-    sublabel: "Lär känna varandra genom att betrakta andra",
-    color: colors.datingTint,
-    alignSelf: "flex-start" as const,
-    sublabelAlign: "flex-start" as const,
+    label: "På date",
+    sublabel: "Lär känna varandra genom att betrakta andra.",
+    color: colors.accent,
   },
   {
     id: "group",
-    label: "Med\nvänner",
-    sublabel: "Fantasi och intuition i en ohelig kombination",
-    color: colors.friendsTint,
-    alignSelf: "flex-end" as const,
-    sublabelAlign: "flex-end" as const,
+    label: "Med vänner",
+    sublabel: "Fantasi och intuition i en ohelig kombination.",
+    color: colors.accent,
   },
   {
     id: "solo",
-    label: "På egen\nhand",
-    sublabel: "Upptäck din inre värld genom utblickar och insikter",
-    color: colors.soloTint,
-    alignSelf: "flex-start" as const,
-    sublabelAlign: "flex-start" as const,
+    label: "På egen hand",
+    sublabel: "Upptäck din inre värld genom utblickar och insikter.",
+    color: colors.accent,
   },
 ];
 
-function ModeButton({ mode }: { mode: (typeof MODES)[0] }) {
+function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
   const router = useRouter();
-  const scale = useRef(new Animated.Value(1)).current;
-  const overlay = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () => {
-    Animated.parallel([
-      Animated.spring(scale, {
-        toValue: 0.95,
-        useNativeDriver: true,
-        speed: 40,
-        bounciness: 0,
-      }),
-      Animated.timing(overlay, {
-        toValue: 1,
-        duration: 80,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    Animated.timing(opacity, {
+      toValue: 0.75,
+      duration: 60,
+      useNativeDriver: true,
+    }).start();
   };
 
   const onPressOut = () => {
-    Animated.parallel([
-      Animated.spring(scale, {
-        toValue: 1,
-        useNativeDriver: true,
-        speed: 30,
-        bounciness: 4,
-      }),
-      Animated.timing(overlay, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
   };
 
-  return (
-    <View style={[styles.modeGroup, { alignSelf: mode.alignSelf }]}>
-      <Animated.View style={{ transform: [{ scale }] }}>
-        <Pressable
-          onPressIn={onPressIn}
-          onPressOut={onPressOut}
-          onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
-          style={[styles.btn, { backgroundColor: mode.color }]}
-        >
-          <Animated.View
-            style={[styles.btnOverlay, { opacity: overlay }]}
-            pointerEvents="none"
-          />
-          <Text style={styles.btnLabel}>{mode.label}</Text>
-        </Pressable>
-      </Animated.View>
+  const isLast = index === MODES.length - 1;
 
-      <Text style={[styles.sublabel, { alignSelf: mode.sublabelAlign }]}>
-        {mode.sublabel}
-      </Text>
-    </View>
+  return (
+    <Animated.View style={{ opacity }}>
+      <Pressable
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
+        style={[styles.row, { backgroundColor: mode.color }, !isLast && styles.rowGap]}
+      >
+        <View style={styles.rowInner}>
+          <View style={styles.rowText}>
+            <Text style={styles.rowLabel}>{mode.label}</Text>
+            <Text style={styles.rowSublabel}>{mode.sublabel}</Text>
+          </View>
+          <Text style={styles.rowArrow}>→</Text>
+        </View>
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -110,9 +80,9 @@ export default function HomeScreen() {
       <AppHeader />
 
       <View style={styles.container}>
-        <View style={styles.buttonsColumn}>
-          {MODES.map((mode) => (
-            <ModeButton key={mode.id} mode={mode} />
+        <View style={styles.modeList}>
+          {MODES.map((mode, index) => (
+            <ModeRow key={mode.id} mode={mode} index={index} />
           ))}
         </View>
       </View>
@@ -125,50 +95,56 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+
   container: {
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
+    gap: spacing.sm,
   },
 
-  buttonsColumn: {
-    gap: spacing.md,
+  modeList: {
+    gap: spacing.sm,
   },
 
-  modeGroup: {
-    gap: spacing.xs,
+  row: {
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    borderRadius: 4,
   },
 
-  btn: {
-    width: BTN,
-    height: BTN,
-    borderRadius: radius.full,
+  rowGap: {},
+
+  rowInner: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
   },
 
-  btnOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.12)",
-    borderRadius: radius.full,
+  rowText: {
+    flex: 1,
+    gap: 5,
   },
 
-  btnLabel: {
-    fontFamily: "Tanker-Regular",
-    fontSize: 30,
-    lineHeight: 32,
+  rowLabel: {
+    fontFamily: "Paquito-Medium",
+    fontSize: 38,
+    lineHeight: 48,
+    letterSpacing: -1,
     color: colors.background,
-    letterSpacing: -0.5,
-    textAlign: "center",
   },
 
-  sublabel: {
-    fontSize: 11,
+  rowSublabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    letterSpacing: 0.2,
     fontStyle: "italic",
-    letterSpacing: 0.3,
-    lineHeight: 15,
-    color: colors.textSecondary,
+    color: colors.background,
+    opacity: 0.9,
+  },
+
+  rowArrow: {
+    fontSize: 22,
+    color: colors.background,
+    opacity: 0.6,
   },
 });

@@ -420,6 +420,7 @@ const styles = StyleSheet.create({
   questionBlock: { flex: 1, justifyContent: "center" },
   whoHere: {
     fontSize: 17,
+    lineHeight: 26,
     fontStyle: "italic",
     color: colors.accent,
     letterSpacing: 0.5,

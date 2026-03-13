@@ -5,25 +5,25 @@ export const colors = {
   card: '#E8E0D5',
   cardBorder: '#D8CEBC',
 
-  // Text — red
-  textPrimary: '#B83030',
-  textSecondary: '#CC5555',
-  textMuted: '#DC9898',
+  // Text — red  (oklch-derived, converted to sRGB hex)
+  textPrimary: '#D42020',    // oklch(0.52 0.21 27)
+  textSecondary: '#E04040',  // oklch(0.58 0.18 27)
+  textMuted: '#E88888',      // oklch(0.68 0.10 27)
 
-  // Accent — deep red
-  accent: '#9E2020',
-  accentSoft: '#F2E0E0',
-  accentDim: '#B8303020',
+  // Accent — vivid red
+  accent: '#D42020',         // oklch(0.52 0.21 27)
+  accentSoft: '#F5E0E0',
+  accentDim: '#D4202020',
 
-  // Mode tints (very subtle)
-  datingTint: '#B83030',   // red
-  friendsTint: '#CC5555',  // mid red
-  soloTint: '#C07070',     // soft red
+  // Mode tints
+  datingTint: '#D42020',     // oklch(0.52 0.21 27)
+  friendsTint: '#E04040',    // oklch(0.58 0.18 27)
+  soloTint: '#CC6060',       // oklch(0.62 0.12 27)
 
   // UI
   border: '#D5CABC',
   overlay: 'rgba(247,242,236,0.95)',
-  destructive: '#7A1515',
+  destructive: '#A01010',    // oklch(0.42 0.20 27)
 };
 
 export const spacing = {

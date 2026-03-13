@@ -6,7 +6,7 @@ import { colors } from '../src/constants/theme';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    'Tanker-Regular': require('../assets/fonts/Tanker-Regular.ttf'),
+    'Paquito-Medium': require('../assets/fonts/Paquito-Medium.otf'),
   });
 
   if (!fontsLoaded) return null;
