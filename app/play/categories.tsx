@@ -142,21 +142,10 @@ export default function CategoriesScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={12}>
-          <Text style={styles.back}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.modeLabel}>{modeLabel}</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
       <View style={styles.header}>
-        <Text style={styles.title}>Välj dina kortlekar</Text>
-        <Text style={styles.subtitle}>
-          Mixa fritt — kort från alla valda lekar blandas ihop.
-        </Text>
+        <Text style={styles.title}>Vad vill du utforska?</Text>
+        <Text style={styles.subtitle}>Välj en eller flera kortlekar — vi blandar ihop resten.</Text>
       </View>
-
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -236,32 +225,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  topBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  back: {
-    fontSize: 22,
-    color: colors.textMuted,
-    fontWeight: "300",
-  },
-  modeLabel: {
-    ...typography.label,
-    color: colors.textSecondary,
-    textTransform: "uppercase",
-    letterSpacing: 1.5,
-  },
   header: {
     paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
     paddingBottom: spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "300",
     color: colors.textPrimary,
     letterSpacing: -0.3,
