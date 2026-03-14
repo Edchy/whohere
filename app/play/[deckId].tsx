@@ -25,6 +25,7 @@ import Animated, {
 import { runOnJS } from "react-native-worklets";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, radius, spacing, typography } from "../../src/constants/theme";
+import AppHeader from "../../src/components/AppHeader";
 import { useHaptics } from "../../src/hooks/useHaptics";
 import { useGameStore } from "../../src/store/gameStore";
 import { Card, Deck } from "../../src/types";
@@ -41,7 +42,7 @@ const NEXT_SCALE = 0.94;
 // Flip animation config
 const FLIP_TOGGLE_CONFIG = { duration: 160, easing: Easing.inOut(Easing.ease) };
 
-function CardFace({ card, deck }: { card: Card; deck: Deck }) {
+function CardFace({ card, deck, cardIndex, totalCards }: { card: Card; deck: Deck; cardIndex: number; totalCards: number }) {
   const icon = card.deckIcon ?? deck.icon;
   const title = card.deckTitle ?? deck.title;
   const color = card.deckColor ?? deck.color;
@@ -65,7 +66,9 @@ function CardFace({ card, deck }: { card: Card; deck: Deck }) {
           <Text style={styles.followUp}>{card.followUp}</Text>
         </View>
       )}
-      <View style={styles.cardFooter} />
+      <View style={styles.cardFooter}>
+        <Text style={styles.cardCounter}>{cardIndex + 1} / {totalCards}</Text>
+      </View>
     </>
   );
 }
@@ -330,31 +333,13 @@ export default function PlayScreen() {
   const nextCardData: Card | undefined = deck.cards[topIndex + 1];
   const prevCardData: Card | undefined = deck.cards[topIndex - 1];
   const isLast = topIndex === deck.cards.length - 1;
-  const progress = (topIndex + 1) / deck.cards.length;
 
   if (!topCard) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.safe}>
-        <View style={styles.topBar}>
-          <TouchableOpacity onPress={handleClose} hitSlop={12}>
-            <Text style={styles.closeText}>✕</Text>
-          </TouchableOpacity>
-          <Text style={styles.deckTitle}>{deck.title}</Text>
-          <Text style={styles.cardCount}>
-            {topIndex + 1} / {deck.cards.length}
-          </Text>
-        </View>
-
-        <View style={styles.progressTrack}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${progress * 100}%`, backgroundColor: deck.color },
-            ]}
-          />
-        </View>
+        <AppHeader onBack={handleClose} />
 
         <View style={styles.cardArea}>
           {/* Show prev or next card behind the top card depending on drag direction.
@@ -362,7 +347,7 @@ export default function PlayScreen() {
           {prevCardData && (
             <Animated.View style={[styles.card, prevCardStyle]}>
               <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
-                <CardFace card={prevCardData} deck={deck} />
+                <CardFace card={prevCardData} deck={deck} cardIndex={topIndex - 1} totalCards={deck.cards.length} />
                 {topIndex - 1 > 0 && <View style={styles.dotLeft} />}
                 <View style={styles.dotRight} />
               </View>
@@ -371,7 +356,7 @@ export default function PlayScreen() {
           {nextCardData && (
             <Animated.View style={[styles.card, nextCardStyle]}>
               <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
-                <CardFace card={nextCardData} deck={deck} />
+                <CardFace card={nextCardData} deck={deck} cardIndex={topIndex + 1} totalCards={deck.cards.length} />
                 <View style={styles.dotLeft} />
                 {topIndex + 1 < deck.cards.length - 1 && <View style={styles.dotRight} />}
               </View>
@@ -384,7 +369,7 @@ export default function PlayScreen() {
               <Pressable style={styles.cardPressable} onPress={handleFlip}>
                 {/* Front face — rotates 0→180deg, backfaceVisibility hides it past 90deg */}
                 <Animated.View style={[styles.cardFace, frontFaceStyle]}>
-                  <CardFace card={topCard} deck={deck} />
+                  <CardFace card={topCard} deck={deck} cardIndex={topIndex} totalCards={deck.cards.length} />
                   {topIndex > 0 && <View style={styles.dotLeft} />}
                   {!isLast && <View style={styles.dotRight} />}
                 </Animated.View>
@@ -445,14 +430,6 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 1.5,
   },
-  cardCount: { ...typography.caption, color: colors.textMuted },
-  progressTrack: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginBottom: spacing.xl,
-    marginHorizontal: spacing.sm,
-  },
-  progressFill: { height: 1 },
   cardArea: {
     flex: 1,
     justifyContent: "center",
@@ -552,6 +529,11 @@ const styles = StyleSheet.create({
   cardFooter: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  cardCounter: {
+    ...typography.caption,
+    color: colors.textMuted,
+    letterSpacing: 0.5,
   },
   difficultyRow: { flexDirection: "row", gap: 6 },
   dot: { width: 6, height: 6, borderRadius: 3 },

@@ -4,10 +4,16 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { colors, spacing } from '../constants/theme';
 import EyesLogo from './EyesLogo';
 
-export default function AppHeader() {
+export default function AppHeader({ onBack }: { onBack?: () => void }) {
   return (
     <View style={styles.container}>
-      <View style={styles.spacer} />
+      {onBack ? (
+        <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7} hitSlop={12}>
+          <Ionicons name="chevron-back" size={26} color={colors.textMuted} />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.spacer} />
+      )}
       <EyesLogo size={72} />
       <TouchableOpacity style={styles.helpButton} activeOpacity={0.7}>
         <Ionicons name="help-circle-outline" size={26} color={colors.textMuted} />
@@ -25,6 +31,9 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
   },
   spacer: {
+    flex: 1,
+  },
+  backButton: {
     flex: 1,
   },
   helpButton: {
