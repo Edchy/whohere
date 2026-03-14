@@ -275,6 +275,7 @@ export default function PlayScreen() {
 
       if (goLeft) {
         animating.value = true;
+        runOnJS(haptics.light)();
         nextProgress.value = withSpring(1, { damping: 18, stiffness: 220 });
         prevProgress.value = 0;
         dragX.value = withTiming(-SCREEN_WIDTH * 1.5, { duration: 240 }, () => {
@@ -286,6 +287,7 @@ export default function PlayScreen() {
         });
       } else if (goRight) {
         animating.value = true;
+        runOnJS(haptics.light)();
         prevProgress.value = withSpring(1, { damping: 18, stiffness: 220 });
         nextProgress.value = 0;
         dragX.value = withTiming(SCREEN_WIDTH * 1.5, { duration: 240 }, () => {

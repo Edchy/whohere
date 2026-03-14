@@ -8,9 +8,11 @@ import {
 } from 'react-native';
 import { colors, spacing, typography, radius } from '../../src/constants/theme';
 import ScreenLayout from '../../src/components/ScreenLayout';
+import { useGameStore } from '../../src/store/gameStore';
 
 export default function SettingsScreen() {
-  const [hapticsEnabled, setHapticsEnabled] = React.useState(true);
+  const hapticsEnabled = useGameStore((s) => s.hapticsEnabled);
+  const setHapticsEnabled = useGameStore((s) => s.setHapticsEnabled);
 
   return (
     <ScreenLayout>
