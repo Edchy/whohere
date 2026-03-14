@@ -91,7 +91,7 @@ function buildDeck(selectedIds: string[], modeId: string): Deck {
     category: "mixed",
     color,
     cardBackground: colors.card,
-    cardText: colors.textPrimary,
+    cardText: colors.textPrimary,  // curated deck fallback — text on neutral card bg
     icon: "",
     cards,
   };

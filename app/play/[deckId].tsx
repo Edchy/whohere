@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardFaceBack: {
-    backgroundColor: colors.textPrimary,
+    backgroundColor: colors.brandBg,
   },
   // Back face content
   cardBackContent: {
