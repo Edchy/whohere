@@ -38,9 +38,8 @@ const SWIPE_VELOCITY = 400;
 const NEXT_TRANSLATE_Y = 20;
 const NEXT_SCALE = 0.94;
 
-// Flip animation configs
-const FLIP_RESET_CONFIG = { duration: 200 };
-const FLIP_TOGGLE_CONFIG = { duration: 350, easing: Easing.out(Easing.quad) };
+// Flip animation config
+const FLIP_TOGGLE_CONFIG = { duration: 160, easing: Easing.inOut(Easing.ease) };
 
 function CardFace({ card, deck }: { card: Card; deck: Deck }) {
   const icon = card.deckIcon ?? deck.icon;
@@ -126,9 +125,9 @@ export default function PlayScreen() {
     }
   }, [storeIndex]);
 
-  // Reset flip to front whenever the top card changes
+  // Reset flip to front instantly whenever the top card changes
   useEffect(() => {
-    flipProgress.value = withTiming(0, FLIP_RESET_CONFIG);
+    flipProgress.value = 0;
   }, [topIndex]);
 
   const commitNext = useCallback(() => {
@@ -175,7 +174,7 @@ export default function PlayScreen() {
       },
       { scale: interpolate(nextProgress.value, [0, 1], [NEXT_SCALE, 1]) },
     ],
-    opacity: interpolate(nextProgress.value, [0, 1], [0, 1]),
+    opacity: interpolate(nextProgress.value, [0, 0.15, 1], [0, 1, 1]),
   }));
 
   const prevCardStyle = useAnimatedStyle(() => ({
@@ -189,23 +188,22 @@ export default function PlayScreen() {
       },
       { scale: interpolate(prevProgress.value, [0, 1], [NEXT_SCALE, 1]) },
     ],
-    opacity: interpolate(prevProgress.value, [0, 1], [0, 1]),
+    opacity: interpolate(prevProgress.value, [0, 0.15, 1], [0, 1, 1]),
   }));
 
-  // Standard card-flip technique:
-  //   front rotates 0deg → 180deg  (backfaceVisibility hides it once past 90deg)
-  //   back  rotates -180deg → 0deg (backfaceVisibility hides it until past -90deg)
-  // perspective must be a separate transform entry (React Native requirement)
+  // Two-face counter-rotation: front 0→180, back -180→0.
+  // backfaceVisibility hides each face once it rotates past 90deg.
+  // Low perspective (600) exaggerates depth for a convincing 3D feel.
   const frontFaceStyle = useAnimatedStyle(() => ({
     transform: [
-      { perspective: 1200 },
+      { perspective: 600 },
       { rotateY: `${interpolate(flipProgress.value, [0, 1], [0, 180])}deg` },
     ],
   }));
 
   const backFaceStyle = useAnimatedStyle(() => ({
     transform: [
-      { perspective: 1200 },
+      { perspective: 600 },
       { rotateY: `${interpolate(flipProgress.value, [0, 1], [-180, 0])}deg` },
     ],
   }));
@@ -360,59 +358,36 @@ export default function PlayScreen() {
           {/* Show prev or next card behind the top card depending on drag direction.
               Never show both — avoids z-order conflicts and double-card flash. */}
           {prevCardData && (
-            <Animated.View
-              style={[
-                styles.card,
-                {
-                  borderColor: (prevCardData.deckColor ?? deck.color) + "40",
-                  backgroundColor: colors.surface,
-                },
-                prevCardStyle,
-              ]}
-            >
-              <View style={styles.cardFace}>
+            <Animated.View style={[styles.card, prevCardStyle]}>
+              <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
                 <CardFace card={prevCardData} deck={deck} />
+                {topIndex - 1 > 0 && <View style={styles.dotLeft} />}
+                <View style={styles.dotRight} />
               </View>
             </Animated.View>
           )}
           {nextCardData && (
-            <Animated.View
-              style={[
-                styles.card,
-                {
-                  borderColor: (nextCardData.deckColor ?? deck.color) + "40",
-                  backgroundColor: colors.surface,
-                },
-                nextCardStyle,
-              ]}
-            >
-              <View style={styles.cardFace}>
+            <Animated.View style={[styles.card, nextCardStyle]}>
+              <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
                 <CardFace card={nextCardData} deck={deck} />
+                <View style={styles.dotLeft} />
+                {topIndex + 1 < deck.cards.length - 1 && <View style={styles.dotRight} />}
               </View>
             </Animated.View>
           )}
 
           {/* Top card — pan gesture for swipe, Pressable inside for flip */}
           <GestureDetector gesture={panGesture}>
-            <Animated.View
-              style={[
-                styles.card,
-                { borderColor: (topCard.deckColor ?? deck.color) + "70" },
-                topCardStyle,
-              ]}
-            >
+            <Animated.View style={[styles.card, topCardStyle]}>
               <Pressable style={styles.cardPressable} onPress={handleFlip}>
-                {/* Front face — rotates 0→180deg, hidden past 90deg */}
+                {/* Front face — rotates 0→180deg, backfaceVisibility hides it past 90deg */}
                 <Animated.View style={[styles.cardFace, frontFaceStyle]}>
                   <CardFace card={topCard} deck={deck} />
                   {topIndex > 0 && <View style={styles.dotLeft} />}
                   {!isLast && <View style={styles.dotRight} />}
                 </Animated.View>
-
-                {/* Back face — starts at -180deg, visible once past -90deg */}
-                <Animated.View
-                  style={[styles.cardFace, styles.cardFaceBack, backFaceStyle]}
-                >
+                {/* Back face — rotates -180→0deg, appears once past 90deg */}
+                <Animated.View style={[styles.cardFace, styles.cardFaceBack, backFaceStyle]}>
                   <CardBack deck={deck} />
                 </Animated.View>
               </Pressable>
@@ -484,9 +459,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: CARD_HEIGHT,
-    backgroundColor: colors.card,
     borderRadius: radius.xl,
-    borderWidth: 1.5,
   },
   cardPressable: {
     width: "100%",
@@ -504,10 +477,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backfaceVisibility: "hidden",
     backgroundColor: colors.card,
-    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: -10, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 3,
   },
   cardFaceBack: {
-    backgroundColor: colors.surface,
+    backgroundColor: "#FFFFFF",
   },
   // Back face content
   cardBackContent: {
