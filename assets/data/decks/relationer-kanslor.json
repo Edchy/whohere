@@ -5,5 +5,7 @@
   "mode": "any",
   "category": "relationer-kanslor",
   "color": "#B07A9F",
+  "cardBackground": "#241420",
+  "cardText": "#F0D8EC",
   "icon": "❋"
 }

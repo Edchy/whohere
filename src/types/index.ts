@@ -23,6 +23,8 @@ export type Card = {
   deckIcon?: string;
   deckTitle?: string;
   deckColor?: string;
+  deckBackground?: string;
+  deckText?: string;
 };
 
 export type Deck = {
@@ -32,6 +34,8 @@ export type Deck = {
   mode: DeckMode;
   category: DeckCategory;
   color: string;
+  cardBackground: string;
+  cardText: string;
   icon: string;
   cards: Card[];
 };

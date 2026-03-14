@@ -77,6 +77,8 @@ function buildDeck(selectedIds: string[], modeId: string): Deck {
       deckIcon: source.icon,
       deckTitle: source.title,
       deckColor: source.color,
+      deckBackground: source.cardBackground,
+      deckText: source.cardText,
     }));
   });
   const filtered = rawCards.filter((card) => passesIntensityFilter(card, modeId));
@@ -88,6 +90,8 @@ function buildDeck(selectedIds: string[], modeId: string): Deck {
     mode: "any",
     category: "mixed",
     color,
+    cardBackground: colors.card,
+    cardText: colors.textPrimary,
     icon: "",
     cards,
   };

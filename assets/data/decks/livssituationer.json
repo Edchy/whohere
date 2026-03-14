@@ -5,5 +5,7 @@
   "mode": "any",
   "category": "livssituationer",
   "color": "#7A9FB0",
+  "cardBackground": "#141E24",
+  "cardText": "#D4E4EE",
   "icon": "◈"
 }

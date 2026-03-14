@@ -46,6 +46,7 @@ function CardFace({ card, deck, cardIndex, totalCards }: { card: Card; deck: Dec
   const icon = card.deckIcon ?? deck.icon;
   const title = card.deckTitle ?? deck.title;
   const color = card.deckColor ?? deck.color;
+  const cardText = card.deckText ?? deck.cardText;
 
   return (
     <>
@@ -57,17 +58,17 @@ function CardFace({ card, deck, cardIndex, totalCards }: { card: Card; deck: Dec
         </Text>
       </View>
       <View style={styles.questionBlock}>
-        <Text style={styles.whoHere}>Vem här…</Text>
-        <Text style={styles.question}>{card.question}</Text>
+        <Text style={[styles.whoHere, { color }]}>Vem här…</Text>
+        <Text style={[styles.question, { color: cardText }]}>{card.question}</Text>
       </View>
       {card.followUp && (
-        <View style={styles.followUpBlock}>
-          <Text style={styles.followUpLabel}>följdfråga —</Text>
-          <Text style={styles.followUp}>{card.followUp}</Text>
+        <View style={[styles.followUpBlock, { borderTopColor: `${cardText}22` }]}>
+          <Text style={[styles.followUpLabel, { color: `${cardText}66` }]}>följdfråga —</Text>
+          <Text style={[styles.followUp, { color: `${cardText}99` }]}>{card.followUp}</Text>
         </View>
       )}
       <View style={styles.cardFooter}>
-        <Text style={styles.cardCounter}>{cardIndex + 1} / {totalCards}</Text>
+        <Text style={[styles.cardCounter, { color: `${cardText}55` }]}>{cardIndex + 1} / {totalCards}</Text>
       </View>
     </>
   );
@@ -346,19 +347,19 @@ export default function PlayScreen() {
               Never show both — avoids z-order conflicts and double-card flash. */}
           {prevCardData && (
             <Animated.View style={[styles.card, prevCardStyle]}>
-              <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
+              <View style={[styles.cardFace, { backgroundColor: prevCardData.deckBackground ?? deck.cardBackground }]}>
                 <CardFace card={prevCardData} deck={deck} cardIndex={topIndex - 1} totalCards={deck.cards.length} />
-                {topIndex - 1 > 0 && <View style={styles.dotLeft} />}
-                <View style={styles.dotRight} />
+                {topIndex - 1 > 0 && <View style={[styles.dotLeft, { backgroundColor: prevCardData.deckText ?? deck.cardText }]} />}
+                <View style={[styles.dotRight, { backgroundColor: prevCardData.deckText ?? deck.cardText }]} />
               </View>
             </Animated.View>
           )}
           {nextCardData && (
             <Animated.View style={[styles.card, nextCardStyle]}>
-              <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
+              <View style={[styles.cardFace, { backgroundColor: nextCardData.deckBackground ?? deck.cardBackground }]}>
                 <CardFace card={nextCardData} deck={deck} cardIndex={topIndex + 1} totalCards={deck.cards.length} />
-                <View style={styles.dotLeft} />
-                {topIndex + 1 < deck.cards.length - 1 && <View style={styles.dotRight} />}
+                <View style={[styles.dotLeft, { backgroundColor: nextCardData.deckText ?? deck.cardText }]} />
+                {topIndex + 1 < deck.cards.length - 1 && <View style={[styles.dotRight, { backgroundColor: nextCardData.deckText ?? deck.cardText }]} />}
               </View>
             </Animated.View>
           )}
@@ -368,10 +369,10 @@ export default function PlayScreen() {
             <Animated.View style={[styles.card, topCardStyle]}>
               <Pressable style={styles.cardPressable} onPress={handleFlip}>
                 {/* Front face — rotates 0→180deg, backfaceVisibility hides it past 90deg */}
-                <Animated.View style={[styles.cardFace, frontFaceStyle]}>
+                <Animated.View style={[styles.cardFace, { backgroundColor: topCard.deckBackground ?? deck.cardBackground }, frontFaceStyle]}>
                   <CardFace card={topCard} deck={deck} cardIndex={topIndex} totalCards={deck.cards.length} />
-                  {topIndex > 0 && <View style={styles.dotLeft} />}
-                  {!isLast && <View style={styles.dotRight} />}
+                  {topIndex > 0 && <View style={[styles.dotLeft, { backgroundColor: topCard.deckText ?? deck.cardText }]} />}
+                  {!isLast && <View style={[styles.dotRight, { backgroundColor: topCard.deckText ?? deck.cardText }]} />}
                 </Animated.View>
                 {/* Back face — rotates -180→0deg, appears once past 90deg */}
                 <Animated.View style={[styles.cardFace, styles.cardFaceBack, backFaceStyle]}>
@@ -455,7 +456,6 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     justifyContent: "space-between",
     backfaceVisibility: "hidden",
-    backgroundColor: colors.card,
     shadowColor: "#000",
     shadowOffset: { width: -10, height: 10 },
     shadowOpacity: 0.12,
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardFaceBack: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.textPrimary,
   },
   // Back face content
   cardBackContent: {
