@@ -15,6 +15,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
+  Easing,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
@@ -28,6 +29,7 @@ import { useHaptics } from "../../src/hooks/useHaptics";
 import { useGameStore } from "../../src/store/gameStore";
 import { Card, Deck } from "../../src/types";
 import allDecks from "../../assets/data/decks/index";
+
 const CARD_HEIGHT = 400;
 const SWIPE_DISTANCE = 60;
 const SWIPE_VELOCITY = 400;
@@ -35,6 +37,9 @@ const SWIPE_VELOCITY = 400;
 // Next card resting state offsets (peeks behind top card)
 const NEXT_TRANSLATE_Y = 20;
 const NEXT_SCALE = 0.94;
+
+// Flip animation config
+const FLIP_TOGGLE_CONFIG = { duration: 160, easing: Easing.inOut(Easing.ease) };
 
 function CardFace({ card, deck }: { card: Card; deck: Deck }) {
   const icon = card.deckIcon ?? deck.icon;
@@ -65,6 +70,18 @@ function CardFace({ card, deck }: { card: Card; deck: Deck }) {
   );
 }
 
+function CardBack({ deck }: { deck: Deck }) {
+  return (
+    <View style={styles.cardBackContent}>
+      <Text style={styles.cardBackIcon}>{deck.icon}</Text>
+      <Text style={[styles.cardBackTitle, { color: deck.color }]}>
+        {deck.title.toUpperCase()}
+      </Text>
+      <Text style={styles.cardBackHint}>tryck för att vända</Text>
+    </View>
+  );
+}
+
 export default function PlayScreen() {
   const router = useRouter();
   const { deckId } = useLocalSearchParams<{ deckId: string }>();
@@ -81,10 +98,16 @@ export default function PlayScreen() {
 
   const [topIndex, setTopIndex] = useState(0);
   const animating = useSharedValue(false);
+  const swipedRef = React.useRef(false);
+  const markSwiping = React.useCallback(() => { swipedRef.current = true; }, []);
+  const clearSwiping = React.useCallback(() => { swipedRef.current = false; }, []);
 
   const dragX = useSharedValue(0);
   const nextProgress = useSharedValue(0);
   const prevProgress = useSharedValue(0);
+
+  // Flip state: 0 = front face visible, 1 = back face visible
+  const flipProgress = useSharedValue(0);
 
   useEffect(() => {
     if (!activeDeck && deckId) {
@@ -101,6 +124,11 @@ export default function PlayScreen() {
       setTopIndex(storeIndex);
     }
   }, [storeIndex]);
+
+  // Reset flip to front instantly whenever the top card changes
+  useEffect(() => {
+    flipProgress.value = 0;
+  }, [topIndex]);
 
   const commitNext = useCallback(() => {
     nextCardStore();
@@ -146,7 +174,7 @@ export default function PlayScreen() {
       },
       { scale: interpolate(nextProgress.value, [0, 1], [NEXT_SCALE, 1]) },
     ],
-    opacity: interpolate(nextProgress.value, [0, 1], [0, 1]),
+    opacity: interpolate(nextProgress.value, [0, 0.15, 1], [0, 1, 1]),
   }));
 
   const prevCardStyle = useAnimatedStyle(() => ({
@@ -160,7 +188,24 @@ export default function PlayScreen() {
       },
       { scale: interpolate(prevProgress.value, [0, 1], [NEXT_SCALE, 1]) },
     ],
-    opacity: interpolate(prevProgress.value, [0, 1], [0, 1]),
+    opacity: interpolate(prevProgress.value, [0, 0.15, 1], [0, 1, 1]),
+  }));
+
+  // Two-face counter-rotation: front 0→180, back -180→0.
+  // backfaceVisibility hides each face once it rotates past 90deg.
+  // Low perspective (600) exaggerates depth for a convincing 3D feel.
+  const frontFaceStyle = useAnimatedStyle(() => ({
+    transform: [
+      { perspective: 600 },
+      { rotateY: `${interpolate(flipProgress.value, [0, 1], [0, 180])}deg` },
+    ],
+  }));
+
+  const backFaceStyle = useAnimatedStyle(() => ({
+    transform: [
+      { perspective: 600 },
+      { rotateY: `${interpolate(flipProgress.value, [0, 1], [-180, 0])}deg` },
+    ],
   }));
 
   const deck = activeDeck;
@@ -179,11 +224,16 @@ export default function PlayScreen() {
 
   const panGesture = Gesture.Pan()
     .activeOffsetX([-10, 10])
+    .onBegin(() => {
+      runOnJS(clearSwiping)();
+    })
     .onUpdate((e) => {
       const idx = topIndexSV.value;
       const cardCount = cardCountSV.value;
       const isFirst = idx === 0;
       const isLast = idx === cardCount - 1;
+
+      runOnJS(markSwiping)();
 
       if (isFirst && e.translationX > 0) {
         // Rubber-band at first card — nowhere to go back
@@ -248,6 +298,13 @@ export default function PlayScreen() {
       }
     });
 
+  const handleFlip = () => {
+    if (swipedRef.current) return;
+    const goToBack = flipProgress.value < 0.5;
+    flipProgress.value = withTiming(goToBack ? 1 : 0, FLIP_TOGGLE_CONFIG);
+    haptics.light();
+  };
+
   const handleClose = () => {
     endGame();
     router.back();
@@ -301,46 +358,39 @@ export default function PlayScreen() {
           {/* Show prev or next card behind the top card depending on drag direction.
               Never show both — avoids z-order conflicts and double-card flash. */}
           {prevCardData && (
-            <Animated.View
-              style={[
-                styles.card,
-                {
-                  borderColor: (prevCardData.deckColor ?? deck.color) + "40",
-                  backgroundColor: colors.surface,
-                },
-                prevCardStyle,
-              ]}
-            >
-              <CardFace card={prevCardData} deck={deck} />
+            <Animated.View style={[styles.card, prevCardStyle]}>
+              <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
+                <CardFace card={prevCardData} deck={deck} />
+                {topIndex - 1 > 0 && <View style={styles.dotLeft} />}
+                <View style={styles.dotRight} />
+              </View>
             </Animated.View>
           )}
           {nextCardData && (
-            <Animated.View
-              style={[
-                styles.card,
-                {
-                  borderColor: (nextCardData.deckColor ?? deck.color) + "40",
-                  backgroundColor: colors.surface,
-                },
-                nextCardStyle,
-              ]}
-            >
-              <CardFace card={nextCardData} deck={deck} />
+            <Animated.View style={[styles.card, nextCardStyle]}>
+              <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
+                <CardFace card={nextCardData} deck={deck} />
+                <View style={styles.dotLeft} />
+                {topIndex + 1 < deck.cards.length - 1 && <View style={styles.dotRight} />}
+              </View>
             </Animated.View>
           )}
 
-          {/* Top card — responds to pan gesture */}
+          {/* Top card — pan gesture for swipe, Pressable inside for flip */}
           <GestureDetector gesture={panGesture}>
-            <Animated.View
-              style={[
-                styles.card,
-                { borderColor: (topCard.deckColor ?? deck.color) + "70" },
-                topCardStyle,
-              ]}
-            >
-              <CardFace card={topCard} deck={deck} />
-              {topIndex > 0 && <View style={styles.dotLeft} />}
-              {!isLast && <View style={styles.dotRight} />}
+            <Animated.View style={[styles.card, topCardStyle]}>
+              <Pressable style={styles.cardPressable} onPress={handleFlip}>
+                {/* Front face — rotates 0→180deg, backfaceVisibility hides it past 90deg */}
+                <Animated.View style={[styles.cardFace, frontFaceStyle]}>
+                  <CardFace card={topCard} deck={deck} />
+                  {topIndex > 0 && <View style={styles.dotLeft} />}
+                  {!isLast && <View style={styles.dotRight} />}
+                </Animated.View>
+                {/* Back face — rotates -180→0deg, appears once past 90deg */}
+                <Animated.View style={[styles.cardFace, styles.cardFaceBack, backFaceStyle]}>
+                  <CardBack deck={deck} />
+                </Animated.View>
+              </Pressable>
             </Animated.View>
           </GestureDetector>
         </View>
@@ -409,12 +459,57 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: CARD_HEIGHT,
-    backgroundColor: colors.card,
     borderRadius: radius.xl,
-    borderWidth: 1.5,
+  },
+  cardPressable: {
+    width: "100%",
+    height: CARD_HEIGHT,
+  },
+  // Each face fills the card exactly and handles its own padding/layout
+  cardFace: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: radius.xl,
     padding: spacing.xl,
     justifyContent: "space-between",
+    backfaceVisibility: "hidden",
+    backgroundColor: colors.card,
+    shadowColor: "#000",
+    shadowOffset: { width: -10, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 3,
   },
+  cardFaceBack: {
+    backgroundColor: "#FFFFFF",
+  },
+  // Back face content
+  cardBackContent: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.md,
+  },
+  cardBackIcon: {
+    fontSize: 64,
+    lineHeight: 72,
+  },
+  cardBackTitle: {
+    ...typography.label,
+    letterSpacing: 2,
+    textAlign: "center",
+  },
+  cardBackHint: {
+    ...typography.caption,
+    color: colors.textMuted,
+    letterSpacing: 1,
+    marginTop: spacing.sm,
+    fontStyle: "italic",
+  },
+  // Front face inner elements
   modeRow: {},
   modeIndicator: { ...typography.label, letterSpacing: 1.5 },
   questionBlock: { flex: 1, justifyContent: "center" },
@@ -460,7 +555,12 @@ const styles = StyleSheet.create({
   dot: { width: 6, height: 6, borderRadius: 3 },
   intensityRow: { flexDirection: "row", gap: spacing.sm, flexWrap: "wrap" },
   intensityChip: { flexDirection: "row", alignItems: "center", gap: 5 },
-  intensityLabel: { fontSize: 10, fontWeight: "500", letterSpacing: 0.8, textTransform: "uppercase" },
+  intensityLabel: {
+    fontSize: 10,
+    fontWeight: "500",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+  },
   intensityDots: { flexDirection: "row", gap: 3 },
   dotLeft: {
     position: "absolute",
