@@ -1,5 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
+import { DeckIcon } from "../../src/components/DeckIcon";
 import {
   ScrollView,
   StyleSheet,
@@ -8,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, radius, spacing, typography } from "../../src/constants/theme";
+import { colors, dimensions, fonts, radius, spacing, typography } from "../../src/constants/theme";
 import { useGameStore } from "../../src/store/gameStore";
 import { Card, Deck, IntensityAxis } from "../../src/types";
 import allDecks from "../../assets/data/decks/index";
@@ -61,28 +63,46 @@ const MODE_LABELS: Record<string, string> = {
   solo: "På egen hand",
 };
 
-const MODE_COLORS: Record<string, string> = {
-  partner: colors.datingTint,
-  group: colors.friendsTint,
-  solo: colors.soloTint,
-};
+
+const GAME_CARD_LIMIT = 15;
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 function buildDeck(selectedIds: string[], modeId: string): Deck {
-  const color = MODE_COLORS[modeId] ?? colors.accent;
-  const rawCards: Card[] = selectedIds.flatMap((deckId) => {
-    const source = allDecks.find((d) => d.id === deckId);
-    if (!source) return [];
-    return source.cards.map((card) => ({
-      ...card,
-      deckIcon: source.icon,
-      deckTitle: source.title,
-      deckColor: source.color,
-      deckBackground: source.cardBackground,
-      deckText: source.cardText,
-    }));
-  });
-  const filtered = rawCards.filter((card) => passesIntensityFilter(card, modeId));
-  const cards = filtered.length > 0 ? filtered : rawCards;
+  const color = colors.accent;
+
+  // Distribute GAME_CARD_LIMIT evenly across selected decks
+  const deckCount = selectedIds.length;
+  const basePerDeck = Math.floor(GAME_CARD_LIMIT / deckCount);
+  const remainder = GAME_CARD_LIMIT % deckCount;
+
+  const cards: Card[] = shuffle(
+    selectedIds.flatMap((deckId, i) => {
+      const source = allDecks.find((d) => d.id === deckId);
+      if (!source) return [];
+      const quota = basePerDeck + (i < remainder ? 1 : 0);
+      const stamped = source.cards.map((card) => ({
+        ...card,
+        deckIcon: source.icon,
+        deckSvgIcon: source.svgIcon,
+        deckTitle: source.title,
+        deckColor: source.color,
+        deckBackground: source.cardBackground,
+        deckText: source.cardText,
+      }));
+      const filtered = stamped.filter((card) => passesIntensityFilter(card, modeId));
+      const pool = filtered.length > 0 ? filtered : stamped;
+      return shuffle(pool).slice(0, quota);
+    })
+  );
+
   return {
     id: `curated-${modeId}`,
     title: MODE_LABELS[modeId] ?? "Spela",
@@ -134,11 +154,9 @@ export default function CategoriesScreen() {
       : selected;
     const deck = buildDeck(ids, mode ?? "partner");
     startGame(deck, "any");
-    router.push(`/play/${deck.id}`);
+    router.replace(`/play/${deck.id}`);
   };
 
-  const modeColor = MODE_COLORS[mode ?? ""] ?? colors.accent;
-  const modeLabel = MODE_LABELS[mode ?? ""] ?? "Play";
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -177,12 +195,12 @@ export default function CategoriesScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.rowLeft}>
-                <Text style={[styles.icon, { color: deck.color }]}>{deck.icon}</Text>
+                <DeckIcon deck={deck} size={22} style={styles.icon} />
                 <View style={styles.rowText}>
                   <View style={styles.titleRow}>
                     <Text style={styles.rowTitle}>{deck.title}</Text>
                     {isDefault && (
-                      <Text style={[styles.badge, { color: modeColor, borderColor: modeColor + "60" }]}>
+                      <Text style={[styles.badge, { color: colors.accent, borderColor: colors.accent + "60" }]}>
                         förslag
                       </Text>
                     )}
@@ -202,18 +220,14 @@ export default function CategoriesScreen() {
         <TouchableOpacity
           style={[
             styles.startBtn,
-            { backgroundColor: modeColor },
+            { backgroundColor: colors.accent },
             !canStart && styles.startBtnDisabled,
           ]}
           onPress={handleStart}
           activeOpacity={0.8}
           disabled={!canStart}
         >
-          <Text style={styles.startBtnText}>
-            {randomize && selected.length === 0
-              ? "Starta — slumpmässigt"
-              : `Starta — ${selected.reduce((n, id) => n + (allDecks.find((d) => d.id === id)?.cards.length ?? 0), 0)} kort`}
-          </Text>
+          <Ionicons name="play" size={spacing.lg} color={colors.white} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -233,17 +247,15 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   title: {
-    fontSize: 26,
-    fontWeight: "300",
+    fontFamily: fonts.heading,
+    ...typography.heading,
     color: colors.textPrimary,
-    letterSpacing: -0.3,
     marginBottom: spacing.xs,
   },
   subtitle: {
     ...typography.caption,
     color: colors.textMuted,
     fontStyle: "italic",
-    lineHeight: 18,
   },
   scroll: {
     paddingVertical: spacing.sm,
@@ -262,15 +274,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   randomIcon: {
-    fontSize: 22,
-    width: 32,
+    ...typography.body,
+    width: dimensions.iconContainer,
     textAlign: "center",
     color: colors.accent,
   },
   randomTitle: {
     ...typography.bodyMedium,
     color: colors.accent,
-    marginBottom: 2,
+    marginBottom: spacing.xs,
   },
   row: {
     flexDirection: "row",
@@ -290,8 +302,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   icon: {
-    fontSize: 22,
-    width: 32,
+    ...typography.body,
+    width: dimensions.iconContainer,
     textAlign: "center",
   },
   rowText: {
@@ -301,20 +313,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
-    marginBottom: 2,
+    marginBottom: spacing.xs,
   },
   rowTitle: {
     ...typography.bodyMedium,
     color: colors.textPrimary,
   },
   badge: {
-    fontSize: 10,
-    fontWeight: "500",
-    letterSpacing: 0.8,
+    ...typography.label,
     textTransform: "uppercase",
     borderWidth: 1,
     borderRadius: radius.sm,
-    paddingHorizontal: 5,
+    paddingHorizontal: spacing.xs,
     paddingVertical: 1,
   },
   rowDesc: {
@@ -323,9 +333,9 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: dimensions.checkboxSize,
+    height: dimensions.checkboxSize,
+    borderRadius: radius.full,
     borderWidth: 1.5,
     borderColor: colors.border,
     alignItems: "center",
@@ -333,8 +343,8 @@ const styles = StyleSheet.create({
     marginLeft: spacing.md,
   },
   checkmark: {
-    color: "#fff",
-    fontSize: 12,
+    color: colors.white,
+    ...typography.caption,
     fontWeight: "600",
   },
   footer: {
@@ -345,18 +355,12 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
   },
   startBtn: {
-    height: 52,
+    height: dimensions.buttonHeight,
     borderRadius: radius.md,
     alignItems: "center",
     justifyContent: "center",
   },
   startBtnDisabled: {
     opacity: 0.3,
-  },
-  startBtnText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#fff",
-    letterSpacing: 0.3,
   },
 });

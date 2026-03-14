@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { colors, radius, spacing } from "../../src/constants/theme";
+import { animation, colors, fonts, radius, spacing, typography } from "../../src/constants/theme";
 import ScreenLayout from "../../src/components/ScreenLayout";
 
 const MODES = [
@@ -38,7 +38,7 @@ function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
   const onPressIn = () => {
     Animated.timing(opacity, {
       toValue: 0.75,
-      duration: 60,
+      duration: animation.press,
       useNativeDriver: true,
     }).start();
   };
@@ -46,7 +46,7 @@ function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
   const onPressOut = () => {
     Animated.timing(opacity, {
       toValue: 1,
-      duration: 200,
+      duration: animation.base,
       useNativeDriver: true,
     }).start();
   };
@@ -113,28 +113,24 @@ const styles = StyleSheet.create({
 
   rowText: {
     flex: 1,
-    gap: 5,
+    gap: spacing.xs,
   },
 
   rowLabel: {
-    fontFamily: "Supreme-Extrabold",
-    fontSize: 38,
-    lineHeight: 48,
-    letterSpacing: -1,
+    fontFamily: fonts.heading,
+    ...typography.display,
     color: colors.background,
   },
 
   rowSublabel: {
-    fontSize: 14,
-    fontWeight: "400",
-    letterSpacing: 0.2,
+    ...typography.caption,
     fontStyle: "italic",
     color: colors.background,
     opacity: 0.9,
   },
 
   rowArrow: {
-    fontSize: 22,
+    ...typography.body,
     color: colors.background,
     opacity: 0.6,
   },

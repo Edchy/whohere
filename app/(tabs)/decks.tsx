@@ -9,7 +9,8 @@ import {
   View,
 } from 'react-native';
 import ScreenLayout from '../../src/components/ScreenLayout';
-import { colors, radius, spacing } from '../../src/constants/theme';
+import { DeckIcon } from '../../src/components/DeckIcon';
+import { animation, colors, dimensions, fonts, radius, spacing, typography } from '../../src/constants/theme';
 import { useGameStore } from '../../src/store/gameStore';
 import { Deck } from '../../src/types';
 import allDecks from '../../assets/data/decks/index';
@@ -22,7 +23,7 @@ function DeckRow({ deck, isLast }: { deck: Deck; isLast: boolean }) {
   const onPressIn = () => {
     Animated.timing(opacity, {
       toValue: 0.75,
-      duration: 60,
+      duration: animation.press,
       useNativeDriver: true,
     }).start();
   };
@@ -30,7 +31,7 @@ function DeckRow({ deck, isLast }: { deck: Deck; isLast: boolean }) {
   const onPressOut = () => {
     Animated.timing(opacity, {
       toValue: 1,
-      duration: 200,
+      duration: animation.base,
       useNativeDriver: true,
     }).start();
   };
@@ -50,7 +51,7 @@ function DeckRow({ deck, isLast }: { deck: Deck; isLast: boolean }) {
       >
         <View style={styles.rowInner}>
           <View style={styles.colIcon}>
-            <Text style={styles.rowIcon}>{deck.icon}</Text>
+            <DeckIcon deck={deck} size={28} color={colors.background} style={styles.rowIcon} />
           </View>
           <View style={styles.colContent}>
             <Text style={styles.rowLabel}>{deck.title}</Text>
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
   },
   row: {
     backgroundColor: colors.accent,
-    height: 80,
+    height: dimensions.rowHeight,
     paddingHorizontal: spacing.sm,
     borderRadius: radius.md,
     justifyContent: 'center',
@@ -114,44 +115,38 @@ const styles = StyleSheet.create({
   colContent: {
     width: '76%',
     paddingHorizontal: spacing.sm,
-    gap: 2,
+    gap: spacing.xs,
   },
   colMeta: {
     width: '12%',
     alignItems: 'flex-start',
   },
   rowIcon: {
-    fontSize: 28,
+    ...typography.heading,
     color: colors.background,
     opacity: 0.75,
   },
   rowLabel: {
-    fontFamily: 'Supreme-Extrabold',
-    fontSize: 18,
-    lineHeight: 22,
+    fontFamily: fonts.heading,
+    ...typography.body,
     letterSpacing: -0.3,
     color: colors.background,
   },
   rowDesc: {
-    fontSize: 12,
-    fontWeight: '400',
+    ...typography.caption,
     fontStyle: 'italic',
     color: colors.background,
     opacity: 0.75,
     flexShrink: 1,
   },
   rowCount: {
-    fontSize: 20,
-    fontWeight: '300',
-    letterSpacing: -0.5,
+    ...typography.heading,
     color: colors.background,
     opacity: 0.6,
     textAlign: 'left',
   },
   rowCountLabel: {
-    fontSize: 9,
-    fontWeight: '500',
-    letterSpacing: 0.8,
+    ...typography.label,
     textTransform: 'uppercase',
     color: colors.background,
     opacity: 0.5,

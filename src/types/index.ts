@@ -21,6 +21,7 @@ export type Card = {
   intensity: CardIntensity;
   // Stamped at runtime when card is part of a curated deck
   deckIcon?: string;
+  deckSvgIcon?: string;
   deckTitle?: string;
   deckColor?: string;
   deckBackground?: string;
@@ -37,5 +38,6 @@ export type Deck = {
   cardBackground: string;
   cardText: string;
   icon: string;
+  svgIcon?: string;
   cards: Card[];
 };

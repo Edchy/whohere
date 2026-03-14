@@ -61,25 +61,21 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   title: {
-    fontSize: 48,
-    fontWeight: '300',
+    ...typography.display,
     color: colors.textPrimary,
-    lineHeight: 56,
-    letterSpacing: -1,
     marginBottom: spacing.lg,
   },
   subtitle: {
     ...typography.body,
     color: colors.textSecondary,
     fontStyle: 'italic',
-    lineHeight: 24,
   },
   actions: {
     gap: spacing.sm,
     paddingBottom: spacing.md,
   },
   primaryButton: {
-    height: 56,
+    height: 52,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.accent,
@@ -92,7 +88,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   secondaryButton: {
-    height: 56,
+    height: 52,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,

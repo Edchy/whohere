@@ -25,6 +25,11 @@ const palette = {
   neutral700: '#6E6458',
   neutral800: '#3D3530',
   neutral900: '#1A1208',
+
+  // Absolute values
+  white: '#FFFFFF',
+  black: '#000000',
+  blackSoft: '#111111',
 } as const;
 
 // ─── Semantic tokens ──────────────────────────────────────────────────────────
@@ -42,6 +47,7 @@ export const colors = {
   bgTertiary:  palette.neutral300,   // inset / nested surfaces
   bgBrand:     palette.brand500,     // brand-colored surface (buttons, card back)
   bgBrandSoft: palette.brand100,     // soft brand tint
+  bgBlack:     palette.black,        // full-black overlay (discretion screen)
 
   // Text — on neutral surfaces (use brand color)
   textPrimary:   palette.brand500,   // high emphasis
@@ -51,6 +57,7 @@ export const colors = {
   // Text — on brand surfaces (use neutral color)
   textOnBrand:      palette.neutral100,   // high emphasis on brand bg
   textOnBrandMuted: palette.neutral100 + '99',   // neutral100 @ 60% opacity
+  textOnBlack:      palette.blackSoft,    // barely-visible hint text on black bg
 
   // Accent (interactive highlights, icons, active states)
   accent:    palette.brand500,
@@ -65,6 +72,7 @@ export const colors = {
   border:      palette.neutral400,
   overlay:     palette.neutral100 + 'F2',   // neutral100 @ 95% opacity
   destructive: palette.brand700,
+  white:       palette.white,
 
   // Legacy aliases — kept so existing call sites don't break while we migrate
   background:  palette.neutral100,
@@ -96,17 +104,50 @@ export const radius = {
   full: 9999,
 } as const;
 
+// ─── Fonts ────────────────────────────────────────────────────────────────────
+
+export const fonts = {
+  heading: 'Supreme-Extrabold',  // loaded via useFonts in app/_layout.tsx
+  copy:    'Cas',                // loaded via useFonts in app/_layout.tsx
+  ui:      undefined,            // system default
+} as const;
+
 // ─── Typography ───────────────────────────────────────────────────────────────
+// 5-level scale. Every font size in the app maps to one of these.
+//
+//   display  36  — home screen mode titles
+//   heading  24  — screen headings, card questions
+//   body     16  — descriptions, card prefix, row labels
+//   caption  12  — secondary info, deck descriptions
+//   label    10  — uppercase micro-labels, badges
 
 export const typography = {
-  cardQuestion:  { fontSize: 28, fontWeight: '400' as const, lineHeight: 40, letterSpacing: 0.2 },
-  cardPrefix:    { fontSize: 16, fontWeight: '400' as const, lineHeight: 24, fontStyle: 'italic' as const, letterSpacing: 0.5 },
+  display:      { fontSize: 36, fontWeight: '400' as const, lineHeight: 44, letterSpacing: -1 },
+  heading:      { fontSize: 24, fontWeight: '400' as const, lineHeight: 32, letterSpacing: -0.3 },
+  body:         { fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
+  bodyMedium:   { fontSize: 16, fontWeight: '500' as const, lineHeight: 24 },
+  caption:      { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
+  label:        { fontSize: 10, fontWeight: '500' as const, lineHeight: 14, letterSpacing: 1 },
+} as const;
 
-  displayLarge:  { fontSize: 40, fontWeight: '300' as const, lineHeight: 48, letterSpacing: -0.5 },
-  displayMedium: { fontSize: 28, fontWeight: '300' as const, lineHeight: 36, letterSpacing: -0.3 },
-  heading:       { fontSize: 20, fontWeight: '400' as const, lineHeight: 28 },
-  body:          { fontSize: 15, fontWeight: '400' as const, lineHeight: 22 },
-  bodyMedium:    { fontSize: 15, fontWeight: '500' as const, lineHeight: 22 },
-  caption:       { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
-  label:         { fontSize: 11, fontWeight: '500' as const, lineHeight: 14, letterSpacing: 1.2 },
+// ─── Dimensions ───────────────────────────────────────────────────────────────
+// Fixed sizes for reusable UI elements. Use these instead of hardcoded px values.
+
+export const dimensions = {
+  cardHeight:    400,   // play screen card height
+  buttonHeight:   52,   // primary action button height
+  iconTouchSize:  44,   // minimum tappable icon area
+  checkboxSize:   22,   // checkbox / radio circle diameter
+  iconContainer:  32,   // icon wrapper in list rows
+  dotSize:         5,   // navigation / pagination dot
+  rowHeight:      80,   // standard list row height
+} as const;
+
+// ─── Animation ────────────────────────────────────────────────────────────────
+// Shared durations (ms) for Animated / Reanimated transitions.
+
+export const animation = {
+  press:  60,   // press-in feedback
+  quick: 160,   // fast transitions (card flip)
+  base:  200,   // default transition (press-out, fade)
 } as const;

@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent + '15',
   },
   emoji: {
-    fontSize: 24,
+    ...typography.heading,
     marginBottom: spacing.xs,
   },
   label: {

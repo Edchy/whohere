@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors, radius, spacing, typography } from '../constants/theme';
+import { DeckIcon } from './DeckIcon';
 import { Deck } from '../types';
 
 type Props = {
@@ -15,7 +16,9 @@ export function DeckCard({ deck, onPress }: Props) {
       onPress={onPress}
       activeOpacity={0.8}
     >
-      <Text style={styles.icon}>{deck.icon}</Text>
+      <View style={styles.iconWrapper}>
+        <DeckIcon deck={deck} size={28} style={styles.icon} />
+      </View>
       <View style={styles.content}>
         <Text style={styles.title}>{deck.title}</Text>
         <Text style={styles.description} numberOfLines={2}>
@@ -42,9 +45,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   icon: {
-    fontSize: 32,
+    ...typography.heading,
     marginRight: spacing.md,
     marginTop: 2,
+  },
+  iconWrapper: {
+    marginRight: spacing.md,
+    marginTop: 2,
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     flex: 1,

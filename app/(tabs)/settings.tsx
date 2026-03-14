@@ -66,10 +66,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   title: {
-    fontSize: 32,
-    fontWeight: '300',
+    ...typography.display,
     color: colors.textPrimary,
-    letterSpacing: -0.5,
   },
   group: {
     marginBottom: spacing.xl,
@@ -108,11 +106,9 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   appName: {
-    fontSize: 28,
-    fontWeight: '300',
+    ...typography.heading,
     color: colors.accent,
-    letterSpacing: -0.5,
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   appTagline: {
     ...typography.body,

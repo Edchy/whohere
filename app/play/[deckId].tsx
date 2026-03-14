@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
+import { DeckIcon } from "../../src/components/DeckIcon";
 
 import {
   Pressable,
@@ -24,14 +25,13 @@ import Animated, {
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, radius, spacing, typography } from "../../src/constants/theme";
+import { animation, colors, dimensions, fonts, radius, spacing, typography } from "../../src/constants/theme";
 import AppHeader from "../../src/components/AppHeader";
 import { useHaptics } from "../../src/hooks/useHaptics";
 import { useGameStore } from "../../src/store/gameStore";
 import { Card, Deck } from "../../src/types";
 import allDecks from "../../assets/data/decks/index";
 
-const CARD_HEIGHT = 400;
 const SWIPE_DISTANCE = 60;
 const SWIPE_VELOCITY = 400;
 
@@ -40,10 +40,11 @@ const NEXT_TRANSLATE_Y = 20;
 const NEXT_SCALE = 0.94;
 
 // Flip animation config
-const FLIP_TOGGLE_CONFIG = { duration: 160, easing: Easing.inOut(Easing.ease) };
+const FLIP_TOGGLE_CONFIG = { duration: animation.quick, easing: Easing.inOut(Easing.ease) };
 
 function CardFace({ card, deck, cardIndex, totalCards }: { card: Card; deck: Deck; cardIndex: number; totalCards: number }) {
   const icon = card.deckIcon ?? deck.icon;
+  const svgIcon = card.deckSvgIcon ?? deck.svgIcon;
   const title = card.deckTitle ?? deck.title;
   const color = card.deckColor ?? deck.color;
   const cardText = card.deckText ?? deck.cardText;
@@ -51,11 +52,10 @@ function CardFace({ card, deck, cardIndex, totalCards }: { card: Card; deck: Dec
   return (
     <>
       <View style={styles.modeRow}>
-        <Text style={[styles.modeIndicator, { color }]}>
-          {icon}
-          {"  "}
-          {title.toUpperCase()}
-        </Text>
+        <View style={styles.modeIndicator}>
+          <DeckIcon deck={{ icon, svgIcon, color }} size={14} color={color} style={styles.modeIndicatorIcon} />
+          <Text style={[styles.modeIndicatorText, { color }]}>{"  "}{title.toUpperCase()}</Text>
+        </View>
       </View>
       <View style={styles.questionBlock}>
         <Text style={[styles.whoHere, { color }]}>Vem här…</Text>
@@ -74,12 +74,17 @@ function CardFace({ card, deck, cardIndex, totalCards }: { card: Card; deck: Dec
   );
 }
 
-function CardBack({ deck }: { deck: Deck }) {
+function CardBack({ card, deck }: { card: Card; deck: Deck }) {
+  const icon = card.deckIcon ?? deck.icon;
+  const svgIcon = card.deckSvgIcon ?? deck.svgIcon;
+  const title = card.deckTitle ?? deck.title;
+  const color = card.deckColor ?? deck.color;
+
   return (
     <View style={styles.cardBackContent}>
-      <Text style={styles.cardBackIcon}>{deck.icon}</Text>
-      <Text style={[styles.cardBackTitle, { color: deck.color }]}>
-        {deck.title.toUpperCase()}
+      <DeckIcon deck={{ icon, svgIcon, color }} size={40} style={styles.cardBackIcon} />
+      <Text style={[styles.cardBackTitle, { color }]}>
+        {title.toUpperCase()}
       </Text>
       <Text style={styles.cardBackHint}>tryck för att vända</Text>
     </View>
@@ -376,7 +381,7 @@ export default function PlayScreen() {
                 </Animated.View>
                 {/* Back face — rotates -180→0deg, appears once past 90deg */}
                 <Animated.View style={[styles.cardFace, styles.cardFaceBack, backFaceStyle]}>
-                  <CardBack deck={deck} />
+                  <CardBack card={topCard} deck={deck} />
                 </Animated.View>
               </Pressable>
             </Animated.View>
@@ -424,7 +429,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.sm,
   },
-  closeText: { fontSize: 16, color: colors.textMuted },
+  closeText: { ...typography.caption, color: colors.textMuted },
   deckTitle: {
     ...typography.label,
     color: colors.textSecondary,
@@ -438,12 +443,12 @@ const styles = StyleSheet.create({
   card: {
     position: "absolute",
     width: "100%",
-    height: CARD_HEIGHT,
+    height: dimensions.cardHeight,
     borderRadius: radius.xl,
   },
   cardPressable: {
     width: "100%",
-    height: CARD_HEIGHT,
+    height: dimensions.cardHeight,
   },
   // Each face fills the card exactly and handles its own padding/layout
   cardFace: {
@@ -456,10 +461,10 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     justifyContent: "space-between",
     backfaceVisibility: "hidden",
-    shadowColor: "#000",
+    shadowColor: colors.bgBlack,
     shadowOffset: { width: -10, height: 10 },
     shadowOpacity: 0.12,
-    shadowRadius: 10,
+    shadowRadius: spacing.sm,
     elevation: 3,
   },
   cardFaceBack: {
@@ -490,22 +495,22 @@ const styles = StyleSheet.create({
   },
   // Front face inner elements
   modeRow: {},
-  modeIndicator: { ...typography.label, letterSpacing: 1.5 },
+  modeIndicator: { flexDirection: 'row', alignItems: 'center' },
+  modeIndicatorIcon: { ...typography.label, letterSpacing: 1.5 },
+  modeIndicatorText: { ...typography.label, letterSpacing: 1.5 },
   questionBlock: { flex: 1, justifyContent: "center" },
   whoHere: {
-    fontSize: 17,
-    lineHeight: 26,
+    ...typography.body,
     fontStyle: "italic",
     color: colors.accent,
-    letterSpacing: 0.5,
     marginBottom: spacing.sm,
     fontWeight: "300",
   },
   question: {
-    fontSize: 28,
+    fontFamily: fonts.copy,
+    ...typography.heading,
     fontWeight: "300",
     color: colors.textPrimary,
-    lineHeight: 40,
     letterSpacing: 0.1,
   },
   followUpBlock: {
@@ -515,14 +520,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   followUpLabel: {
-    ...typography.label,
+    ...typography.caption,
     color: colors.textMuted,
     marginBottom: spacing.xs,
     fontStyle: "italic",
     letterSpacing: 0.5,
   },
   followUp: {
-    ...typography.body,
+    ...typography.caption,
     color: colors.textSecondary,
     fontStyle: "italic",
   },
@@ -535,24 +540,22 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     letterSpacing: 0.5,
   },
-  difficultyRow: { flexDirection: "row", gap: 6 },
-  dot: { width: 6, height: 6, borderRadius: 3 },
+  difficultyRow: { flexDirection: "row", gap: spacing.sm },
+  dot: { width: dimensions.dotSize, height: dimensions.dotSize, borderRadius: radius.full },
   intensityRow: { flexDirection: "row", gap: spacing.sm, flexWrap: "wrap" },
-  intensityChip: { flexDirection: "row", alignItems: "center", gap: 5 },
+  intensityChip: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   intensityLabel: {
-    fontSize: 10,
-    fontWeight: "500",
-    letterSpacing: 0.8,
+    ...typography.label,
     textTransform: "uppercase",
   },
-  intensityDots: { flexDirection: "row", gap: 3 },
+  intensityDots: { flexDirection: "row", gap: spacing.xs },
   dotLeft: {
     position: "absolute",
     bottom: spacing.xl,
     left: spacing.xl,
-    width: 5,
-    height: 5,
-    borderRadius: 3,
+    width: dimensions.dotSize,
+    height: dimensions.dotSize,
+    borderRadius: radius.full,
     backgroundColor: colors.textMuted,
     opacity: 0.5,
   },
@@ -560,9 +563,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: spacing.xl,
     right: spacing.xl,
-    width: 5,
-    height: 5,
-    borderRadius: 3,
+    width: dimensions.dotSize,
+    height: dimensions.dotSize,
+    borderRadius: radius.full,
     backgroundColor: colors.textMuted,
     opacity: 0.5,
   },
@@ -575,8 +578,8 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   discretionBtn: {
-    width: 44,
-    height: 44,
+    width: dimensions.iconTouchSize,
+    height: dimensions.iconTouchSize,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: radius.full,
@@ -584,10 +587,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     backgroundColor: colors.surface,
   },
-  discretionIcon: { fontSize: 18 },
+  discretionIcon: { ...typography.body },
   finishBtn: {
     flex: 1,
-    height: 44,
+    height: dimensions.iconTouchSize,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: radius.md,
@@ -596,14 +599,14 @@ const styles = StyleSheet.create({
   finishBtnText: { ...typography.bodyMedium, letterSpacing: 0.5 },
   discretionScreen: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: colors.bgBlack,
     alignItems: "center",
     justifyContent: "flex-end",
-    paddingBottom: 60,
+    paddingBottom: spacing.xxxl,
   },
   discretionHint: {
     ...typography.caption,
-    color: "#222222",
+    color: colors.textOnBlack,
     letterSpacing: 1,
   },
 });
