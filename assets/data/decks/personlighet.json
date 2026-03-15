@@ -4,9 +4,9 @@
   "description": "Talande ledtrådar om de människor vi möter",
   "mode": "any",
   "category": "personlighet",
-  "color": "#C8A97A",
-  "cardBackground": "#221C10",
-  "cardText": "#EFE0B8",
+  "color": "#A07830",
+  "cardBackground": "#100C00",
+  "cardText": "#D8C488",
   "icon": "✦",
   "svgIcon": "noun-zombie-3571797"
 }

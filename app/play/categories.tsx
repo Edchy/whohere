@@ -1,16 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { DeckIcon } from "../../src/components/DeckIcon";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, dimensions, fonts, radius, spacing, typography } from "../../src/constants/theme";
+import ScreenLayout from "../../src/components/ScreenLayout";
+import { animation, colors, fonts, radius, spacing, typography } from "../../src/constants/theme";
 import { useGameStore } from "../../src/store/gameStore";
 import { Card, Deck, IntensityAxis } from "../../src/types";
 import allDecks from "../../assets/data/decks/index";
@@ -50,7 +43,7 @@ function passesIntensityFilter(card: Card, modeId: string): boolean {
     const range = ranges[axis];
     if (!range) continue;
     const val = card.intensity?.[axis] ?? 0;
-    if (val === 0) continue; // 0 = not applicable, always passes
+    if (val === 0) continue;
     const [min, max] = range;
     if (val < min || val > max) return false;
   }
@@ -62,7 +55,6 @@ const MODE_LABELS: Record<string, string> = {
   group: "Med vänner",
   solo: "På egen hand",
 };
-
 
 const GAME_CARD_LIMIT = 15;
 
@@ -78,7 +70,6 @@ function shuffle<T>(arr: T[]): T[] {
 function buildDeck(selectedIds: string[], modeId: string): Deck {
   const color = colors.accent;
 
-  // Distribute GAME_CARD_LIMIT evenly across selected decks
   const deckCount = selectedIds.length;
   const basePerDeck = Math.floor(GAME_CARD_LIMIT / deckCount);
   const remainder = GAME_CARD_LIMIT % deckCount;
@@ -111,7 +102,7 @@ function buildDeck(selectedIds: string[], modeId: string): Deck {
     category: "mixed",
     color,
     cardBackground: colors.card,
-    cardText: colors.textPrimary,  // curated deck fallback — text on neutral card bg
+    cardText: colors.textPrimary,
     icon: "",
     cards,
   };
@@ -123,6 +114,65 @@ function randomSubset(ids: string[]): string[] {
   return shuffled.slice(0, count);
 }
 
+// ─── Animated tile ────────────────────────────────────────────────────────────
+
+function DeckTile({
+  deck,
+  isSelected,
+  isDefault,
+  onPress,
+}: {
+  deck: (typeof allDecks)[0];
+  isSelected: boolean;
+  isDefault: boolean;
+  onPress: () => void;
+}) {
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = () =>
+    Animated.timing(opacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start();
+
+  const onPressOut = () =>
+    Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
+
+  return (
+    <Animated.View style={{ opacity }}>
+      <Pressable
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={onPress}
+        style={[
+          styles.tile,
+          isSelected && { backgroundColor: deck.cardBackground },
+        ]}
+      >
+        <View style={styles.tileInner}>
+          <DeckIcon
+            deck={deck}
+            size={36}
+            color={isSelected ? deck.cardText : colors.textPrimary}
+          />
+          <View style={styles.tileText}>
+            <View style={styles.tileTitleRow}>
+              <Text style={[styles.tileTitle, isSelected && { color: deck.cardText }]}>
+                {deck.title}
+              </Text>
+              {isDefault && !isSelected && (
+                <Text style={styles.badge}>förslag</Text>
+              )}
+            </View>
+            <Text style={[styles.tileDesc, isSelected && { color: deck.cardText + "99" }]}>
+              {deck.description}
+            </Text>
+          </View>
+        </View>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+// ─── Main screen ──────────────────────────────────────────────────────────────
+
 export default function CategoriesScreen() {
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode: string }>();
@@ -131,6 +181,8 @@ export default function CategoriesScreen() {
   const defaults = DEFAULT_SELECTIONS[mode ?? ""] ?? [];
   const [selected, setSelected] = useState<string[]>([]);
   const [randomize, setRandomize] = useState(true);
+
+  const surpriseOpacity = useRef(new Animated.Value(1)).current;
 
   const toggle = (id: string) => {
     setRandomize(false);
@@ -149,218 +201,181 @@ export default function CategoriesScreen() {
   const handleStart = () => {
     if (!canStart) return;
     const modePool = DEFAULT_SELECTIONS[mode ?? ""] ?? allDecks.map((d) => d.id);
-    const ids = randomize
-      ? randomSubset(modePool)
-      : selected;
+    const ids = randomize ? randomSubset(modePool) : selected;
     const deck = buildDeck(ids, mode ?? "partner");
     startGame(deck, "any");
     router.replace(`/play/${deck.id}`);
   };
 
+  const startOpacity = useRef(new Animated.Value(1)).current;
+  const onStartPressIn = () =>
+    Animated.timing(startOpacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start();
+  const onStartPressOut = () =>
+    Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Vad vill du utforska?</Text>
-        <Text style={styles.subtitle}>Välj en eller flera kortlekar — vi blandar ihop resten.</Text>
-      </View>
+    <ScreenLayout mainStyle={styles.layoutMain}>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        {/* Randomize option */}
-        <TouchableOpacity
-          style={[styles.randomRow, randomize && { borderLeftColor: colors.accent }]}
-          onPress={handleSurpriseToggle}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.randomIcon}>⚄</Text>
-          <View style={styles.rowText}>
-            <Text style={styles.randomTitle}>Överraska mig</Text>
-            <Text style={styles.rowDesc}>Välj en slumpmässig mix av kortlekar</Text>
-          </View>
-          <View style={[styles.checkbox, randomize && { backgroundColor: colors.accent, borderColor: colors.accent }]}>
-            {randomize && <Text style={styles.checkmark}>✓</Text>}
-          </View>
-        </TouchableOpacity>
+        <View style={styles.header}>
+          <Text style={styles.title}>Vad vill du utforska?</Text>
+          <Text style={styles.subtitle}>Välj en kortlek — eller låt slumpen bestämma.</Text>
+        </View>
 
-        {allDecks.map((deck) => {
-          const isSelected = selected.includes(deck.id);
-          const isDefault = defaults.includes(deck.id);
-          return (
-            <TouchableOpacity
-              key={deck.id}
-              style={[styles.row, isSelected && { borderColor: deck.color + "80" }]}
-              onPress={() => toggle(deck.id)}
-              activeOpacity={0.7}
+        <View style={styles.tileList}>
+          {/* Surprise tile */}
+          <Animated.View style={{ opacity: surpriseOpacity }}>
+            <Pressable
+              onPressIn={() =>
+                Animated.timing(surpriseOpacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start()
+              }
+              onPressOut={() =>
+                Animated.timing(surpriseOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start()
+              }
+              onPress={handleSurpriseToggle}
+              style={[styles.tile, randomize && { backgroundColor: colors.accent }]}
             >
-              <View style={styles.rowLeft}>
-                <DeckIcon deck={deck} size={22} style={styles.icon} />
-                <View style={styles.rowText}>
-                  <View style={styles.titleRow}>
-                    <Text style={styles.rowTitle}>{deck.title}</Text>
-                    {isDefault && (
-                      <Text style={[styles.badge, { color: colors.accent, borderColor: colors.accent + "60" }]}>
-                        förslag
-                      </Text>
-                    )}
-                  </View>
-                  <Text style={styles.rowDesc}>{deck.description}</Text>
+              <View style={styles.tileInner}>
+                <Text style={[styles.surpriseIcon, randomize && { color: colors.textOnBrand }]}>⚄</Text>
+                <View style={styles.tileText}>
+                  <Text style={[styles.tileTitle, randomize && styles.tileTitleSelected]}>
+                    Överraska mig
+                  </Text>
+                  <Text style={[styles.tileDesc, randomize && styles.tileDescSelected]}>
+                    En slumpmässig mix av kortlekar
+                  </Text>
                 </View>
               </View>
-              <View style={[styles.checkbox, isSelected && { backgroundColor: deck.color, borderColor: deck.color }]}>
-                {isSelected && <Text style={styles.checkmark}>✓</Text>}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+            </Pressable>
+          </Animated.View>
 
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[
-            styles.startBtn,
-            { backgroundColor: colors.accent },
-            !canStart && styles.startBtnDisabled,
-          ]}
-          onPress={handleStart}
-          activeOpacity={0.8}
-          disabled={!canStart}
-        >
-          <Ionicons name="play" size={spacing.lg} color={colors.white} />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          {/* Deck tiles */}
+          {allDecks.map((deck) => (
+            <DeckTile
+              key={deck.id}
+              deck={deck}
+              isSelected={selected.includes(deck.id)}
+              isDefault={defaults.includes(deck.id)}
+              onPress={() => toggle(deck.id)}
+            />
+          ))}
+        </View>
+
+        {/* Start button */}
+        <Animated.View style={[styles.startWrap, { opacity: startOpacity }]}>
+          <Pressable
+            onPressIn={onStartPressIn}
+            onPressOut={onStartPressOut}
+            onPress={handleStart}
+            disabled={!canStart}
+            style={[styles.startBtn, !canStart && styles.startBtnDisabled]}
+          >
+            <Text style={styles.startLabel}>Spela →</Text>
+          </Pressable>
+        </Animated.View>
+      </ScrollView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
+  layoutMain: {
+    paddingTop: 0,
+  },
+  scroll: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xxxl,
+    gap: spacing.sm,
   },
   header: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+    gap: spacing.xs,
   },
   title: {
     fontFamily: fonts.heading,
     ...typography.heading,
     color: colors.textPrimary,
-    marginBottom: spacing.xs,
   },
   subtitle: {
     ...typography.caption,
     color: colors.textMuted,
     fontStyle: "italic",
   },
-  scroll: {
-    paddingVertical: spacing.sm,
-    paddingBottom: spacing.xxxl,
+  tileList: {
+    gap: spacing.sm,
   },
-  randomRow: {
-    flexDirection: "row",
-    alignItems: "center",
+  tile: {
+    paddingVertical: spacing.lg,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    borderLeftWidth: 3,
-    borderLeftColor: 'transparent',
-    gap: spacing.md,
-    marginBottom: spacing.sm,
+    borderRadius: radius.md,
+    backgroundColor: colors.bgSecondary,
   },
-  randomIcon: {
-    ...typography.body,
-    width: dimensions.iconContainer,
-    textAlign: "center",
-    color: colors.accent,
+  tileSelected: {
+    backgroundColor: colors.accent,
   },
-  randomTitle: {
-    ...typography.bodyMedium,
-    color: colors.accent,
-    marginBottom: spacing.xs,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    borderLeftWidth: 3,
-    borderLeftColor: "transparent",
-  },
-  rowLeft: {
+  tileInner: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
-    flex: 1,
   },
-  icon: {
+  surpriseIcon: {
     ...typography.body,
-    width: dimensions.iconContainer,
-    textAlign: "center",
+    color: colors.textPrimary,
   },
-  rowText: {
+  tileText: {
     flex: 1,
+    gap: spacing.xs,
   },
-  titleRow: {
+  tileTitleRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
-    marginBottom: spacing.xs,
   },
-  rowTitle: {
+  tileTitle: {
     ...typography.bodyMedium,
     color: colors.textPrimary,
   },
-  badge: {
-    ...typography.label,
-    textTransform: "uppercase",
-    borderWidth: 1,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 1,
+  tileTitleSelected: {
+    color: colors.textOnBrand,
   },
-  rowDesc: {
+  tileDesc: {
     ...typography.caption,
     color: colors.textSecondary,
     fontStyle: "italic",
   },
-  checkbox: {
-    width: dimensions.checkboxSize,
-    height: dimensions.checkboxSize,
-    borderRadius: radius.full,
-    borderWidth: 1.5,
+  tileDescSelected: {
+    color: colors.textOnBrandMuted,
+  },
+  badge: {
+    ...typography.label,
+    textTransform: "uppercase",
+    color: colors.textMuted,
+    borderWidth: 1,
     borderColor: colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: spacing.md,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 1,
   },
-  checkmark: {
-    color: colors.white,
-    ...typography.caption,
-    fontWeight: "600",
-  },
-  footer: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
+  startWrap: {
+    marginTop: spacing.md,
   },
   startBtn: {
-    height: dimensions.buttonHeight,
+    height: 52,
     borderRadius: radius.md,
+    backgroundColor: colors.accent,
     alignItems: "center",
     justifyContent: "center",
   },
   startBtnDisabled: {
     opacity: 0.3,
+  },
+  startLabel: {
+    fontFamily: fonts.heading,
+    ...typography.body,
+    color: colors.textOnBrand,
+    letterSpacing: 0.5,
   },
 });

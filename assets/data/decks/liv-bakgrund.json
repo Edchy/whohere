@@ -4,8 +4,8 @@
   "description": "Synliga spår av liv som levts.",
   "mode": "any",
   "category": "liv-bakgrund",
-  "color": "#A0A0A0",
-  "cardBackground": "#2A2318",
-  "cardText": "#F0E6D3",
+  "color": "#B85C38",
+  "cardBackground": "#110A06",
+  "cardText": "#E8D0C0",
   "icon": "◎"
 }

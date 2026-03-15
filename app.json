@@ -29,6 +29,12 @@
       "bundler": "metro",
       "favicon": "./assets/favicon.png"
     },
-    "plugins": []
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "1c6991e3-04da-44bb-9d43-5a9dc7226b86"
+      }
+    },
+    "owner": "edch"
   }
 }
