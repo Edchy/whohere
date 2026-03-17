@@ -4,9 +4,9 @@
   "description": "Lager på lager av fakta och fantasi.",
   "mode": "any",
   "category": "livssituationer",
-  "color": "#4A7A5C",
-  "cardBackground": "#080F0A",
-  "cardText": "#C0D8C8",
+  "color": "#1F9540",
+  "cardBackground": "#0A1810",
+  "cardText": "#FFFFFF",
   "icon": "◈",
   "svgIcon": "noun-zombie-3571880"
 }

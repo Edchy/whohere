@@ -1,9 +1,12 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { DeckIcon } from "../../src/components/DeckIcon";
+import RandomSvg from "../../assets/icons/noun-random-2986670.svg";
+import { DeckTile } from "../../src/components/DeckTile";
 import ScreenLayout from "../../src/components/ScreenLayout";
 import { animation, colors, fonts, radius, spacing, typography } from "../../src/constants/theme";
+
 import { useGameStore } from "../../src/store/gameStore";
 import { Card, Deck, IntensityAxis } from "../../src/types";
 import allDecks from "../../assets/data/decks/index";
@@ -114,61 +117,77 @@ function randomSubset(ids: string[]): string[] {
   return shuffled.slice(0, count);
 }
 
-// ─── Animated tile ────────────────────────────────────────────────────────────
+// ─── Header copy ──────────────────────────────────────────────────────────────
 
-function DeckTile({
-  deck,
-  isSelected,
-  isDefault,
-  onPress,
-}: {
-  deck: (typeof allDecks)[0];
-  isSelected: boolean;
-  isDefault: boolean;
-  onPress: () => void;
-}) {
-  const opacity = useRef(new Animated.Value(1)).current;
+const HEADER_TITLES: Record<string, string[]> = {
+  partner: [
+    "Vad vill ni lära er om varandra?",
+    "Vart vill ni ta samtalet ikväll?",
+    "Vad är ni redo att utforska?",
+  ],
+  group: [
+    "Vad ska ni blanda er i ikväll?",
+    "Vart tar ni gruppen?",
+    "Vad väljer ni att gå in i?",
+  ],
+  solo: [
+    "Vad vill du möta idag?",
+    "Vart tar du dig själv?",
+    "Vad är du redo att titta på?",
+  ],
+};
 
-  const onPressIn = () =>
-    Animated.timing(opacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start();
+const HEADER_SUBTITLES: Record<string, string[]> = {
+  partner: [
+    "Välj vad som lockar er — eller låt oss välja.",
+    "Plocka det ni vill dyka in i. Eller kasta tärningen.",
+    "Era val. Eller slumpens.",
+  ],
+  group: [
+    "Välj vad gruppen orkar med. Eller låt ödet avgöra.",
+    "Plocka ihop ert kvällsprogram — eller överlåt det åt slumpen.",
+    "Alla väljer, ingen bestämmer — eller låt oss sköta det.",
+  ],
+  solo: [
+    "Välj vad du vill brottas med. Eller låt slumpen ta rodret.",
+    "Dina val — eller överlåt dem till universum.",
+    "Plocka det du vill gå in i. Eller låt det komma till dig.",
+  ],
+};
 
-  const onPressOut = () =>
-    Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
+function pickHeaderTitle(mode: string): string {
+  const options = HEADER_TITLES[mode] ?? HEADER_TITLES["partner"];
+  return options[Math.floor(Math.random() * options.length)];
+}
 
-  return (
-    <Animated.View style={{ opacity }}>
-      <Pressable
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        onPress={onPress}
-        style={[
-          styles.tile,
-          isSelected && { backgroundColor: deck.cardBackground },
-        ]}
-      >
-        <View style={styles.tileInner}>
-          <DeckIcon
-            deck={deck}
-            size={36}
-            color={isSelected ? deck.cardText : colors.textPrimary}
-          />
-          <View style={styles.tileText}>
-            <View style={styles.tileTitleRow}>
-              <Text style={[styles.tileTitle, isSelected && { color: deck.cardText }]}>
-                {deck.title}
-              </Text>
-              {isDefault && !isSelected && (
-                <Text style={styles.badge}>förslag</Text>
-              )}
-            </View>
-            <Text style={[styles.tileDesc, isSelected && { color: deck.cardText + "99" }]}>
-              {deck.description}
-            </Text>
-          </View>
-        </View>
-      </Pressable>
-    </Animated.View>
-  );
+function pickHeaderSubtitle(mode: string): string {
+  const options = HEADER_SUBTITLES[mode] ?? HEADER_SUBTITLES["partner"];
+  return options[Math.floor(Math.random() * options.length)];
+}
+
+// ─── Surprise tile descriptions ───────────────────────────────────────────────
+
+const SURPRISE_DESCS: Record<string, string[]> = {
+  partner: [
+    "Ett handplockat urval för er två. Men med ett uns överraskning.",
+    "Kurerat för er. Ordningen är slumpens fel.",
+    "Rätt frågor för er två, i fel ordning. Med flit.",
+  ],
+  group: [
+    "Utvalda för gruppen. Men ingen vet vad som kommer härnäst.",
+    "Kurerat kaos för alla inblandade.",
+    "Rätt kortlekar för er. Fel ordning. Med avsikt.",
+  ],
+  solo: [
+    "Handplockat för dig. Ordningen bestämmer sig själv.",
+    "Kurerat för en. Överraskningarna ingår.",
+    "Rätt frågor för dig, i en ordning bara slumpen känner till.",
+  ],
+};
+
+function pickSurpriseDesc(mode: string): string {
+  const options = SURPRISE_DESCS[mode] ?? SURPRISE_DESCS["partner"];
+  return options[Math.floor(Math.random() * options.length)];
 }
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
@@ -177,6 +196,9 @@ export default function CategoriesScreen() {
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode: string }>();
   const startGame = useGameStore((s) => s.startGame);
+  const surpriseDesc = useRef(pickSurpriseDesc(mode ?? "partner")).current;
+  const headerTitle = useRef(pickHeaderTitle(mode ?? "partner")).current;
+  const headerSubtitle = useRef(pickHeaderSubtitle(mode ?? "partner")).current;
 
   const defaults = DEFAULT_SELECTIONS[mode ?? ""] ?? [];
   const [selected, setSelected] = useState<string[]>([]);
@@ -214,14 +236,14 @@ export default function CategoriesScreen() {
     Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
   return (
-    <ScreenLayout mainStyle={styles.layoutMain}>
+    <ScreenLayout>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Vad vill du utforska?</Text>
-          <Text style={styles.subtitle}>Välj en kortlek — eller låt slumpen bestämma.</Text>
+          <Text style={styles.title}>{headerTitle}</Text>
+          <Text style={styles.subtitle}>{headerSubtitle}</Text>
         </View>
 
         <View style={styles.tileList}>
@@ -235,16 +257,16 @@ export default function CategoriesScreen() {
                 Animated.timing(surpriseOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start()
               }
               onPress={handleSurpriseToggle}
-              style={[styles.tile, randomize && { backgroundColor: colors.accent }]}
+              style={[styles.surpriseTile, randomize && { backgroundColor: colors.accent }]}
             >
-              <View style={styles.tileInner}>
-                <Text style={[styles.surpriseIcon, randomize && { color: colors.textOnBrand }]}>⚄</Text>
-                <View style={styles.tileText}>
-                  <Text style={[styles.tileTitle, randomize && styles.tileTitleSelected]}>
-                    Överraska mig
+              <View style={styles.surpriseInner}>
+                <RandomSvg width={36} height={36} fill={randomize ? colors.textOnBrand : colors.textPrimary} />
+                <View style={styles.surpriseText}>
+                  <Text style={[styles.surpriseTitle, { color: randomize ? colors.textOnBrand : colors.textPrimary }]}>
+                    Överraska mig!
                   </Text>
-                  <Text style={[styles.tileDesc, randomize && styles.tileDescSelected]}>
-                    En slumpmässig mix av kortlekar
+                  <Text style={[styles.surpriseDesc, { color: randomize ? colors.textOnBrandMuted : colors.textMuted }]}>
+                    {surpriseDesc}
                   </Text>
                 </View>
               </View>
@@ -257,7 +279,7 @@ export default function CategoriesScreen() {
               key={deck.id}
               deck={deck}
               isSelected={selected.includes(deck.id)}
-              isDefault={defaults.includes(deck.id)}
+              badge={defaults.includes(deck.id) && !selected.includes(deck.id) ? 'förslag' : undefined}
               onPress={() => toggle(deck.id)}
             />
           ))}
@@ -272,7 +294,7 @@ export default function CategoriesScreen() {
             disabled={!canStart}
             style={[styles.startBtn, !canStart && styles.startBtnDisabled]}
           >
-            <Text style={styles.startLabel}>Spela →</Text>
+            <Ionicons name="play" size={22} color={colors.textOnBrand} />
           </Pressable>
         </Animated.View>
       </ScrollView>
@@ -281,83 +303,58 @@ export default function CategoriesScreen() {
 }
 
 const styles = StyleSheet.create({
-  layoutMain: {
-    paddingTop: 0,
-  },
   scroll: {
     paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
     paddingBottom: spacing.xxxl,
     gap: spacing.sm,
   },
   header: {
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
+    borderRadius: radius.md,
+    // borderWidth: 1,
+    borderColor: '#333333',
+    backgroundColor: '#000000',
     gap: spacing.xs,
   },
+
   title: {
+    ...typography.display,
     fontFamily: fonts.heading,
-    ...typography.heading,
     color: colors.textPrimary,
+    textTransform: 'uppercase',
+    lineHeight: 24,
   },
   subtitle: {
     ...typography.caption,
+    fontFamily: fonts.copyLight,
     color: colors.textMuted,
-    fontStyle: "italic",
   },
   tileList: {
     gap: spacing.sm,
   },
-  tile: {
+  surpriseTile: {
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.lg,
     borderRadius: radius.md,
     backgroundColor: colors.bgSecondary,
   },
-  tileSelected: {
-    backgroundColor: colors.accent,
-  },
-  tileInner: {
-    flexDirection: "row",
-    alignItems: "center",
+  surpriseInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.md,
   },
-  surpriseIcon: {
-    ...typography.body,
-    color: colors.textPrimary,
-  },
-  tileText: {
+  surpriseText: {
     flex: 1,
     gap: spacing.xs,
   },
-  tileTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  tileTitle: {
+  surpriseTitle: {
     ...typography.bodyMedium,
-    color: colors.textPrimary,
   },
-  tileTitleSelected: {
-    color: colors.textOnBrand,
-  },
-  tileDesc: {
+  surpriseDesc: {
     ...typography.caption,
-    color: colors.textSecondary,
-    fontStyle: "italic",
-  },
-  tileDescSelected: {
-    color: colors.textOnBrandMuted,
-  },
-  badge: {
-    ...typography.label,
-    textTransform: "uppercase",
-    color: colors.textMuted,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 1,
+    fontFamily: fonts.copyLight,
   },
   startWrap: {
     marginTop: spacing.md,
@@ -371,11 +368,5 @@ const styles = StyleSheet.create({
   },
   startBtnDisabled: {
     opacity: 0.3,
-  },
-  startLabel: {
-    fontFamily: fonts.heading,
-    ...typography.body,
-    color: colors.textOnBrand,
-    letterSpacing: 0.5,
   },
 });

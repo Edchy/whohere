@@ -56,6 +56,7 @@ function CardFace({ card, deck, cardIndex, totalCards }: { card: Card; deck: Dec
           <DeckIcon deck={{ icon, svgIcon, color }} size={14} color={color} style={styles.modeIndicatorIcon} />
           <Text style={[styles.modeIndicatorText, { color }]}>{"  "}{title.toUpperCase()}</Text>
         </View>
+        <Text style={[styles.cardCounter, { color }]}>{cardIndex + 1} / {totalCards}</Text>
       </View>
       <View style={styles.questionBlock}>
         <Text style={[styles.whoHere, { color }]}>Vem här…</Text>
@@ -67,9 +68,6 @@ function CardFace({ card, deck, cardIndex, totalCards }: { card: Card; deck: Dec
           <Text style={[styles.followUp, { color: `${cardText}99` }]}>{card.followUp}</Text>
         </View>
       )}
-      <View style={styles.cardFooter}>
-        <Text style={[styles.cardCounter, { color: `${cardText}55` }]}>{cardIndex + 1} / {totalCards}</Text>
-      </View>
     </>
   );
 }
@@ -354,8 +352,8 @@ export default function PlayScreen() {
             <Animated.View style={[styles.card, prevCardStyle]}>
               <View style={[styles.cardFace, { backgroundColor: prevCardData.deckBackground ?? deck.cardBackground }]}>
                 <CardFace card={prevCardData} deck={deck} cardIndex={topIndex - 1} totalCards={deck.cards.length} />
-                {topIndex - 1 > 0 && <View style={[styles.dotLeft, { backgroundColor: prevCardData.deckText ?? deck.cardText }]} />}
-                <View style={[styles.dotRight, { backgroundColor: prevCardData.deckText ?? deck.cardText }]} />
+                {topIndex - 1 > 0 && <Text style={[styles.dotLeft, { color: prevCardData.deckColor ?? deck.color }]}>◀</Text>}
+                <Text style={[styles.dotRight, { color: prevCardData.deckColor ?? deck.color }]}>▶</Text>
               </View>
             </Animated.View>
           )}
@@ -363,8 +361,8 @@ export default function PlayScreen() {
             <Animated.View style={[styles.card, nextCardStyle]}>
               <View style={[styles.cardFace, { backgroundColor: nextCardData.deckBackground ?? deck.cardBackground }]}>
                 <CardFace card={nextCardData} deck={deck} cardIndex={topIndex + 1} totalCards={deck.cards.length} />
-                <View style={[styles.dotLeft, { backgroundColor: nextCardData.deckText ?? deck.cardText }]} />
-                {topIndex + 1 < deck.cards.length - 1 && <View style={[styles.dotRight, { backgroundColor: nextCardData.deckText ?? deck.cardText }]} />}
+                <Text style={[styles.dotLeft, { color: nextCardData.deckColor ?? deck.color }]}>◀</Text>
+                {topIndex + 1 < deck.cards.length - 1 && <Text style={[styles.dotRight, { color: nextCardData.deckColor ?? deck.color }]}>▶</Text>}
               </View>
             </Animated.View>
           )}
@@ -376,8 +374,8 @@ export default function PlayScreen() {
                 {/* Front face — rotates 0→180deg, backfaceVisibility hides it past 90deg */}
                 <Animated.View style={[styles.cardFace, { backgroundColor: topCard.deckBackground ?? deck.cardBackground }, frontFaceStyle]}>
                   <CardFace card={topCard} deck={deck} cardIndex={topIndex} totalCards={deck.cards.length} />
-                  {topIndex > 0 && <View style={[styles.dotLeft, { backgroundColor: topCard.deckText ?? deck.cardText }]} />}
-                  {!isLast && <View style={[styles.dotRight, { backgroundColor: topCard.deckText ?? deck.cardText }]} />}
+                  {topIndex > 0 && <Text style={[styles.dotLeft, { color: topCard.deckColor ?? deck.color }]}>◀</Text>}
+                  {!isLast && <Text style={[styles.dotRight, { color: topCard.deckColor ?? deck.color }]}>▶</Text>}
                 </Animated.View>
                 {/* Back face — rotates -180→0deg, appears once past 90deg */}
                 <Animated.View style={[styles.cardFace, styles.cardFaceBack, backFaceStyle]}>
@@ -494,22 +492,22 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   // Front face inner elements
-  modeRow: {},
+  modeRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   modeIndicator: { flexDirection: 'row', alignItems: 'center' },
   modeIndicatorIcon: { ...typography.label, letterSpacing: 1.5 },
   modeIndicatorText: { ...typography.label, letterSpacing: 1.5 },
   questionBlock: { flex: 1, justifyContent: "center" },
   whoHere: {
-    ...typography.body,
-    fontStyle: "italic",
+    ...typography.heading,
+    // fontStyle: "italic",
     color: colors.accent,
-    marginBottom: spacing.sm,
-    fontWeight: "300",
+    // marginBottom: spacing.sm,
+    // fontWeight: "300",
   },
   question: {
-    fontFamily: fonts.copy,
     ...typography.heading,
-    fontWeight: "300",
+    fontFamily: fonts.question,
+    // fontWeight: "300",
     color: colors.textPrimary,
     letterSpacing: 0.1,
   },
@@ -531,10 +529,6 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontStyle: "italic",
   },
-  cardFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   cardCounter: {
     ...typography.caption,
     color: colors.textMuted,
@@ -553,21 +547,15 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: spacing.xl,
     left: spacing.xl,
-    width: dimensions.dotSize,
-    height: dimensions.dotSize,
-    borderRadius: radius.full,
-    backgroundColor: colors.textMuted,
-    opacity: 0.5,
+    fontSize: 10,
+    opacity: 0.6,
   },
   dotRight: {
     position: "absolute",
     bottom: spacing.xl,
     right: spacing.xl,
-    width: dimensions.dotSize,
-    height: dimensions.dotSize,
-    borderRadius: radius.full,
-    backgroundColor: colors.textMuted,
-    opacity: 0.5,
+    fontSize: 10,
+    opacity: 0.6,
   },
   nav: {
     flexDirection: "row",

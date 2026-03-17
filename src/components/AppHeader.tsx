@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { colors, spacing } from '../constants/theme';
 import EyesLogo from './EyesLogo';
+import QuestionIcon from '../../assets/icons/noun-question-85537.svg';
 
 export default function AppHeader({ onBack }: { onBack?: () => void }) {
   return (
@@ -16,7 +17,7 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
       )}
       <EyesLogo size={72} />
       <TouchableOpacity style={styles.helpButton} activeOpacity={0.7}>
-        <Ionicons name="help-circle-outline" size={26} color={colors.textMuted} />
+        <QuestionIcon width={26} height={26} fill={colors.textMuted} />
       </TouchableOpacity>
     </View>
   );

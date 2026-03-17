@@ -6,8 +6,8 @@ import { colors } from '../src/constants/theme';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    'Supreme-Extrabold': require('../assets/fonts/Supreme-Extrabold.otf'),
-    'Sig': require('../assets/fonts/Sig.otf'), 'Cas': require('../assets/fonts/cas-reg.otf'),
+    'Supreme': require('../assets/fonts/Supreme-Extrabold.otf'),
+   'Hedvig': require('../assets/fonts/HedvigLettersSerif-Regular.otf'), 'Pecita': require('../assets/fonts/Pecita.otf'),  'Seasum': require('../assets/fonts/seasum.otf'), 'Seasum2': require('../assets/fonts/seasum2.otf'),'Nafta': require('../assets/fonts/NaftaLight-Regular.ttf'),  'MonumentBlack': require('../assets/fonts/PPMonumentNormal-Black.otf'), 'MonumentLight': require('../assets/fonts/PPMonumentNormal-Light.otf'), 'MonumentRegular': require('../assets/fonts/PPMonumentNormal-Regular.otf'), 'Raleway-Black' : require('../assets/fonts/Raleway-Black.otf'),
   });
 
   if (!fontsLoaded) return null;

@@ -15,19 +15,22 @@ const MODES = [
     id: "partner",
     label: "På date",
     sublabel: "Lär känna varandra genom att betrakta andra.",
-    color: colors.accent,
+    bg: "#000000",
+    text: "#FFFFFF",
   },
   {
     id: "group",
     label: "Med vänner",
     sublabel: "Fantasi och intuition i en ohelig kombination.",
-    color: colors.accent,
+    bg: "#000000",
+    text: "#FFFFFF",
   },
   {
     id: "solo",
     label: "På egen hand",
     sublabel: "Upptäck din inre värld genom utblickar och insikter.",
-    color: colors.accent,
+    bg: "#000000",
+    text: "#FFFFFF",
   },
 ];
 
@@ -59,14 +62,14 @@ function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
-        style={[styles.row, { backgroundColor: mode.color }, !isLast && styles.rowGap]}
+        style={[styles.row, { backgroundColor: mode.bg }, !isLast && styles.rowGap]}
       >
         <View style={styles.rowInner}>
           <View style={styles.rowText}>
-            <Text style={styles.rowLabel}>{mode.label}</Text>
-            <Text style={styles.rowSublabel}>{mode.sublabel}</Text>
+            <Text style={[styles.rowLabel, { color: mode.text }]}>{mode.label}</Text>
+            <Text style={[styles.rowSublabel, { color: mode.text }]}>{mode.sublabel}</Text>
           </View>
-          <Text style={styles.rowArrow}>→</Text>
+          <Text style={[styles.rowArrow, { color: mode.text }]}>→</Text>
         </View>
       </Pressable>
     </Animated.View>
@@ -91,6 +94,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
     gap: spacing.sm,
   },
 
@@ -102,6 +106,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xl,
     paddingHorizontal: spacing.lg,
     borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: '#333333',
   },
 
   rowGap: {},
@@ -113,25 +119,22 @@ const styles = StyleSheet.create({
 
   rowText: {
     flex: 1,
-    gap: spacing.xs,
+    gap: 2,
   },
 
   rowLabel: {
-    fontFamily: fonts.heading,
     ...typography.display,
-    color: colors.background,
+    textTransform: 'uppercase',
+    lineHeight: 24,
   },
 
   rowSublabel: {
     ...typography.caption,
-    fontStyle: "italic",
-    color: colors.background,
-    opacity: 0.9,
+    opacity: 0.8,
   },
 
   rowArrow: {
     ...typography.body,
-    color: colors.background,
     opacity: 0.6,
   },
 });

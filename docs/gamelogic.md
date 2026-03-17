@@ -132,7 +132,7 @@ Navigation: after `startGame`, app navigates to `/play/{deck.id}`. On last card 
 
 Cards show:
 - Source deck icon + title (uppercase, top)
-- **"Vem här…"** prefix (italic, accent color) — the brand hook
+- **"Vem här…"**  — the brand hook
 - Main question (fontSize 28, fontWeight 300)
 - Optional `followUp` question (after a divider, if present)
 - Card counter (e.g. "3 / 24")

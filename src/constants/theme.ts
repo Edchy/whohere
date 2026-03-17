@@ -4,32 +4,30 @@
 // without touching any semantic token names or call sites.
 
 const palette = {
-  // Brand scale (oklch-derived, converted to sRGB hex — currently a warm red)
-  brand900: '#6B0808',   // oklch(0.32 0.21 27) — deepest
-  brand700: '#A01010',   // oklch(0.42 0.21 27)
-  brand500: '#D42020',   // oklch(0.52 0.21 27) — base brand color
-  brand400: '#E04040',   // oklch(0.58 0.18 27)
-  brand300: '#CC6060',   // oklch(0.62 0.12 27)
-  brand200: '#E88888',   // oklch(0.68 0.10 27)
-  brand100: '#F5E0E0',   // oklch(0.90 0.04 27) — tint
-  brand50:  '#FDF5F5',   // oklch(0.97 0.01 27) — near-white tint
+  // Brand scale (red)
+  brand500: 'rgb(254, 153, 217)',   // pure brand red — base
+  brand400: '#FF2F00',   // orange-red variant
+  brand700: '#CC0000',   // darker red for destructive/hover
 
-  // Warm neutral scale (parchment/cream)
-  neutral50:  '#FDFAF6',
-  neutral100: '#F7F2EC',  // primary background
-  neutral200: '#EFE8DF',
-  neutral300: '#E8E0D5',
-  neutral400: '#D8CEBC',
-  neutral500: '#BFB4A4',
-  neutral600: '#9C9080',
-  neutral700: '#6E6458',
-  neutral800: '#3D3530',
-  neutral900: '#1A1208',
+  // Neutral scale (black → white)
+  neutral900: '#101010',   // near-black — primary surface
+  neutral700: '#666666',   // mid grey
+  neutral500: '#ABABAB',   // light grey
+  neutral300: '#D9D9D9',   // very light grey
+  neutral200: '#DDDDDD',   // very light grey 2
+  neutral150: '#EDEDED',   // off-white
+  neutral100: '#FAFAFA',   // near-white
+  neutral50:  '#FFFFFF',   // pure white
 
-  // Absolute values
-  white: '#FFFFFF',
-  black: '#000000',
-  blackSoft: '#111111',
+  // Special use (badges only)
+  green:      '#00D816',   // badge: positive/correct
+  greenMint:  '#5CFFA8',   // badge: secondary positive
+  yellow:     '#FFB700',   // badge: warning/highlight
+
+  // Absolute
+  black:      '#000000',
+  white:      '#FFFFFF',
+  transparent: 'rgba(0,0,0,0)',
 } as const;
 
 // ─── Semantic tokens ──────────────────────────────────────────────────────────
@@ -41,44 +39,49 @@ const palette = {
 //   Brand surface    →  neutral text    (red bg,   cream text — inverted)
 
 export const colors = {
-  // Backgrounds — neutral surfaces
-  bgPrimary:   palette.neutral100,   // main app background
-  bgSecondary: palette.neutral200,   // cards, sheets, elevated surfaces
-  bgTertiary:  palette.neutral300,   // inset / nested surfaces
-  bgBrand:     palette.brand500,     // brand-colored surface (buttons, card back)
-  bgBrandSoft: palette.brand100,     // soft brand tint
-  bgBlack:     palette.black,        // full-black overlay (discretion screen)
+  // Backgrounds
+  bgPrimary:   palette.black,              // main app background (#000)
+  bgSecondary: palette.neutral900,         // cards, sheets (#101010)
+  bgTertiary:  '#1A1A1A',                  // inset surfaces
+  bgBrand:     palette.brand500,           // brand-colored surface (buttons)
+  bgBrandSoft: palette.brand500 + '20',    // red @ 12% opacity
+  bgBlack:     palette.black,              // discretion screen
 
-  // Text — on neutral surfaces (use brand color)
-  textPrimary:   palette.brand500,   // high emphasis
-  textSecondary: palette.brand400,   // medium emphasis
-  textMuted:     palette.brand200,   // low emphasis / placeholder
+  // Text — on dark surfaces (white/grey)
+  textPrimary:   palette.white,            // high emphasis
+  textSecondary: palette.neutral300,       // medium emphasis
+  textMuted:     palette.neutral500,       // low emphasis
 
-  // Text — on brand surfaces (use neutral color)
-  textOnBrand:      palette.neutral100,   // high emphasis on brand bg
-  textOnBrandMuted: palette.neutral100 + '99',   // neutral100 @ 60% opacity
-  textOnBlack:      palette.blackSoft,    // barely-visible hint text on black bg
+  // Text — on brand (red) surfaces
+  textOnBrand:      palette.white,
+  textOnBrandMuted: palette.white + '99',
+  textOnBlack:      '#111111',             // barely-visible on black
 
-  // Accent (interactive highlights, icons, active states)
-  accent:    palette.brand500,
-  accentDim: palette.brand500 + '20',   // brand500 @ 12% opacity
+  // Accent
+  accent:    palette.brand500,             // #FF0000
+  accentDim: palette.brand500 + '20',
 
   // Mode tints
-  datingTint:  palette.brand500,
-  friendsTint: palette.brand400,
-  soloTint:    palette.brand300,
+  datingTint:  palette.brand500,           // red
+  friendsTint: palette.brand400,           // orange-red
+  soloTint:    palette.neutral500,         // grey
+
+  // Badge colors (use sparingly)
+  badgeGreen:  palette.green,
+  badgeMint:   palette.greenMint,
+  badgeYellow: palette.yellow,
 
   // UI chrome
-  border:      palette.neutral400,
-  overlay:     palette.neutral100 + 'F2',   // neutral100 @ 95% opacity
+  border:      palette.neutral700,         // #666
+  overlay:     palette.black + 'F2',       // black @ 95%
   destructive: palette.brand700,
   white:       palette.white,
 
-  // Legacy aliases — kept so existing call sites don't break while we migrate
-  background:  palette.neutral100,
-  surface:     palette.neutral200,
-  card:        palette.neutral300,
-  cardBorder:  palette.neutral400,
+  // Legacy aliases
+  background:  palette.black,
+  surface:     palette.neutral900,
+  card:        '#1A1A1A',
+  cardBorder:  palette.neutral700,
   brandBg:     palette.brand500,
 } as const;
 
@@ -107,9 +110,11 @@ export const radius = {
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
 export const fonts = {
-  heading: 'Supreme-Extrabold',  // loaded via useFonts in app/_layout.tsx
-  copy:    'Cas',                // loaded via useFonts in app/_layout.tsx
-  ui:      undefined,            // system default
+  heading:   'Pecita',    // loaded via useFonts in app/_layout.tsx
+  copy:      'MonumentRegular',      // loaded via useFonts in app/_layout.tsx
+  copyLight: 'MonumentLight',
+  ui:        'MonumentLight',   // system default
+  question:  'MonumentRegular',   // card question text — swap as needed
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
@@ -122,12 +127,12 @@ export const fonts = {
 //   label    10  — uppercase micro-labels, badges
 
 export const typography = {
-  display:      { fontSize: 36, fontWeight: '400' as const, lineHeight: 44, letterSpacing: -1 },
-  heading:      { fontSize: 24, fontWeight: '400' as const, lineHeight: 32, letterSpacing: -0.3 },
-  body:         { fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
-  bodyMedium:   { fontSize: 16, fontWeight: '500' as const, lineHeight: 24 },
-  caption:      { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
-  label:        { fontSize: 10, fontWeight: '500' as const, lineHeight: 14, letterSpacing: 1 },
+  display:      { fontFamily: fonts.heading, fontSize: 36, fontWeight: '400' as const, lineHeight: 44, letterSpacing: -1 },
+  heading:      { fontFamily: fonts.heading, fontSize: 24, fontWeight: '400' as const, lineHeight: 32, letterSpacing: -0.3 },
+  body:         { fontFamily: fonts.copy,    fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
+  bodyMedium:   { fontFamily: fonts.copy,    fontSize: 16, fontWeight: '500' as const, lineHeight: 24 },
+  caption:      { fontFamily: fonts.copy,    fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
+  label:        { fontFamily: fonts.ui,      fontSize: 10, fontWeight: '500' as const, lineHeight: 14, letterSpacing: 1 },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────

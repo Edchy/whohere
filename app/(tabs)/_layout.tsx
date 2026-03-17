@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { colors, radius, spacing, typography } from '../../src/constants/theme';
+import { colors, fonts, radius, spacing, typography } from '../../src/constants/theme';
 
 const ICONS: Record<string, [string, string]> = {
   index:    ['play-outline',         'play'],
@@ -82,6 +82,7 @@ const tabStyles = StyleSheet.create({
   },
   iconWrapActive: {},
   label: {
+    fontFamily: fonts.ui,
     fontSize: 9,
     fontWeight: '500',
     lineHeight: 11,

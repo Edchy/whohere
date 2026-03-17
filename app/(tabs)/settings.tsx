@@ -17,12 +17,9 @@ export default function SettingsScreen() {
   return (
     <ScreenLayout>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Inställningar</Text>
-        </View>
+    
 
         <View style={styles.group}>
-          <Text style={styles.groupLabel}>INSTÄLLNINGAR</Text>
           <View style={styles.row}>
             <View style={styles.rowContent}>
               <Text style={styles.rowTitle}>Haptik</Text>
@@ -59,19 +56,24 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
     paddingBottom: spacing.xxxl,
+    gap: spacing.xl,
   },
-  header: {
-    marginBottom: spacing.xl,
-    marginTop: spacing.md,
-  },
+
   title: {
     ...typography.display,
     color: colors.textPrimary,
+    textTransform: 'uppercase',
+    lineHeight: 24,
   },
-  group: {
-    marginBottom: spacing.xl,
+  subtitle: {
+    ...typography.caption,
+    color: colors.textMuted,
+    fontStyle: 'italic',
+    marginTop: 2,
   },
+  group: {},
   groupLabel: {
     ...typography.label,
     color: colors.textMuted,
