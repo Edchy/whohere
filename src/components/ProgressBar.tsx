@@ -1,37 +1,28 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { colors, radius } from '../constants/theme';
+import { View } from 'react-native';
+import { radius } from '../constants/theme';
+import { useColors } from '../hooks/useColors';
 
 type Props = {
   progress: number; // 0 to 1
   color?: string;
 };
 
-export function ProgressBar({ progress, color = colors.accent }: Props) {
+export function ProgressBar({ progress, color }: Props) {
+  const colors = useColors();
+  const trackColor = colors.border;
+  const fillColor = color ?? colors.accent;
+
   return (
-    <View style={styles.track}>
+    <View style={{ height: 4, backgroundColor: trackColor, borderRadius: radius.full, overflow: 'hidden' }}>
       <View
-        style={[
-          styles.fill,
-          {
-            width: `${Math.min(Math.max(progress, 0), 1) * 100}%`,
-            backgroundColor: color,
-          },
-        ]}
+        style={{
+          height: '100%',
+          borderRadius: radius.full,
+          width: `${Math.min(Math.max(progress, 0), 1) * 100}%`,
+          backgroundColor: fillColor,
+        }}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  track: {
-    height: 4,
-    backgroundColor: colors.border,
-    borderRadius: radius.full,
-    overflow: 'hidden',
-  },
-  fill: {
-    height: '100%',
-    borderRadius: radius.full,
-  },
-});

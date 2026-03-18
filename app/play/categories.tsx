@@ -2,10 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import RandomSvg from "../../assets/icons/noun-random-2986670.svg";
+import RandomSvg from "../../assets/icons/noun-doodle-element-7389160.svg";
 import { DeckTile } from "../../src/components/DeckTile";
 import ScreenLayout from "../../src/components/ScreenLayout";
-import { animation, colors, fonts, radius, spacing, typography } from "../../src/constants/theme";
+import { animation, AppColors, fonts, radius, spacing, typography } from "../../src/constants/theme";
+import { useColors } from "../../src/hooks/useColors";
 
 import { useGameStore } from "../../src/store/gameStore";
 import { Card, Deck, IntensityAxis } from "../../src/types";
@@ -70,7 +71,7 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function buildDeck(selectedIds: string[], modeId: string): Deck {
+function buildDeck(selectedIds: string[], modeId: string, colors: AppColors): Deck {
   const color = colors.accent;
 
   const deckCount = selectedIds.length;
@@ -190,9 +191,81 @@ function pickSurpriseDesc(mode: string): string {
   return options[Math.floor(Math.random() * options.length)];
 }
 
+function makeStyles(colors: AppColors) {
+  return StyleSheet.create({
+    scroll: {
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.lg,
+      paddingBottom: spacing.xxxl,
+      gap: spacing.sm,
+    },
+    header: {
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.xl,
+      borderRadius: radius.md,
+      borderColor: colors.border,
+      backgroundColor: colors.bgSecondary,
+      gap: spacing.xs,
+    },
+    title: {
+      ...typography.display,
+      fontFamily: fonts.heading,
+      color: colors.textPrimary,
+      textTransform: 'uppercase',
+      lineHeight: 24,
+    },
+    subtitle: {
+      ...typography.caption,
+      fontFamily: fonts.copyLight,
+      color: colors.textMuted,
+    },
+    tileList: {
+      gap: spacing.sm,
+    },
+    surpriseTile: {
+      paddingVertical: spacing.lg,
+      paddingHorizontal: spacing.lg,
+      borderRadius: radius.md,
+      backgroundColor: colors.bgSecondary,
+    },
+    surpriseInner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+    },
+    surpriseText: {
+      flex: 1,
+      gap: spacing.xs,
+    },
+    surpriseTitle: {
+      ...typography.bodyMedium,
+    },
+    surpriseDesc: {
+      ...typography.caption,
+      fontFamily: fonts.copyLight,
+    },
+    startWrap: {
+      marginTop: spacing.md,
+    },
+    startBtn: {
+      height: 52,
+      borderRadius: radius.md,
+      backgroundColor: colors.accent,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    startBtnDisabled: {
+      opacity: 0.3,
+    },
+  });
+}
+
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function CategoriesScreen() {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode: string }>();
   const startGame = useGameStore((s) => s.startGame);
@@ -224,7 +297,7 @@ export default function CategoriesScreen() {
     if (!canStart) return;
     const modePool = DEFAULT_SELECTIONS[mode ?? ""] ?? allDecks.map((d) => d.id);
     const ids = randomize ? randomSubset(modePool) : selected;
-    const deck = buildDeck(ids, mode ?? "partner");
+    const deck = buildDeck(ids, mode ?? "partner", colors);
     startGame(deck, "any");
     router.replace(`/play/${deck.id}`);
   };
@@ -260,12 +333,12 @@ export default function CategoriesScreen() {
               style={[styles.surpriseTile, randomize && { backgroundColor: colors.accent }]}
             >
               <View style={styles.surpriseInner}>
-                <RandomSvg width={36} height={36} fill={randomize ? colors.textOnBrand : colors.textPrimary} />
+                <RandomSvg width={36} height={36} fill={randomize ? colors.bgPrimary : colors.textPrimary} />
                 <View style={styles.surpriseText}>
-                  <Text style={[styles.surpriseTitle, { color: randomize ? colors.textOnBrand : colors.textPrimary }]}>
+                  <Text style={[styles.surpriseTitle, { color: randomize ? colors.bgPrimary : colors.textPrimary }]}>
                     Överraska mig!
                   </Text>
-                  <Text style={[styles.surpriseDesc, { color: randomize ? colors.textOnBrandMuted : colors.textMuted }]}>
+                  <Text style={[styles.surpriseDesc, { color: randomize ? colors.bgPrimary + '99' : colors.textMuted }]}>
                     {surpriseDesc}
                   </Text>
                 </View>
@@ -280,6 +353,7 @@ export default function CategoriesScreen() {
               deck={deck}
               isSelected={selected.includes(deck.id)}
               badge={defaults.includes(deck.id) && !selected.includes(deck.id) ? 'förslag' : undefined}
+              showCount={false}
               onPress={() => toggle(deck.id)}
             />
           ))}
@@ -301,72 +375,3 @@ export default function CategoriesScreen() {
     </ScreenLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xxxl,
-    gap: spacing.sm,
-  },
-  header: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl,
-    borderRadius: radius.md,
-    // borderWidth: 1,
-    borderColor: '#333333',
-    backgroundColor: '#000000',
-    gap: spacing.xs,
-  },
-
-  title: {
-    ...typography.display,
-    fontFamily: fonts.heading,
-    color: colors.textPrimary,
-    textTransform: 'uppercase',
-    lineHeight: 24,
-  },
-  subtitle: {
-    ...typography.caption,
-    fontFamily: fonts.copyLight,
-    color: colors.textMuted,
-  },
-  tileList: {
-    gap: spacing.sm,
-  },
-  surpriseTile: {
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    borderRadius: radius.md,
-    backgroundColor: colors.bgSecondary,
-  },
-  surpriseInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  surpriseText: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  surpriseTitle: {
-    ...typography.bodyMedium,
-  },
-  surpriseDesc: {
-    ...typography.caption,
-    fontFamily: fonts.copyLight,
-  },
-  startWrap: {
-    marginTop: spacing.md,
-  },
-  startBtn: {
-    height: 52,
-    borderRadius: radius.md,
-    backgroundColor: colors.accent,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  startBtnDisabled: {
-    opacity: 0.3,
-  },
-});

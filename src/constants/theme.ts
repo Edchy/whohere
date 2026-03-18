@@ -38,7 +38,7 @@ const palette = {
 //   Neutral surface  →  brand text      (cream bg, red text  — default)
 //   Brand surface    →  neutral text    (red bg,   cream text — inverted)
 
-export const colors = {
+export const darkColors = {
   // Backgrounds
   bgPrimary:   palette.black,              // main app background (#000)
   bgSecondary: palette.neutral900,         // cards, sheets (#101010)
@@ -58,8 +58,9 @@ export const colors = {
   textOnBlack:      '#111111',             // barely-visible on black
 
   // Accent
-  accent:    palette.brand500,             // #FF0000
-  accentDim: palette.brand500 + '20',
+  accent:     palette.brand500,            // #FF0000
+  accentDim:  palette.brand500 + '20',
+  accentSoft: palette.brand500 + '33',
 
   // Mode tints
   datingTint:  palette.brand500,           // red
@@ -84,6 +85,59 @@ export const colors = {
   cardBorder:  palette.neutral700,
   brandBg:     palette.brand500,
 } as const;
+
+export const lightColors = {
+  // Backgrounds
+  bgPrimary:   '#FAFAFA',
+  bgSecondary: '#F0F0F0',
+  bgTertiary:  '#E8E8E8',
+  bgBrand:     palette.brand500,
+  bgBrandSoft: palette.brand500 + '20',
+  bgBlack:     palette.black,              // always black (discretion screen)
+
+  // Text — on light surfaces (dark)
+  textPrimary:   '#111111',
+  textSecondary: '#444444',
+  textMuted:     '#888888',
+
+  // Text — on brand (red) surfaces
+  textOnBrand:      palette.white,
+  textOnBrandMuted: palette.white + '99',
+  textOnBlack:      '#111111',
+
+  // Accent
+  accent:     palette.brand500,
+  accentDim:  palette.brand500 + '20',
+  accentSoft: palette.brand500 + '33',
+
+  // Mode tints
+  datingTint:  palette.brand500,
+  friendsTint: palette.brand400,
+  soloTint:    palette.neutral500,
+
+  // Badge colors (use sparingly)
+  badgeGreen:  palette.green,
+  badgeMint:   palette.greenMint,
+  badgeYellow: palette.yellow,
+
+  // UI chrome
+  border:      '#CCCCCC',
+  overlay:     'rgba(255,255,255,0.95)',
+  destructive: palette.brand700,
+  white:       palette.white,
+
+  // Legacy aliases
+  background:  '#FAFAFA',
+  surface:     '#F0F0F0',
+  card:        '#FFFFFF',
+  cardBorder:  '#DDDDDD',
+  brandBg:     palette.brand500,
+} as const;
+
+export type AppColors = typeof darkColors;
+
+// Backward-compat alias — components that have not yet migrated can still import `colors`
+export const colors = darkColors;
 
 // ─── Spacing ──────────────────────────────────────────────────────────────────
 

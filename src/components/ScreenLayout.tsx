@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing } from '../constants/theme';
+import { useColors } from '../hooks/useColors';
 import AppHeader from './AppHeader';
 
 interface Props {
@@ -11,22 +11,13 @@ interface Props {
 }
 
 export default function ScreenLayout({ children, mainStyle }: Props) {
+  const colors = useColors();
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <AppHeader />
-      <View style={[styles.main, mainStyle]}>
+      <View style={[{ flex: 1 }, mainStyle]}>
         {children}
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  main: {
-    flex: 1,
-  },
-});

@@ -7,35 +7,79 @@ import {
   Text,
   View,
 } from "react-native";
-import { animation, colors, fonts, radius, spacing, typography } from "../../src/constants/theme";
+import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
 import ScreenLayout from "../../src/components/ScreenLayout";
+import { useColors } from "../../src/hooks/useColors";
+import deckIcons from "../../src/constants/deckIcons";
 
 const MODES = [
   {
     id: "partner",
     label: "På date",
     sublabel: "Lär känna varandra genom att betrakta andra.",
-    bg: "#000000",
-    text: "#FFFFFF",
+    svgIcon: "noun-give-8020580",
   },
   {
     id: "group",
     label: "Med vänner",
     sublabel: "Fantasi och intuition i en ohelig kombination.",
-    bg: "#000000",
-    text: "#FFFFFF",
+    svgIcon: "noun-piece-8020583",
   },
   {
     id: "solo",
     label: "På egen hand",
     sublabel: "Upptäck din inre värld genom utblickar och insikter.",
-    bg: "#000000",
-    text: "#FFFFFF",
+    svgIcon: "noun-gift-8020579",
   },
 ];
 
-function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
+function makeStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.lg,
+      gap: spacing.sm,
+    },
+    modeList: {
+      gap: spacing.sm,
+    },
+    row: {
+      paddingVertical: spacing.xl,
+      paddingHorizontal: spacing.lg,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.bgSecondary,
+    },
+    rowInner: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    rowIconWrap: {
+      marginRight: spacing.md,
+    },
+    rowText: {
+      flex: 1,
+      gap: 2,
+    },
+    rowLabel: {
+      ...typography.display,
+      textTransform: 'uppercase',
+      lineHeight: 24,
+      color: colors.textPrimary,
+    },
+    rowSublabel: {
+      ...typography.caption,
+      opacity: 0.8,
+      color: colors.textSecondary,
+    },
+  });
+}
+
+function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors }) {
   const router = useRouter();
+  const styles = makeStyles(colors);
   const opacity = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () => {
@@ -54,7 +98,7 @@ function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
     }).start();
   };
 
-  const isLast = index === MODES.length - 1;
+  const SvgIcon = deckIcons[mode.svgIcon];
 
   return (
     <Animated.View style={{ opacity }}>
@@ -62,14 +106,18 @@ function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
-        style={[styles.row, { backgroundColor: mode.bg }, !isLast && styles.rowGap]}
+        style={styles.row}
       >
         <View style={styles.rowInner}>
+          {SvgIcon && (
+            <View style={styles.rowIconWrap}>
+              <SvgIcon width={40} height={40} fill={colors.textPrimary} />
+            </View>
+          )}
           <View style={styles.rowText}>
-            <Text style={[styles.rowLabel, { color: mode.text }]}>{mode.label}</Text>
-            <Text style={[styles.rowSublabel, { color: mode.text }]}>{mode.sublabel}</Text>
+            <Text style={styles.rowLabel}>{mode.label}</Text>
+            <Text style={styles.rowSublabel}>{mode.sublabel}</Text>
           </View>
-          <Text style={[styles.rowArrow, { color: mode.text }]}>→</Text>
         </View>
       </Pressable>
     </Animated.View>
@@ -77,64 +125,18 @@ function ModeRow({ mode, index }: { mode: (typeof MODES)[0]; index: number }) {
 }
 
 export default function HomeScreen() {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <ScreenLayout>
       <View style={styles.container}>
         <View style={styles.modeList}>
-          {MODES.map((mode, index) => (
-            <ModeRow key={mode.id} mode={mode} index={index} />
+          {MODES.map((mode) => (
+            <ModeRow key={mode.id} mode={mode} colors={colors} />
           ))}
         </View>
       </View>
     </ScreenLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    gap: spacing.sm,
-  },
-
-  modeList: {
-    gap: spacing.sm,
-  },
-
-  row: {
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.lg,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: '#333333',
-  },
-
-  rowGap: {},
-
-  rowInner: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  rowText: {
-    flex: 1,
-    gap: 2,
-  },
-
-  rowLabel: {
-    ...typography.display,
-    textTransform: 'uppercase',
-    lineHeight: 24,
-  },
-
-  rowSublabel: {
-    ...typography.caption,
-    opacity: 0.8,
-  },
-
-  rowArrow: {
-    ...typography.body,
-    opacity: 0.6,
-  },
-});

@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { colors, spacing } from '../constants/theme';
+import { spacing } from '../constants/theme';
+import { useColors } from '../hooks/useColors';
 import EyesLogo from './EyesLogo';
-import QuestionIcon from '../../assets/icons/noun-question-85537.svg';
 
 export default function AppHeader({ onBack }: { onBack?: () => void }) {
+  const colors = useColors();
   return (
     <View style={styles.container}>
       {onBack ? (
@@ -16,9 +17,7 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
         <View style={styles.spacer} />
       )}
       <EyesLogo size={72} />
-      <TouchableOpacity style={styles.helpButton} activeOpacity={0.7}>
-        <QuestionIcon width={26} height={26} fill={colors.textMuted} />
-      </TouchableOpacity>
+      <View style={styles.spacer} />
     </View>
   );
 }
@@ -36,9 +35,5 @@ const styles = StyleSheet.create({
   },
   backButton: {
     flex: 1,
-  },
-  helpButton: {
-    flex: 1,
-    alignItems: 'flex-end',
   },
 });

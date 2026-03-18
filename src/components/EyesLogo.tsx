@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { colors } from '../constants/theme';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -73,15 +72,14 @@ export default function EyesLogo({ size = 64 }: EyesLogoProps) {
 
   return (
     <View style={[styles.row, { gap }]}>
-      <Eye eyeW={eyeW} eyeH={eyeH} borderW={borderW} irisSize={irisSize} shineSize={shineSize} irisAnimStyle={irisAnimStyle} translateX={translateX} maxX={maxX} />
-      <Eye eyeW={eyeW} eyeH={eyeH} borderW={borderW} irisSize={irisSize} shineSize={shineSize} irisAnimStyle={irisAnimStyle} translateX={translateX} maxX={maxX} />
+      <Eye eyeW={eyeW} eyeH={eyeH} borderW={borderW} irisSize={irisSize} shineSize={shineSize} irisAnimStyle={irisAnimStyle} translateX={translateX} maxX={maxX} irisColor="#000000" />
+      <Eye eyeW={eyeW} eyeH={eyeH} borderW={borderW} irisSize={irisSize} shineSize={shineSize} irisAnimStyle={irisAnimStyle} translateX={translateX} maxX={maxX} irisColor="#000000" />
     </View>
   );
 }
 
-function Eye({ eyeW, eyeH, borderW, irisSize, shineSize, irisAnimStyle, translateX, maxX }: any) {
+function Eye({ eyeW, eyeH, borderW, irisSize, shineSize, irisAnimStyle, translateX, maxX, irisColor }: any) {
   const shineAnimStyle = useAnimatedStyle(() => {
-    // When looking right → shine moves right; left → left; center → center
     const offset = interpolate(
       translateX.value,
       [-maxX, 0, maxX],
@@ -98,7 +96,7 @@ function Eye({ eyeW, eyeH, borderW, irisSize, shineSize, irisAnimStyle, translat
         borderRadius: eyeW * 0.5,
         backgroundColor: '#FAFAF8',
         borderWidth: borderW,
-        borderColor: colors.bgPrimary,
+        borderColor: irisColor,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
@@ -110,7 +108,7 @@ function Eye({ eyeW, eyeH, borderW, irisSize, shineSize, irisAnimStyle, translat
             width: irisSize,
             height: irisSize,
             borderRadius: irisSize / 2,
-            backgroundColor: colors.bgPrimary,
+            backgroundColor: irisColor,
             alignItems: 'center',
             justifyContent: 'center',
           },

@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { colors, fonts, radius, spacing, typography } from '../../src/constants/theme';
+import { AppColors, fonts, radius, spacing } from '../../src/constants/theme';
+import { useColors } from '../../src/hooks/useColors';
 
 const ICONS: Record<string, [string, string]> = {
   index:    ['play-outline',         'play'],
@@ -10,7 +11,50 @@ const ICONS: Record<string, [string, string]> = {
   settings: ['settings-outline',     'settings'],
 };
 
+function makeStyles(colors: AppColors) {
+  return StyleSheet.create({
+    bar: {
+      flexDirection: 'row',
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.accent,
+      backgroundColor: colors.background,
+      marginHorizontal: spacing.lg,
+      marginBottom: 24,
+      paddingBottom: 12,
+      paddingTop: 12,
+      paddingHorizontal: spacing.md,
+    },
+    tab: {
+      flex: 1,
+      alignItems: 'center',
+      gap: 0,
+    },
+    iconWrap: {
+      width: 32,
+      height: 28,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    label: {
+      fontFamily: fonts.ui,
+      fontSize: 9,
+      fontWeight: '500',
+      lineHeight: 11,
+      color: colors.textMuted,
+      letterSpacing: 0.5,
+      textTransform: 'uppercase',
+    },
+    labelActive: {
+      color: colors.accent,
+    },
+  });
+}
+
 function CustomTabBar({ state, descriptors, navigation }: any) {
+  const colors = useColors();
+  const tabStyles = makeStyles(colors);
+
   return (
     <View style={tabStyles.bar}>
       {state.routes
@@ -27,7 +71,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
               onPress={() => navigation.navigate(route.name)}
               activeOpacity={0.7}
             >
-              <View style={[tabStyles.iconWrap, focused && tabStyles.iconWrapActive]}>
+              <View style={tabStyles.iconWrap}>
                 <Ionicons
                   name={(focused ? iconOn : iconOff) as any}
                   size={22}
@@ -56,41 +100,3 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
-
-const tabStyles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row',
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.accent,
-    marginHorizontal: spacing.lg,
-    marginBottom: 24,
-    paddingBottom: 12,
-    paddingTop: 12,
-    paddingHorizontal: spacing.md,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 0,
-  },
-  iconWrap: {
-    width: 32,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconWrapActive: {},
-  label: {
-    fontFamily: fonts.ui,
-    fontSize: 9,
-    fontWeight: '500',
-    lineHeight: 11,
-    color: colors.textMuted,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  labelActive: {
-    color: colors.accent,
-  },
-});

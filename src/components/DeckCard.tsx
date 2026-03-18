@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { colors, radius, spacing, typography } from '../constants/theme';
+import { AppColors, radius, spacing, typography } from '../constants/theme';
+import { useColors } from '../hooks/useColors';
 import { DeckIcon } from './DeckIcon';
 import { Deck } from '../types';
 
@@ -9,7 +10,67 @@ type Props = {
   onPress: () => void;
 };
 
+function makeStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      padding: spacing.md,
+      marginBottom: spacing.sm,
+      borderRadius: radius.md,
+      borderWidth: 1,
+    },
+    iconWrapper: {
+      marginRight: spacing.md,
+      marginTop: 2,
+      width: 28,
+      height: 28,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    icon: {
+      ...typography.heading,
+      marginRight: spacing.md,
+      marginTop: 2,
+    },
+    content: {
+      flex: 1,
+    },
+    title: {
+      ...typography.bodyMedium,
+      color: colors.textPrimary,
+      marginBottom: spacing.xs,
+    },
+    description: {
+      ...typography.caption,
+      color: colors.textSecondary,
+      marginBottom: spacing.sm,
+    },
+    meta: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    badge: {
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 2,
+      borderRadius: radius.full,
+    },
+    badgeText: {
+      ...typography.label,
+      textTransform: 'uppercase',
+    },
+    count: {
+      ...typography.caption,
+      color: colors.textMuted,
+    },
+  });
+}
+
 export function DeckCard({ deck, onPress }: Props) {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <TouchableOpacity
       style={[styles.container, { backgroundColor: deck.color + '22', borderColor: deck.color + '44' }]}
@@ -34,58 +95,3 @@ export function DeckCard({ deck, onPress }: Props) {
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderRadius: radius.md,
-    borderWidth: 1,
-  },
-  icon: {
-    ...typography.heading,
-    marginRight: spacing.md,
-    marginTop: 2,
-  },
-  iconWrapper: {
-    marginRight: spacing.md,
-    marginTop: 2,
-    width: 28,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  content: {
-    flex: 1,
-  },
-  title: {
-    ...typography.bodyMedium,
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-  },
-  description: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  meta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  badge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radius.full,
-  },
-  badgeText: {
-    ...typography.label,
-    textTransform: 'uppercase',
-  },
-  count: {
-    ...typography.caption,
-    color: colors.textMuted,
-  },
-});
