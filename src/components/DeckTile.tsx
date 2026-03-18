@@ -56,14 +56,16 @@ function makeStyles(colors: AppColors) {
     },
     title: {
       ...typography.bodyMedium,
+      fontFamily: fonts.black,
+      letterSpacing: 0.4,
     },
     desc: {
       ...typography.caption,
-      fontFamily: fonts.copyLight,
+      fontFamily: fonts.copy,
     },
     count: {
       ...typography.label,
-      fontFamily: fonts.copyLight,
+      fontFamily: fonts.copy,
     },
 
   });

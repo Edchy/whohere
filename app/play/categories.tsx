@@ -216,7 +216,7 @@ function makeStyles(colors: AppColors) {
     },
     subtitle: {
       ...typography.caption,
-      fontFamily: fonts.copyLight,
+      fontFamily: fonts.copy,
       color: colors.textMuted,
     },
     tileList: {
@@ -242,7 +242,7 @@ function makeStyles(colors: AppColors) {
     },
     surpriseDesc: {
       ...typography.caption,
-      fontFamily: fonts.copyLight,
+      fontFamily: fonts.copy,
     },
     startWrap: {
       marginTop: spacing.md,
@@ -264,6 +264,7 @@ function makeStyles(colors: AppColors) {
 
 export default function CategoriesScreen() {
   const colors = useColors();
+  const colorScheme = useGameStore((s) => s.colorScheme);
   const styles = makeStyles(colors);
 
   const router = useRouter();
@@ -333,12 +334,12 @@ export default function CategoriesScreen() {
               style={[styles.surpriseTile, randomize && { backgroundColor: colors.accent }]}
             >
               <View style={styles.surpriseInner}>
-                <RandomSvg width={36} height={36} fill={randomize ? colors.bgPrimary : colors.textPrimary} />
+                <RandomSvg width={36} height={36} fill={randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary} />
                 <View style={styles.surpriseText}>
-                  <Text style={[styles.surpriseTitle, { color: randomize ? colors.bgPrimary : colors.textPrimary }]}>
+                  <Text style={[styles.surpriseTitle, { color: randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary }]}>
                     Överraska mig!
                   </Text>
-                  <Text style={[styles.surpriseDesc, { color: randomize ? colors.bgPrimary + '99' : colors.textMuted }]}>
+                  <Text style={[styles.surpriseDesc, { color: randomize ? (colorScheme === 'light' ? '#44444499' : colors.bgPrimary + '99') : colors.textMuted }]}>
                     {surpriseDesc}
                   </Text>
                 </View>

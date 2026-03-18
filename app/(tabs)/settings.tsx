@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { spacing, typography, radius, AppColors } from '../../src/constants/theme';
@@ -79,6 +80,19 @@ function makeStyles(colors: AppColors) {
       ...typography.caption,
       color: colors.textMuted,
     },
+    iconToggle: {
+      width: 44,
+      height: 44,
+      borderRadius: radius.md,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    iconToggleText: {
+      fontSize: 22,
+    },
   });
 }
 
@@ -101,13 +115,15 @@ export default function SettingsScreen() {
               <Text style={styles.rowTitle}>Utseende</Text>
               <Text style={styles.rowSub}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
             </View>
-            <Switch
-              value={colorScheme === 'light'}
-              onValueChange={(v) => setColorScheme(v ? 'light' : 'dark')}
-              trackColor={{ false: colors.border, true: colors.accentSoft }}
-              thumbColor={colorScheme === 'light' ? colors.accent : colors.textMuted}
-              ios_backgroundColor={colors.border}
-            />
+            <TouchableOpacity
+              style={styles.iconToggle}
+              onPress={() => setColorScheme(colorScheme === 'dark' ? 'light' : 'dark')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.iconToggleText}>
+                {colorScheme === 'dark' ? '🌙' : '☀️'}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 

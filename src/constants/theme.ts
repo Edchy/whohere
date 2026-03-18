@@ -88,9 +88,9 @@ export const darkColors = {
 
 export const lightColors = {
   // Backgrounds
-  bgPrimary:   '#FAFAFA',
-  bgSecondary: '#F0F0F0',
-  bgTertiary:  '#E8E8E8',
+  bgPrimary:   '#F5F0EB',
+  bgSecondary: '#EDE8E2',
+  bgTertiary:  '#E2DDD7',
   bgBrand:     palette.brand500,
   bgBrandSoft: palette.brand500 + '20',
   bgBlack:     palette.black,              // always black (discretion screen)
@@ -121,16 +121,16 @@ export const lightColors = {
   badgeYellow: palette.yellow,
 
   // UI chrome
-  border:      '#CCCCCC',
-  overlay:     'rgba(255,255,255,0.95)',
+  border:      '#C8C3BD',
+  overlay:     'rgba(245,240,235,0.95)',
   destructive: palette.brand700,
   white:       palette.white,
 
   // Legacy aliases
-  background:  '#FAFAFA',
-  surface:     '#F0F0F0',
-  card:        '#FFFFFF',
-  cardBorder:  '#DDDDDD',
+  background:  '#F5F0EB',
+  surface:     '#EDE8E2',
+  card:        '#E2DDD7',
+  cardBorder:  '#D4CFC9',
   brandBg:     palette.brand500,
 } as const;
 
@@ -164,11 +164,11 @@ export const radius = {
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
 export const fonts = {
-  heading:   'Pecita',    // loaded via useFonts in app/_layout.tsx
-  copy:      'MonumentRegular',      // loaded via useFonts in app/_layout.tsx
-  copyLight: 'MonumentLight',
-  ui:        'MonumentLight',   // system default
-  question:  'MonumentRegular',   // card question text — swap as needed
+  heading:   'Pecita',           // loaded via useFonts in app/_layout.tsx
+  copy:      'Raleway-Regular',  // loaded via useFonts in app/_layout.tsx
+  ui:        'Raleway-Thin',     // system default
+  question:  'Raleway-Regular',  // card question text — swap as needed
+  black:     'Raleway-Bold',    // tile titles, heavy display text
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────

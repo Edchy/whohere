@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { spacing } from '../constants/theme';
@@ -16,7 +17,9 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
       ) : (
         <View style={styles.spacer} />
       )}
-      <EyesLogo size={72} />
+      <TouchableOpacity onPress={() => router.replace('/')} activeOpacity={0.7}>
+        <EyesLogo size={72} />
+      </TouchableOpacity>
       <View style={styles.spacer} />
     </View>
   );
