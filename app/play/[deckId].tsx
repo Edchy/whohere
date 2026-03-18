@@ -43,19 +43,18 @@ const NEXT_SCALE = 0.94;
 // Flip animation config
 const FLIP_TOGGLE_CONFIG = { duration: animation.quick, easing: Easing.inOut(Easing.ease) };
 
-// In light mode: white card + dark text + deck color border.
-// In dark mode: original deck-defined background/text, no border.
+// In light mode: white card + dark text.
+// In dark mode: original deck-defined background/text.
 function resolveCardColors(
   deckBackground: string | undefined,
   deckText: string | undefined,
-  deckColor: string,
   colors: AppColors,
   colorScheme: 'dark' | 'light',
-): { bg: string; text: string; borderColor: string | undefined } {
+): { bg: string; text: string } {
   if (colorScheme === 'light') {
-    return { bg: colors.card, text: colors.textPrimary, borderColor: deckColor };
+    return { bg: colors.card, text: colors.textPrimary };
   }
-  return { bg: deckBackground ?? colors.card, text: deckText ?? colors.textPrimary, borderColor: undefined };
+  return { bg: deckBackground ?? colors.card, text: deckText ?? colors.textPrimary };
 }
 
 function makeStyles(colors: AppColors) {
@@ -121,12 +120,12 @@ function makeStyles(colors: AppColors) {
       fontStyle: "italic",
     },
     modeRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-    modeIndicator: { flexDirection: 'row', alignItems: 'center' },
-    modeIndicatorIcon: { ...typography.label, letterSpacing: 1.5 },
     modeIndicatorText: { ...typography.label, letterSpacing: 1.5 },
     questionBlock: { flex: 1, justifyContent: "center" },
+    cardBottom: { gap: spacing.xs },
     whoHere: {
       ...typography.heading,
+      fontSize: 28,
       color: colors.accent,
     },
     question: {
@@ -205,22 +204,22 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText }: {
   return (
     <>
       <View style={styles.modeRow}>
-        <View style={styles.modeIndicator}>
-          <DeckIcon deck={{ icon, svgIcon, color }} size={14} color={color} style={styles.modeIndicatorIcon} />
-          <Text style={[styles.modeIndicatorText, { color }]}>{"  "}{title.toUpperCase()}</Text>
-        </View>
-        <Text style={[styles.cardCounter, { color }]}>{cardIndex + 1} / {totalCards}</Text>
+        <Text style={[styles.modeIndicatorText, { color }]}>{title.toUpperCase()}</Text>
+        <DeckIcon deck={{ icon, svgIcon, color }} size={20} color={color} />
       </View>
       <View style={styles.questionBlock}>
         <Text style={[styles.whoHere, { color }]}>Vem här…</Text>
         <Text style={[styles.question, { color: cardText }]}>{card.question}</Text>
       </View>
-      {card.followUp && (
-        <View style={[styles.followUpBlock, { borderTopColor: `${cardText}22` }]}>
-          <Text style={[styles.followUpLabel, { color: `${cardText}66` }]}>följdfråga —</Text>
-          <Text style={[styles.followUp, { color: `${cardText}99` }]}>{card.followUp}</Text>
-        </View>
-      )}
+      <View style={styles.cardBottom}>
+        {card.followUp && (
+          <View style={[styles.followUpBlock, { borderTopColor: `${cardText}22` }]}>
+            <Text style={[styles.followUpLabel, { color: `${cardText}66` }]}>följdfråga —</Text>
+            <Text style={[styles.followUp, { color: `${cardText}99` }]}>{card.followUp}</Text>
+          </View>
+        )}
+        <Text style={[styles.cardCounter, { color }]}>{cardIndex + 1} / {totalCards}</Text>
+      </View>
     </>
   );
 }
@@ -481,10 +480,10 @@ export default function PlayScreen() {
 
         <View style={styles.cardArea}>
           {prevCardData && (() => {
-            const rc = resolveCardColors(prevCardData.deckBackground, prevCardData.deckText, prevCardData.deckColor ?? deck.color, colors, colorScheme);
+            const rc = resolveCardColors(prevCardData.deckBackground, prevCardData.deckText, colors, colorScheme);
             return (
               <Animated.View style={[styles.card, prevCardStyle]}>
-                <View style={[styles.cardFace, { backgroundColor: rc.bg, borderWidth: rc.borderColor ? 1 : 0, borderColor: rc.borderColor }]}>
+                <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
                   <CardFace card={prevCardData} deck={deck} cardIndex={topIndex - 1} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} />
                   {topIndex - 1 > 0 && <Text style={[styles.dotLeft, { color: prevCardData.deckColor ?? deck.color }]}>◀</Text>}
                   <Text style={[styles.dotRight, { color: prevCardData.deckColor ?? deck.color }]}>▶</Text>
@@ -493,10 +492,10 @@ export default function PlayScreen() {
             );
           })()}
           {nextCardData && (() => {
-            const rc = resolveCardColors(nextCardData.deckBackground, nextCardData.deckText, nextCardData.deckColor ?? deck.color, colors, colorScheme);
+            const rc = resolveCardColors(nextCardData.deckBackground, nextCardData.deckText, colors, colorScheme);
             return (
               <Animated.View style={[styles.card, nextCardStyle]}>
-                <View style={[styles.cardFace, { backgroundColor: rc.bg, borderWidth: rc.borderColor ? 1 : 0, borderColor: rc.borderColor }]}>
+                <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
                   <CardFace card={nextCardData} deck={deck} cardIndex={topIndex + 1} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} />
                   <Text style={[styles.dotLeft, { color: nextCardData.deckColor ?? deck.color }]}>◀</Text>
                   {topIndex + 1 < deck.cards.length - 1 && <Text style={[styles.dotRight, { color: nextCardData.deckColor ?? deck.color }]}>▶</Text>}
@@ -507,11 +506,11 @@ export default function PlayScreen() {
 
           <GestureDetector gesture={panGesture}>
             {(() => {
-              const rc = resolveCardColors(topCard.deckBackground, topCard.deckText, topCard.deckColor ?? deck.color, colors, colorScheme);
+              const rc = resolveCardColors(topCard.deckBackground, topCard.deckText, colors, colorScheme);
               return (
                 <Animated.View style={[styles.card, topCardStyle]}>
                   <Pressable style={styles.cardPressable} onPress={handleFlip}>
-                    <Animated.View style={[styles.cardFace, { backgroundColor: rc.bg, borderWidth: rc.borderColor ? 1 : 0, borderColor: rc.borderColor }, frontFaceStyle]}>
+                    <Animated.View style={[styles.cardFace, { backgroundColor: rc.bg }, frontFaceStyle]}>
                       <CardFace card={topCard} deck={deck} cardIndex={topIndex} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} />
                       {topIndex > 0 && <Text style={[styles.dotLeft, { color: topCard.deckColor ?? deck.color }]}>◀</Text>}
                       {!isLast && <Text style={[styles.dotRight, { color: topCard.deckColor ?? deck.color }]}>▶</Text>}
