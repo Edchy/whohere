@@ -5,7 +5,7 @@
 
 const palette = {
   // Brand scale (red)
-  brand500: 'rgb(254, 153, 217)',   // pure brand red — base
+  brand500: '#FE99D9',   // pure brand red — base
   brand400: '#FF2F00',   // orange-red variant
   brand700: '#CC0000',   // darker red for destructive/hover
 

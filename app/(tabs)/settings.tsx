@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
+  Animated,
+  Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
-import { spacing, typography, radius, AppColors } from '../../src/constants/theme';
+import { router } from 'expo-router';
+import MoonIcon from '../../assets/icons/noun-moon-4373688.svg';
+import SunIcon from '../../assets/icons/noun-sun-4373690.svg';
+import { animation, AppColors, fonts, radius, spacing, typography } from '../../src/constants/theme';
 import ScreenLayout from '../../src/components/ScreenLayout';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
@@ -18,82 +21,113 @@ function makeStyles(colors: AppColors) {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
       paddingBottom: spacing.xxxl,
-      gap: spacing.xl,
-    },
-    group: {},
-    groupLabel: {
-      ...typography.label,
-      color: colors.textMuted,
-      marginBottom: spacing.md,
+      gap: spacing.sm,
     },
     row: {
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.lg,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.bgSecondary,
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: colors.card,
-      borderRadius: radius.md,
-      padding: spacing.md,
-      borderWidth: 1,
-      borderColor: colors.border,
     },
-    rowContent: {
+    rowText: {
       flex: 1,
+      gap: 2,
     },
-    rowTitle: {
-      ...typography.bodyMedium,
+    rowLabel: {
+      ...typography.body,
+      fontFamily: fonts.heading,
+      fontSize: 24,
+      textTransform: 'uppercase',
       color: colors.textPrimary,
-      marginBottom: 2,
     },
-    rowSub: {
+    rowSublabel: {
       ...typography.caption,
-      color: colors.textMuted,
+      opacity: 0.8,
+      color: colors.textSecondary,
     },
     infoBlock: {
-      backgroundColor: colors.card,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.lg,
       borderRadius: radius.md,
-      padding: spacing.xl,
       borderWidth: 1,
       borderColor: colors.border,
+      backgroundColor: colors.bgSecondary,
+      gap: spacing.sm,
     },
     appName: {
-      ...typography.heading,
-      color: colors.accent,
-      marginBottom: spacing.xs,
+      ...typography.body,
+      fontFamily: fonts.heading,
+      fontSize: 24,
+      textTransform: 'uppercase',
+      color: colors.textPrimary,
     },
     appTagline: {
-      ...typography.body,
+      ...typography.caption,
+      opacity: 0.8,
       color: colors.textSecondary,
       fontStyle: 'italic',
-      marginBottom: spacing.md,
     },
     divider: {
       height: 1,
       backgroundColor: colors.border,
-      marginBottom: spacing.md,
+      marginVertical: spacing.sm,
     },
     appDesc: {
-      ...typography.body,
+      ...typography.caption,
       color: colors.textSecondary,
-      lineHeight: 24,
-      marginBottom: spacing.lg,
+      lineHeight: 18,
     },
     version: {
-      ...typography.caption,
+      ...typography.label,
       color: colors.textMuted,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
     },
-    iconToggle: {
-      width: 44,
-      height: 44,
+    toggle: {
+      width: 36,
+      height: 36,
       borderRadius: radius.md,
-      backgroundColor: colors.surface,
       borderWidth: 1,
-      borderColor: colors.border,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    iconToggleText: {
-      fontSize: 22,
+    toggleText: {
+      ...typography.caption,
     },
   });
+}
+
+function AnimatedRow({ onPress, children }: { onPress?: () => void; children: (colors: AppColors) => React.ReactNode }) {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = () =>
+    Animated.timing(opacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start();
+
+  const onPressOut = () =>
+    Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
+
+  if (!onPress) {
+    return <View style={styles.row}>{children(colors)}</View>;
+  }
+
+  return (
+    <Animated.View style={{ opacity }}>
+      <Pressable
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={onPress}
+        style={styles.row}
+      >
+        {children(colors)}
+      </Pressable>
+    </Animated.View>
+  );
 }
 
 export default function SettingsScreen() {
@@ -104,58 +138,81 @@ export default function SettingsScreen() {
   const setHapticsEnabled = useGameStore((s) => s.setHapticsEnabled);
   const colorScheme = useGameStore((s) => s.colorScheme);
   const setColorScheme = useGameStore((s) => s.setColorScheme);
+  const cardBackStyle = useGameStore((s) => s.cardBackStyle);
+
+  const cardBackLabel =
+    cardBackStyle === 'plain' ? 'Enfärgad' :
+    cardBackStyle === 'chevron' ? 'Curtain' :
+    cardBackStyle === 'bubbles' ? 'Moroccan' :
+    cardBackStyle === 'polka' ? 'Polka Dots' :
+    cardBackStyle === 'tictactoe' ? 'Tic Tac Toe' :
+    'Skulls';
 
   return (
     <ScreenLayout>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-        <View style={styles.group}>
-          <View style={styles.row}>
-            <View style={styles.rowContent}>
-              <Text style={styles.rowTitle}>Utseende</Text>
-              <Text style={styles.rowSub}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.iconToggle}
-              onPress={() => setColorScheme(colorScheme === 'dark' ? 'light' : 'dark')}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.iconToggleText}>
-                {colorScheme === 'dark' ? '🌙' : '☀️'}
-              </Text>
-            </TouchableOpacity>
-          </View>
+        <AnimatedRow onPress={() => setColorScheme(colorScheme === 'dark' ? 'light' : 'dark')}>
+          {(c) => (
+            <>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>Utseende</Text>
+                <Text style={styles.rowSublabel}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
+              </View>
+              {colorScheme === 'dark' ? (
+                <SunIcon width={20} height={20} fill={colors.textPrimary} />
+              ) : (
+                <MoonIcon width={20} height={20} fill={colors.textPrimary} />
+              )}
+            </>
+          )}
+        </AnimatedRow>
+
+        <AnimatedRow onPress={() => setHapticsEnabled(!hapticsEnabled)}>
+          {(c) => (
+            <>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>Haptik</Text>
+                <Text style={styles.rowSublabel}>Vibrera när du byter kort</Text>
+              </View>
+              <View style={[
+                styles.toggle,
+                {
+                  borderColor: hapticsEnabled ? colors.accent : colors.border,
+                  backgroundColor: hapticsEnabled ? colors.accentDim : 'transparent',
+                },
+              ]}>
+                <Text style={[styles.toggleText, { color: hapticsEnabled ? colors.accent : colors.textMuted }]}>
+                  {hapticsEnabled ? 'På' : 'Av'}
+                </Text>
+              </View>
+            </>
+          )}
+        </AnimatedRow>
+
+        <AnimatedRow onPress={() => router.push('/settings/card-back')}>
+          {(c) => (
+            <>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>Kortbaksida</Text>
+                <Text style={styles.rowSublabel}>{cardBackLabel}</Text>
+              </View>
+              <Text style={[styles.rowSublabel, { fontSize: 18, opacity: 1 }]}>›</Text>
+            </>
+          )}
+        </AnimatedRow>
+
+        <View style={styles.infoBlock}>
+          <Text style={styles.appName}>Vem här?</Text>
+          <Text style={styles.appTagline}>Ett spel om hur vi läser varandra.</Text>
+          <View style={styles.divider} />
+          <Text style={styles.appDesc}>
+            Tre lägen. Inget internet. Inga konton.{'\n'}
+            Bara appen och människorna runt dig.
+          </Text>
+          <Text style={styles.version}>v1.0.0</Text>
         </View>
 
-        <View style={styles.group}>
-          <View style={styles.row}>
-            <View style={styles.rowContent}>
-              <Text style={styles.rowTitle}>Haptik</Text>
-              <Text style={styles.rowSub}>Vibrera när du byter kort</Text>
-            </View>
-            <Switch
-              value={hapticsEnabled}
-              onValueChange={setHapticsEnabled}
-              trackColor={{ false: colors.border, true: colors.accentSoft }}
-              thumbColor={hapticsEnabled ? colors.accent : colors.textMuted}
-              ios_backgroundColor={colors.border}
-            />
-          </View>
-        </View>
-
-        <View style={styles.group}>
-          <Text style={styles.groupLabel}>OM APPEN</Text>
-          <View style={styles.infoBlock}>
-            <Text style={styles.appName}>Vem här?</Text>
-            <Text style={styles.appTagline}>Ett spel om hur vi läser varandra.</Text>
-            <View style={styles.divider} />
-            <Text style={styles.appDesc}>
-              Tre lägen. Inget internet. Inga konton.{'\n'}
-              Bara appen och människorna runt dig.
-            </Text>
-            <Text style={styles.version}>v1.0.0</Text>
-          </View>
-        </View>
       </ScrollView>
     </ScreenLayout>
   );

@@ -56,7 +56,9 @@ function makeStyles(colors: AppColors) {
     },
     title: {
       ...typography.bodyMedium,
-      fontFamily: fonts.black,
+      fontFamily: fonts.heading,
+      fontSize: 24,
+      textTransform: 'uppercase',
       letterSpacing: 0.4,
     },
     desc: {

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import Svg, { Defs, Path, Pattern, Rect } from "react-native-svg";
+import Svg, { Circle, Defs, Path, Pattern, Rect } from "react-native-svg";
 import { DeckIcon } from "../../src/components/DeckIcon";
 
 import {
@@ -45,16 +45,13 @@ const NEXT_SCALE = 0.94;
 const FLIP_TOGGLE_CONFIG = { duration: animation.quick, easing: Easing.inOut(Easing.ease) };
 
 // In light mode: white card + dark text.
-// In dark mode: original deck-defined background/text.
+// Use deck-defined background/text in both light and dark mode.
 function resolveCardColors(
   card: Card,
   deck: Deck,
   colors: AppColors,
   colorScheme: 'dark' | 'light',
 ): { bg: string; text: string } {
-  if (colorScheme === 'light') {
-    return { bg: colors.card, text: colors.textPrimary };
-  }
   const bg = card.deckBackground ?? deck.cardBackground ?? colors.card;
   const text = card.deckText ?? deck.cardText ?? colors.textPrimary;
   return { bg, text };
@@ -240,16 +237,81 @@ function CardBackPattern({ color }: { color: string }) {
   );
 }
 
+function CardBackBubbles({ color }: { color: string }) {
+  return (
+    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: radius.xl, overflow: "hidden" }}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <Pattern id="bubbles" x="0" y="0" width="80" height="88" patternUnits="userSpaceOnUse">
+            <Path d="M22 21.91V26h-2c-9.94 0-18 8.06-18 18 0 9.943 8.058 18 18 18h2v4.09c8.012.722 14.785 5.738 18 12.73 3.212-6.99 9.983-12.008 18-12.73V62h2c9.94 0 18-8.06 18-18 0-9.943-8.058-18-18-18h-2v-4.09c-8.012-.722-14.785-5.738-18-12.73-3.212 6.99-9.983 12.008-18 12.73zM54 58v4.696c-5.574 1.316-10.455 4.428-14 8.69-3.545-4.262-8.426-7.374-14-8.69V58h-5.993C12.27 58 6 51.734 6 44c0-7.732 6.275-14 14.007-14H26v-4.696c5.574-1.316 10.455-4.428 14-8.69 3.545 4.262 8.426 7.374 14 8.69V30h5.993C67.73 30 74 36.266 74 44c0 7.732-6.275 14-14.007 14H54zM42 88c0-9.94 8.06-18 18-18h2v-4.09c8.016-.722 14.787-5.738 18-12.73v7.434c-3.545 4.262-8.426 7.374-14 8.69V74h-5.993C52.275 74 46 80.268 46 88h-4zm-4 0c0-9.943-8.058-18-18-18h-2v-4.09c-8.012-.722-14.785-5.738-18-12.73v7.434c3.545 4.262 8.426 7.374 14 8.69V74h5.993C27.73 74 34 80.266 34 88h4zm4-88c0 9.943 8.058 18 18 18h2v4.09c8.012.722 14.785 5.738 18 12.73v-7.434c-3.545-4.262-8.426-7.374-14-8.69V14h-5.993C52.27 14 46 7.734 46 0h-4zM0 34.82c3.213-6.992 9.984-12.008 18-12.73V18h2c9.94 0 18-8.06 18-18h-4c0 7.732-6.275 14-14.007 14H14v4.696c-5.574 1.316-10.455 4.428-14 8.69v7.433z" fill={color} fillOpacity={0.15} fillRule="evenodd" />
+          </Pattern>
+        </Defs>
+        <Rect width="100%" height="100%" fill="url(#bubbles)" />
+      </Svg>
+    </View>
+  );
+}
+
+function CardBackPolka({ color }: { color: string }) {
+  return (
+    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: radius.xl, overflow: "hidden" }}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <Pattern id="polka" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <Circle cx="3" cy="3" r="3" fill={color} fillOpacity={0.15} />
+            <Circle cx="13" cy="13" r="3" fill={color} fillOpacity={0.15} />
+          </Pattern>
+        </Defs>
+        <Rect width="100%" height="100%" fill="url(#polka)" />
+      </Svg>
+    </View>
+  );
+}
+
+function CardBackChevron({ color }: { color: string }) {
+  return (
+    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: radius.xl, overflow: "hidden" }}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <Pattern id="chevron" x="0" y="0" width="44" height="12" patternUnits="userSpaceOnUse">
+            <Path d="M20 12v-2L0 0v10l4 2h16zm18 0l4-2V0L22 10v2h16zM20 0v8L4 0h16zm18 0L22 8V0h16z" fill={color} fillOpacity={0.15} fillRule="evenodd" />
+          </Pattern>
+        </Defs>
+        <Rect width="100%" height="100%" fill="url(#chevron)" />
+      </Svg>
+    </View>
+  );
+}
+
+function CardBackTicTacToe({ color }: { color: string }) {
+  return (
+    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: radius.xl, overflow: "hidden" }}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <Pattern id="tictactoe" x="0" y="0" width="64" height="64" patternUnits="userSpaceOnUse">
+            <Path d="M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z" fill={color} fillOpacity={0.15} fillRule="evenodd" />
+          </Pattern>
+        </Defs>
+        <Rect width="100%" height="100%" fill="url(#tictactoe)" />
+      </Svg>
+    </View>
+  );
+}
+
 function CardBack({ card, deck, colors }: { card: Card; deck: Deck; colors: AppColors }) {
   const styles = makeStyles(colors);
   const icon = card.deckIcon ?? deck.icon;
   const svgIcon = card.deckSvgIcon ?? deck.svgIcon;
   const color = card.deckColor ?? deck.color;
+  const cardBackStyle = useGameStore((s) => s.cardBackStyle);
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Repeating circuit pattern */}
-      <CardBackPattern color={color} />
+      {cardBackStyle === 'pattern' && <CardBackPattern color={color} />}
+      {cardBackStyle === 'bubbles' && <CardBackBubbles color={color} />}
+      {cardBackStyle === 'chevron' && <CardBackChevron color={color} />}
+      {cardBackStyle === 'polka' && <CardBackPolka color={color} />}
+      {cardBackStyle === 'tictactoe' && <CardBackTicTacToe color={color} />}
 
 
       {/* Corner pips — top-left & bottom-right (rotated 180) */}
@@ -509,7 +571,7 @@ export default function PlayScreen() {
             const rc = resolveCardColors(prevCardData, deck, colors, colorScheme);
             return (
               <Animated.View style={[styles.card, prevCardStyle]}>
-                <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
+                <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
                   <CardFace card={prevCardData} deck={deck} cardIndex={topIndex - 1} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={topIndex - 1 > 0} canGoForward={true} />
                 </View>
               </Animated.View>
@@ -519,7 +581,7 @@ export default function PlayScreen() {
             const rc = resolveCardColors(nextCardData, deck, colors, colorScheme);
             return (
               <Animated.View style={[styles.card, nextCardStyle]}>
-                <View style={[styles.cardFace, { backgroundColor: colors.card }]}>
+                <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
                   <CardFace card={nextCardData} deck={deck} cardIndex={topIndex + 1} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={true} canGoForward={topIndex + 1 < deck.cards.length - 1} />
                 </View>
               </Animated.View>
@@ -532,7 +594,7 @@ export default function PlayScreen() {
               return (
                 <Animated.View style={[styles.card, topCardStyle]}>
                   <Pressable style={styles.cardPressable} onPress={handleFlip}>
-                    <Animated.View style={[styles.cardFace, { backgroundColor: colors.card }, frontFaceStyle]}>
+                    <Animated.View style={[styles.cardFace, { backgroundColor: rc.bg }, frontFaceStyle]}>
                       <CardFace card={topCard} deck={deck} cardIndex={topIndex} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={topIndex > 0} canGoForward={!isLast} />
                     </Animated.View>
                     <Animated.View style={[styles.cardFace, { backgroundColor: rc.bg, padding: 0 }, backFaceStyle]}>

@@ -239,6 +239,9 @@ function makeStyles(colors: AppColors) {
     },
     surpriseTitle: {
       ...typography.bodyMedium,
+      fontFamily: fonts.heading,
+      fontSize: 24,
+      textTransform: 'uppercase',
     },
     surpriseDesc: {
       ...typography.caption,

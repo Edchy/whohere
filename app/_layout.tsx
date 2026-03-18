@@ -22,6 +22,7 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
           <Stack.Screen name="play/categories" options={{ presentation: "modal" }} />
           <Stack.Screen name="play/[deckId]" options={{ presentation: "card" }} />
+          <Stack.Screen name="settings/card-back" options={{ presentation: "card" }} />
         </Stack>
     </SafeAreaProvider>
   );
