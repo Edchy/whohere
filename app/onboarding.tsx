@@ -10,9 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import EyesLogo from '../src/components/EyesLogo';
 import {
-  animation,
   dimensions as dim,
   fonts,
   radius,
@@ -40,107 +38,60 @@ type Slide = {
   id: string;
   topLabel: string;
   headline: string;
-  body?: string;
-  bottomLabel?: string;
-  showLogo?: boolean;
-  isCta?: boolean;
+  body: string;
+  bottomLabel: string;
 };
 
 const SLIDES: Slide[] = [
   {
     id: '1',
-    topLabel: 'VEM HÄR?',
-    headline: 'Titta dig omkring.',
-    body: 'Vem av dem du ser bär på en hemlighet?\nVem kom hit för att undvika någon?\nVem är inte den de verkar vara?',
-    bottomLabel: 'ett spel om att lägga märke till',
-    showLogo: true,
+    topLabel: 'LOREM IPSUM',
+    headline: 'Lorem ipsum dolor sit amet.',
+    body: 'Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    bottomLabel: 'lorem ipsum',
   },
   {
     id: '2',
-    topLabel: 'SÅ HÄR FUNKAR DET',
-    headline: 'Ett kort i taget.',
-    body: 'Läs frågan.\nTitta dig omkring.\nVälj en person — förklara varför.',
-    bottomLabel: 'svep för nästa · tryck för att vända',
+    topLabel: 'LOREM IPSUM',
+    headline: 'Ut enim ad minim veniam.',
+    body: 'Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    bottomLabel: 'lorem ipsum',
   },
   {
     id: '3',
-    topLabel: 'DET HÄR HANDLAR OM DIG',
-    headline: 'Personen du pekar på är en spegel.',
-    body: 'Det val du gör avslöjar hur du tänker, vad du lägger märke till och vilka antaganden du bär på.',
-    bottomLabel: 'inga rätta svar',
+    topLabel: 'LOREM IPSUM',
+    headline: 'Duis aute irure dolor.',
+    body: 'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    bottomLabel: 'lorem ipsum',
   },
   {
     id: '4',
-    topLabel: 'SPELA DISKRET',
-    headline: 'De vet inte om att de är med.',
-    body: 'Viska era svar.\nPeka inte. Stirra inte.\nDet ska förbli så.',
+    topLabel: 'LOREM IPSUM',
+    headline: 'Excepteur sint occaecat.',
+    body: 'Cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    bottomLabel: 'lorem ipsum',
   },
   {
     id: '5',
-    topLabel: 'VÄLJ DITT LÄGE',
-    headline: 'Välj hur du vill spela.',
-    isCta: true,
+    topLabel: 'LOREM IPSUM',
+    headline: 'Sed ut perspiciatis unde.',
+    body: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.',
+    bottomLabel: 'lorem ipsum',
   },
 ];
 
-const MODES = [
-  { emoji: '💕', label: 'På date', desc: 'nyfiken och lite flirig' },
-  { emoji: '👯', label: 'Med vänner', desc: 'absurt och debatt' },
-  { emoji: '🧍', label: 'Själv', desc: 'kontemplativt och stilla' },
-];
-
-function SlideCard({ slide, onDismiss }: { slide: Slide; onDismiss: () => void }) {
-  const ctaOpacity = useRef(new Animated.Value(1)).current;
-  const onPressIn = () =>
-    Animated.timing(ctaOpacity, { toValue: 0.6, duration: animation.press, useNativeDriver: true }).start();
-  const onPressOut = () =>
-    Animated.timing(ctaOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
-
+function SlideCard({ slide }: { slide: Slide }) {
   return (
     <View style={styles.card}>
-      <View style={styles.cardTop}>
-        {slide.showLogo ? <EyesLogo size={44} /> : (
-          <Text selectable={false} style={styles.topLabel}>{slide.topLabel}</Text>
-        )}
-      </View>
+      <Text selectable={false} style={styles.topLabel}>{slide.topLabel}</Text>
 
       <View style={styles.cardMiddle}>
-        {slide.isCta ? (
-          <View style={styles.modeList}>
-            {MODES.map((m) => (
-              <View key={m.label} style={styles.modeRow}>
-                <Text selectable={false} style={styles.modeEmoji}>{m.emoji}</Text>
-                <View>
-                  <Text selectable={false} style={styles.modeLabel}>{m.label}</Text>
-                  <Text selectable={false} style={styles.modeDesc}>{m.desc}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        ) : (
-          <>
-            <Text selectable={false} style={styles.headline}>{slide.headline}</Text>
-            {slide.body && <Text selectable={false} style={styles.body}>{slide.body}</Text>}
-          </>
-        )}
+        <Text selectable={false} style={styles.headline}>{slide.headline}</Text>
+        <Text selectable={false} style={styles.body}>{slide.body}</Text>
       </View>
 
       <View style={styles.cardBottom}>
-        {slide.bottomLabel && (
-          <Text selectable={false} style={styles.bottomLabel}>{slide.bottomLabel}</Text>
-        )}
-        {slide.isCta && (
-          <Animated.View style={{ opacity: ctaOpacity }}>
-            <Pressable
-              onPressIn={onPressIn}
-              onPressOut={onPressOut}
-              onPress={onDismiss}
-              style={styles.ctaButton}
-            >
-              <Text selectable={false} style={styles.ctaText}>börja spela →</Text>
-            </Pressable>
-          </Animated.View>
-        )}
+        <Text selectable={false} style={styles.bottomLabel}>{slide.bottomLabel}</Text>
       </View>
     </View>
   );
@@ -208,7 +159,8 @@ export default function OnboardingScreen() {
         if (g.dx < 0) {
           setShowPrev(false);
           if (isLast) {
-            dragX.setValue(g.dx * 0.08);
+            dragX.setValue(g.dx);
+            nextProgress.setValue(Math.min(1, -g.dx / (SCREEN_WIDTH * 0.55)));
           } else {
             dragX.setValue(g.dx);
             nextProgress.setValue(Math.min(1, -g.dx / (SCREEN_WIDTH * 0.55)));
@@ -227,14 +179,20 @@ export default function OnboardingScreen() {
         const cur = topIndexRef.current;
         const isFirst = cur === 0;
         const isLast = cur === SLIDES.length - 1;
-        const goLeft = !isLast && (g.dx < -SWIPE_DISTANCE || g.vx < -(SWIPE_VELOCITY / 1000));
+        const goLeft = g.dx < -SWIPE_DISTANCE || g.vx < -(SWIPE_VELOCITY / 1000);
         const goRight = !isFirst && (g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000));
 
         if (goLeft) {
-          Animated.parallel([
-            Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
-            Animated.spring(nextProgress, { toValue: 1, damping: 18, stiffness: 220, useNativeDriver: true }),
-          ]).start(() => commitNextRef.current());
+          if (isLast) {
+            // Navigate immediately so home screen loads underneath the flying card
+            dismissRef.current();
+            Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }).start();
+          } else {
+            Animated.parallel([
+              Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
+              Animated.spring(nextProgress, { toValue: 1, damping: 18, stiffness: 220, useNativeDriver: true }),
+            ]).start(() => commitNextRef.current());
+          }
         } else if (goRight) {
           Animated.parallel([
             Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
@@ -294,7 +252,7 @@ export default function OnboardingScreen() {
               key={slide.id}
               style={[styles.cardWrapper, { transform: [{ translateX }, { translateY }, { scale }] }]}
             >
-              <SlideCard slide={slide} onDismiss={dismiss} />
+              <SlideCard slide={slide} />
             </Animated.View>
           );
         })}
@@ -302,13 +260,13 @@ export default function OnboardingScreen() {
         {/* Prev card — slides in from left when swiping right */}
         {showPrev && prevSlide && (
           <Animated.View style={[styles.cardWrapper, prevCardAnimStyle]}>
-            <SlideCard slide={prevSlide} onDismiss={dismiss} />
+            <SlideCard slide={prevSlide} />
           </Animated.View>
         )}
 
         {/* Top card */}
         <Animated.View style={[styles.cardWrapper, topCardStyle]}>
-          <SlideCard slide={SLIDES[topIndex]} onDismiss={dismiss} />
+          <SlideCard slide={SLIDES[topIndex]} />
         </Animated.View>
       </View>
 
@@ -317,6 +275,7 @@ export default function OnboardingScreen() {
           <Text selectable={false} style={styles.skipText}>hoppa över</Text>
         </Pressable>
       )}
+
 
       <View style={styles.dots} pointerEvents="none">
         {SLIDES.map((_, i) => (
@@ -373,10 +332,6 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     justifyContent: 'space-between',
   },
-  cardTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   topLabel: {
     fontFamily: fonts.ui,
     fontSize: 10,
@@ -402,29 +357,6 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.65)',
     lineHeight: 26,
   },
-  modeList: {
-    gap: spacing.lg,
-  },
-  modeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  modeEmoji: {
-    fontSize: 24,
-  },
-  modeLabel: {
-    fontFamily: fonts.black,
-    fontSize: 16,
-    color: TEXT_PRIMARY,
-  },
-  modeDesc: {
-    fontFamily: fonts.copy,
-    fontSize: 13,
-    fontStyle: 'italic',
-    color: 'rgba(255,255,255,0.5)',
-    marginTop: 2,
-  },
   cardBottom: {
     gap: spacing.sm,
   },
@@ -433,20 +365,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     letterSpacing: 1.5,
     color: TEXT_MUTED,
-  },
-  ctaButton: {
-    height: dim.buttonHeight,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ctaText: {
-    fontFamily: fonts.black,
-    fontSize: 15,
-    letterSpacing: 1,
-    color: TEXT_PRIMARY,
+    textAlign: 'right',
   },
   dots: {
     position: 'absolute',

@@ -203,6 +203,7 @@ export default function SettingsScreen() {
           <AnimatedRow onPress={() => {
             AsyncStorage.removeItem('@whohere/hasSeenOnboarding');
             setHasSeenOnboarding(false);
+            router.push('/onboarding');
           }}>
             {(c) => (
               <View style={styles.rowText}>
