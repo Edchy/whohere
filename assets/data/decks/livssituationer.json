@@ -1,0 +1,12 @@
+{
+  "id": "livssituationer",
+  "title": "Livssituationer",
+  "description": "Lager på lager av fakta och fantasi.",
+  "mode": "any",
+  "category": "livssituationer",
+  "color": "#1F9540",
+  "cardBackground": "#0A1810",
+  "cardText": "#FFFFFF",
+  "icon": "◈",
+  "svgIcon": "noun-doodle-element-7389183"
+}

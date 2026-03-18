@@ -1,226 +1,142 @@
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useRef } from "react";
 import {
-  ScrollView,
+  Animated,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, spacing, typography, radius } from "../../src/constants/theme";
-import { useGameStore } from "../../src/store/gameStore";
-import { Card, Deck } from "../../src/types";
-import decksData from "../../assets/data/decks.json";
-
-const allDecks = decksData as Deck[];
-
-function getDeckById(id: string): Deck | undefined {
-  return allDecks.find((d) => d.id === id);
-}
-
-// Build a merged virtual deck from cards across multiple source decks
-function buildCuratedDeck(
-  id: string,
-  title: string,
-  color: string,
-  icon: string,
-  deckIds: string[],
-): Deck {
-  const cards: Card[] = deckIds.flatMap((deckId) => {
-    const source = getDeckById(deckId);
-    if (!source) return [];
-    return source.cards.map((card) => ({
-      ...card,
-      deckIcon: source.icon,
-      deckTitle: source.title,
-      deckColor: source.color,
-    }));
-  });
-  return {
-    id,
-    title,
-    description: "",
-    mode: "any",
-    category: "fun",
-    cardCount: cards.length,
-    color,
-    icon,
-    cards,
-  };
-}
+import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
+import ScreenLayout from "../../src/components/ScreenLayout";
+import { useColors } from "../../src/hooks/useColors";
+import deckIcons from "../../src/constants/deckIcons";
 
 const MODES = [
   {
     id: "partner",
-    label: "On a date",
-    sublabel: "Flirty. Curious. Revealing.",
-    emoji: "💕",
-    color: colors.datingTint,
-    // Spicy + Secret Agent
-    deckIds: ["spicy", "secret-agent"],
-    curatedId: "curated-date",
-    curatedTitle: "On a date",
-    curatedIcon: "💕",
+    label: "På date",
+    sublabel: "Lär känna varandra genom att betrakta andra.",
+    svgIcon: "noun-give-8020580",
   },
   {
     id: "group",
-    label: "With friends",
-    sublabel: "Absurd. Funny. A little chaotic.",
-    emoji: "👯",
-    color: colors.friendsTint,
-    // Dark Backgrounds + Secret Agent
-    deckIds: ["dark-backgrounds", "secret-agent"],
-    curatedId: "curated-friends",
-    curatedTitle: "With friends",
-    curatedIcon: "👯",
+    label: "Med vänner",
+    sublabel: "Fantasi och intuition i en ohelig kombination.",
+    svgIcon: "noun-piece-8020583",
   },
   {
     id: "solo",
-    label: "Alone",
-    sublabel: "Slow. Observant. Meditative.",
-    emoji: "🧍",
-    color: colors.soloTint,
-    // Meditative + Spicy
-    deckIds: ["meditative", "spicy"],
-    curatedId: "curated-alone",
-    curatedTitle: "Alone",
-    curatedIcon: "🧍",
+    label: "På egen hand",
+    sublabel: "Upptäck din inre värld genom utblickar och insikter.",
+    svgIcon: "noun-gift-8020579",
   },
 ];
 
-export default function HomeScreen() {
-  const router = useRouter();
-  const startGame = useGameStore((s) => s.startGame);
+function makeStyles(colors: AppColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.lg,
+      gap: spacing.sm,
+    },
+    modeList: {
+      gap: spacing.sm,
+    },
+    row: {
+      paddingVertical: spacing.xl,
+      paddingHorizontal: spacing.lg,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.bgSecondary,
+    },
+    rowInner: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    rowIconWrap: {
+      marginRight: spacing.md,
+    },
+    rowText: {
+      flex: 1,
+      gap: 2,
+    },
+    rowLabel: {
+      ...typography.display,
+      textTransform: 'uppercase',
+      lineHeight: 24,
+      color: colors.textPrimary,
+    },
+    rowSublabel: {
+      ...typography.caption,
+      opacity: 0.8,
+      color: colors.textSecondary,
+    },
+  });
+}
 
-  const handleModePress = (mode: (typeof MODES)[0]) => {
-    const deck = buildCuratedDeck(
-      mode.curatedId,
-      mode.curatedTitle,
-      mode.color,
-      mode.curatedIcon,
-      mode.deckIds,
-    );
-    startGame(deck, "any");
-    router.push(`/play/${mode.curatedId}`);
+function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors }) {
+  const router = useRouter();
+  const styles = makeStyles(colors);
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = () => {
+    Animated.timing(opacity, {
+      toValue: 0.75,
+      duration: animation.press,
+      useNativeDriver: true,
+    }).start();
   };
 
+  const onPressOut = () => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: animation.base,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const SvgIcon = deckIcons[mode.svgIcon];
+
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        showsVerticalScrollIndicator={false}
+    <Animated.View style={{ opacity }}>
+      <Pressable
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
+        style={styles.row}
       >
-        <View style={styles.header}>
-          <Text style={styles.wordmark}>Who here?</Text>
-          <Text style={styles.tagline}>A game about how we read people.</Text>
+        <View style={styles.rowInner}>
+          {SvgIcon && (
+            <View style={styles.rowIconWrap}>
+              <SvgIcon width={40} height={40} fill={colors.textPrimary} />
+            </View>
+          )}
+          <View style={styles.rowText}>
+            <Text style={styles.rowLabel}>{mode.label}</Text>
+            <Text style={styles.rowSublabel}>{mode.sublabel}</Text>
+          </View>
         </View>
-
-        <View style={styles.modes}>
-          {MODES.map((mode, i) => (
-            <TouchableOpacity
-              key={mode.id}
-              style={[
-                styles.modeCard,
-                i < MODES.length - 1 && styles.modeCardBorder,
-              ]}
-              onPress={() => handleModePress(mode)}
-              activeOpacity={0.6}
-            >
-              <View style={styles.modeLeft}>
-                <Text style={styles.modeEmoji}>{mode.emoji}</Text>
-                <View>
-                  <Text style={styles.modeLabel}>{mode.label}</Text>
-                  <Text style={styles.modeSublabel}>{mode.sublabel}</Text>
-                </View>
-              </View>
-              <Text style={[styles.modeArrow, { color: mode.color }]}>→</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <Text style={styles.hint}>Look around. Pick someone. Discuss why.</Text>
-      </ScrollView>
-    </SafeAreaView>
+      </Pressable>
+    </Animated.View>
   );
 }
 
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scroll: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxxl,
-    flexGrow: 1,
-    justifyContent: "center",
-  },
-  header: {
-    marginBottom: spacing.xxxl,
-    marginTop: spacing.xl,
-  },
-  wordmark: {
-    fontSize: 44,
-    fontWeight: "300",
-    color: colors.accent,
-    letterSpacing: -1,
-    lineHeight: 52,
-    marginBottom: spacing.sm,
-  },
-  tagline: {
-    ...typography.body,
-    color: colors.textSecondary,
-    fontStyle: "italic",
-  },
-  modes: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.lg,
-    overflow: "hidden",
-    marginBottom: spacing.xl,
-  },
-  modeCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    backgroundColor: colors.card,
-  },
-  modeCardBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  modeLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-  },
-  modeEmoji: {
-    fontSize: 28,
-    width: 40,
-  },
-  modeLabel: {
-    ...typography.bodyMedium,
-    color: colors.textPrimary,
-    marginBottom: 2,
-    fontSize: 17,
-  },
-  modeSublabel: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    fontStyle: "italic",
-  },
-  modeArrow: {
-    fontSize: 20,
-    fontWeight: "300",
-  },
-  hint: {
-    ...typography.caption,
-    color: colors.textMuted,
-    textAlign: "center",
-    fontStyle: "italic",
-    letterSpacing: 0.3,
-  },
-});
+export default function HomeScreen() {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <ScreenLayout>
+      <View style={styles.container}>
+        <View style={styles.modeList}>
+          {MODES.map((mode) => (
+            <ModeRow key={mode.id} mode={mode} colors={colors} />
+          ))}
+        </View>
+      </View>
+    </ScreenLayout>
+  );
+}

@@ -1,0 +1,12 @@
+{
+  "id": "personlighet",
+  "title": "Personlighet",
+  "description": "Talande ledtrådar om de människor vi möter",
+  "mode": "any",
+  "category": "personlighet",
+  "color": "#FBCB04",
+  "cardBackground": "#1A1602",
+  "cardText": "#FFFFFF",
+  "icon": "✦",
+  "svgIcon": "noun-doodle-element-7389184"
+}

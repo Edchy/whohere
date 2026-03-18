@@ -8,6 +8,12 @@ type GameState = {
   mode: DeckMode;
   isFlipped: boolean;
 
+  // Settings
+  hapticsEnabled: boolean;
+  setHapticsEnabled: (enabled: boolean) => void;
+  colorScheme: 'dark' | 'light';
+  setColorScheme: (scheme: 'dark' | 'light') => void;
+
   // Actions
   startGame: (deck: Deck, mode: DeckMode) => void;
   nextCard: () => void;
@@ -26,6 +32,11 @@ export const useGameStore = create<GameState>((set, get) => ({
   currentCardIndex: 0,
   mode: 'any',
   isFlipped: false,
+
+  hapticsEnabled: true,
+  setHapticsEnabled: (enabled) => set({ hapticsEnabled: enabled }),
+  colorScheme: 'dark' as const,
+  setColorScheme: (scheme) => set({ colorScheme: scheme }),
 
   startGame: (deck, mode) =>
     set({ activeDeck: deck, currentCardIndex: 0, mode, isFlipped: false }),
