@@ -177,7 +177,26 @@ function makeStyles(colors: AppColors) {
       borderWidth: 1,
     },
     finishBtnText: { ...typography.bodyMedium, letterSpacing: 0.5 },
-
+    backFollowUpContainer: {
+      paddingHorizontal: spacing.xl,
+      alignItems: "center",
+    },
+    backLabel: {
+      ...typography.caption,
+      fontStyle: "italic",
+      letterSpacing: 1,
+      marginBottom: spacing.md,
+      textAlign: "center",
+    },
+    backFollowUpText: {
+      ...typography.heading,
+      fontFamily: fonts.question,
+      fontSize: 22,
+      fontStyle: "italic",
+      textAlign: "center",
+      letterSpacing: 0.2,
+      lineHeight: 32,
+    },
   });
 }
 
@@ -201,12 +220,6 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText, can
         <Text style={[styles.question, { color: cardText }]}>{card.question}</Text>
       </View>
       <View style={styles.cardBottom}>
-        {card.followUp && (
-          <View style={[styles.followUpBlock, { borderTopColor: `${cardText}22` }]}>
-            <Text style={[styles.followUpLabel, { color: `${cardText}66` }]}>följdfråga —</Text>
-            <Text style={[styles.followUp, { color: `${cardText}99` }]}>{card.followUp}</Text>
-          </View>
-        )}
         <View style={styles.bottomRow}>
           <View style={styles.bottomRowLeft}>
             <Text style={[styles.bottomRowText, { color: canGoBack ? color : colors.textMuted }]}>‹</Text>
@@ -304,6 +317,7 @@ function CardBack({ card, deck, colors }: { card: Card; deck: Deck; colors: AppC
   const svgIcon = card.deckSvgIcon ?? deck.svgIcon;
   const color = card.deckColor ?? deck.color;
   const cardBackStyle = useGameStore((s) => s.cardBackStyle);
+  const resolvedText = card.deckText ?? deck.cardText ?? colors.textPrimary;
 
   return (
     <View style={{ flex: 1 }}>
@@ -313,7 +327,6 @@ function CardBack({ card, deck, colors }: { card: Card; deck: Deck; colors: AppC
       {cardBackStyle === 'polka' && <CardBackPolka color={color} />}
       {cardBackStyle === 'tictactoe' && <CardBackTicTacToe color={color} />}
 
-
       {/* Corner pips — top-left & bottom-right (rotated 180) */}
       <View style={{ position: "absolute", top: 22, left: 22, opacity: 0.7 }}>
         <DeckIcon deck={{ icon, svgIcon, color }} size={18} color={color} />
@@ -322,10 +335,19 @@ function CardBack({ card, deck, colors }: { card: Card; deck: Deck; colors: AppC
         <DeckIcon deck={{ icon, svgIcon, color }} size={18} color={color} />
       </View>
 
-      {/* Center icon */}
-      <View style={styles.cardBackContent}>
-        <DeckIcon deck={{ icon, svgIcon, color }} size={96} color={color} />
-      </View>
+      {card.followUp ? (
+        /* Follow-up reflection prompt */
+        <View style={styles.cardBackContent}>
+          <View style={styles.backFollowUpContainer}>
+            <Text style={[styles.backFollowUpText, { color: resolvedText }]}>{card.followUp}</Text>
+          </View>
+        </View>
+      ) : (
+        /* Center icon (fallback when no followUp) */
+        <View style={styles.cardBackContent}>
+          <DeckIcon deck={{ icon, svgIcon, color }} size={96} color={color} />
+        </View>
+      )}
     </View>
   );
 }

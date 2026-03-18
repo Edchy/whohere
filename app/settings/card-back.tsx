@@ -1,9 +1,9 @@
 import React from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Circle, Defs, Path, Pattern, Rect, Svg } from 'react-native-svg';
-import { AppColors, darkColors, radius, spacing } from '../../src/constants/theme';
+import { AppColors, darkColors, fonts, radius, spacing, typography } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
 import AppHeader from '../../src/components/AppHeader';
@@ -112,6 +112,15 @@ function makeStyles(colors: AppColors) {
       height: 120,
       backgroundColor: '#101010',
     },
+    label: {
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      ...typography.caption,
+      fontFamily: fonts.heading,
+      fontSize: 13,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
   });
 }
 
@@ -138,6 +147,9 @@ export default function CardBackPickerScreen() {
                 <View style={styles.preview}>
                   <PatternPreview id={opt.id} />
                 </View>
+                <Text style={[styles.label, { color: selected ? colors.accent : colors.textSecondary }]}>
+                  {opt.label}
+                </Text>
               </TouchableOpacity>
             );
           })}

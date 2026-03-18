@@ -41,7 +41,7 @@ function makeStyles(colors: AppColors) {
     },
     text: {
       flex: 1,
-      gap: spacing.xs,
+      gap: 2,
     },
     titleRow: {
       flexDirection: 'row',

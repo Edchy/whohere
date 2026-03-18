@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useRef } from 'react';
 import {
   Animated,
@@ -21,17 +22,26 @@ function makeStyles(colors: AppColors) {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
       paddingBottom: spacing.xxxl,
-      gap: spacing.sm,
+      gap: spacing.md,
+    },
+    grid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.md,
     },
     row: {
       paddingVertical: spacing.md,
-      paddingHorizontal: spacing.lg,
+      paddingHorizontal: spacing.md,
       borderRadius: radius.md,
       borderWidth: 1,
       borderColor: colors.border,
       backgroundColor: colors.bgSecondary,
       flexDirection: 'row',
       alignItems: 'center',
+      gap: spacing.xs,
+    },
+    rowLight: {
+      backgroundColor: 'transparent',
     },
     rowText: {
       flex: 1,
@@ -40,7 +50,7 @@ function makeStyles(colors: AppColors) {
     rowLabel: {
       ...typography.body,
       fontFamily: fonts.heading,
-      fontSize: 24,
+      fontSize: 18,
       textTransform: 'uppercase',
       color: colors.textPrimary,
     },
@@ -57,6 +67,9 @@ function makeStyles(colors: AppColors) {
       borderColor: colors.border,
       backgroundColor: colors.bgSecondary,
       gap: spacing.sm,
+    },
+    infoBlockLight: {
+      backgroundColor: 'transparent',
     },
     appName: {
       ...typography.body,
@@ -87,23 +100,13 @@ function makeStyles(colors: AppColors) {
       textTransform: 'uppercase',
       letterSpacing: 1,
     },
-    toggle: {
-      width: 36,
-      height: 36,
-      borderRadius: radius.md,
-      borderWidth: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    toggleText: {
-      ...typography.caption,
-    },
   });
 }
 
-function AnimatedRow({ onPress, children }: { onPress?: () => void; children: (colors: AppColors) => React.ReactNode }) {
+function AnimatedRow({ onPress, backgroundColor, children }: { onPress?: () => void; backgroundColor?: string; children: (colors: AppColors) => React.ReactNode }) {
   const colors = useColors();
   const styles = makeStyles(colors);
+  const colorScheme = useGameStore((s) => s.colorScheme);
   const opacity = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () =>
@@ -112,17 +115,23 @@ function AnimatedRow({ onPress, children }: { onPress?: () => void; children: (c
   const onPressOut = () =>
     Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
+  const tileStyle = [
+    styles.row,
+    colorScheme === 'light' ? styles.rowLight : undefined,
+    backgroundColor ? { backgroundColor, borderColor: backgroundColor } : undefined,
+  ];
+
   if (!onPress) {
-    return <View style={styles.row}>{children(colors)}</View>;
+    return <View style={[tileStyle, { width: '47%' }]}>{children(colors)}</View>;
   }
 
   return (
-    <Animated.View style={{ opacity }}>
+    <Animated.View style={{ opacity, width: '47%' }}>
       <Pressable
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={onPress}
-        style={styles.row}
+        style={tileStyle}
       >
         {children(colors)}
       </Pressable>
@@ -139,6 +148,7 @@ export default function SettingsScreen() {
   const colorScheme = useGameStore((s) => s.colorScheme);
   const setColorScheme = useGameStore((s) => s.setColorScheme);
   const cardBackStyle = useGameStore((s) => s.cardBackStyle);
+  const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
 
   const cardBackLabel =
     cardBackStyle === 'plain' ? 'Enfärgad' :
@@ -152,57 +162,58 @@ export default function SettingsScreen() {
     <ScreenLayout>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-        <AnimatedRow onPress={() => setColorScheme(colorScheme === 'dark' ? 'light' : 'dark')}>
-          {(c) => (
-            <>
-              <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>Utseende</Text>
-                <Text style={styles.rowSublabel}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
-              </View>
-              {colorScheme === 'dark' ? (
-                <SunIcon width={20} height={20} fill={colors.textPrimary} />
-              ) : (
-                <MoonIcon width={20} height={20} fill={colors.textPrimary} />
-              )}
-            </>
-          )}
-        </AnimatedRow>
+        <View style={styles.grid}>
+          <AnimatedRow onPress={() => setColorScheme(colorScheme === 'dark' ? 'light' : 'dark')}>
+            {(c) => (
+              <>
+                <View style={styles.rowText}>
+                  <Text style={styles.rowLabel}>Utseende</Text>
+                  <Text style={styles.rowSublabel}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
+                </View>
+                {colorScheme === 'dark' ? (
+                  <SunIcon width={16} height={16} fill={colors.textMuted} />
+                ) : (
+                  <MoonIcon width={16} height={16} fill={colors.textMuted} />
+                )}
+              </>
+            )}
+          </AnimatedRow>
 
-        <AnimatedRow onPress={() => setHapticsEnabled(!hapticsEnabled)}>
-          {(c) => (
-            <>
+          <AnimatedRow onPress={() => setHapticsEnabled(!hapticsEnabled)} backgroundColor={hapticsEnabled ? colors.bgBrand : undefined}>
+            {(c) => (
               <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>Haptik</Text>
-                <Text style={styles.rowSublabel}>Vibrera när du byter kort</Text>
+                <Text style={[styles.rowLabel, hapticsEnabled ? { color: colors.textOnBrand } : undefined]}>Haptik</Text>
+                <Text style={[styles.rowSublabel, hapticsEnabled ? { color: colors.textOnBrand, opacity: 0.7 } : undefined]}>Vibrera när du byter kort</Text>
               </View>
-              <View style={[
-                styles.toggle,
-                {
-                  borderColor: hapticsEnabled ? colors.accent : colors.border,
-                  backgroundColor: hapticsEnabled ? colors.accentDim : 'transparent',
-                },
-              ]}>
-                <Text style={[styles.toggleText, { color: hapticsEnabled ? colors.accent : colors.textMuted }]}>
-                  {hapticsEnabled ? 'På' : 'Av'}
-                </Text>
-              </View>
-            </>
-          )}
-        </AnimatedRow>
+            )}
+          </AnimatedRow>
 
-        <AnimatedRow onPress={() => router.push('/settings/card-back')}>
-          {(c) => (
-            <>
+          <AnimatedRow onPress={() => router.push('/settings/card-back')}>
+            {(c) => (
+              <>
+                <View style={styles.rowText}>
+                  <Text style={styles.rowLabel}>Kortbaksida</Text>
+                  <Text style={styles.rowSublabel}>{cardBackLabel}</Text>
+                </View>
+                <Text style={[styles.rowSublabel, { fontSize: 18, opacity: 1 }]}>›</Text>
+              </>
+            )}
+          </AnimatedRow>
+
+          <AnimatedRow onPress={() => {
+            AsyncStorage.removeItem('@whohere/hasSeenOnboarding');
+            setHasSeenOnboarding(false);
+          }}>
+            {(c) => (
               <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>Kortbaksida</Text>
-                <Text style={styles.rowSublabel}>{cardBackLabel}</Text>
+                <Text style={styles.rowLabel}>Intro</Text>
+                <Text style={styles.rowSublabel}>Visa igen</Text>
               </View>
-              <Text style={[styles.rowSublabel, { fontSize: 18, opacity: 1 }]}>›</Text>
-            </>
-          )}
-        </AnimatedRow>
+            )}
+          </AnimatedRow>
+        </View>
 
-        <View style={styles.infoBlock}>
+        <View style={[styles.infoBlock, colorScheme === 'light' ? styles.infoBlockLight : undefined]}>
           <Text style={styles.appName}>Vem här?</Text>
           <Text style={styles.appTagline}>Ett spel om hur vi läser varandra.</Text>
           <View style={styles.divider} />
