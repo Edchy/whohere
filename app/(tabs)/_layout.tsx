@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AppColors, fonts, radius, spacing } from '../../src/constants/theme';
+import { AppColors, radius, spacing, typography } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
 
 const ICONS: Record<string, [string, string]> = {
@@ -37,9 +37,8 @@ function makeStyles(colors: AppColors) {
       justifyContent: 'center',
     },
     label: {
-      fontFamily: fonts.ui,
+      ...typography.badge,
       fontSize: 9,
-      fontWeight: '500',
       lineHeight: 11,
       color: colors.textMuted,
       letterSpacing: 0.5,

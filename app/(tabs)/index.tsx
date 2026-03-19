@@ -11,26 +11,25 @@ import { animation, AppColors, radius, spacing, typography } from "../../src/con
 import ScreenLayout from "../../src/components/ScreenLayout";
 import { useColors } from "../../src/hooks/useColors";
 import deckIcons from "../../src/constants/deckIcons";
-import Mascot from "../../src/components/Mascot";
 
 const MODES = [
   {
     id: "partner",
     label: "På date",
     sublabel: "Lär känna varandra genom att betrakta andra.",
-    svgIcon: "noun-give-8020580",
+    svgIcon: "noun-smoking-cigarette-7798098",
   },
   {
     id: "group",
     label: "Med vänner",
     sublabel: "Fantasi och intuition i en ohelig kombination.",
-    svgIcon: "noun-piece-8020583",
+    svgIcon: "noun-magic-cards-7798217",
   },
   {
     id: "solo",
     label: "På egen hand",
     sublabel: "Upptäck din inre värld genom utblickar och insikter.",
-    svgIcon: "noun-gift-8020579",
+    svgIcon: "noun-cat-hiding-7798136",
   },
 ];
 
@@ -136,10 +135,7 @@ export default function HomeScreen() {
   return (
     <ScreenLayout>
       <View style={styles.container}>
-        <View style={styles.mascotWrap}>
-          <Mascot size={100} />
-        </View>
-        <View style={styles.modeList}>
+<View style={styles.modeList}>
           {MODES.map((mode) => (
             <ModeRow key={mode.id} mode={mode} colors={colors} />
           ))}

@@ -37,5 +37,21 @@ type: project
 - Assembled in `assets/data/decks/index.ts`
 - Deck IDs: livssituationer, personlighet, liv-bakgrund, relationer-kanslor
 
+## app.json asset config (current)
+- `userInterfaceStyle`: "dark"
+- splash `backgroundColor`: "#000000"
+- android adaptive icon `backgroundColor`: "#000000"
+- icon: `./assets/icon.png` (1024×1024 RGB PNG)
+- splash: `./assets/splash-icon.png` (1284×2778 RGB PNG)
+- adaptive icon: `./assets/adaptive-icon.png` (1024×1024 RGBA PNG)
+
+## Ghost mascot static PNG generation
+- Script: `scripts/generate-icon.py` — Pillow-based, mirrors Mascot.tsx SVG math exactly
+- Run with: `/tmp/imgenv/bin/python3.14 scripts/generate-icon.py` (from project root)
+- Venv setup if `/tmp/imgenv` is gone:
+  `cd /tmp && /usr/local/Cellar/python@3.14/3.14.3_1/bin/python3.14 -m venv imgenv && /tmp/imgenv/bin/pip install pillow`
+- System Python 3.13 has a broken Pillow build (arm64/x86_64 mismatch) — do NOT use it
+- `canvas` npm package and ImageMagick are NOT installed on this machine
+
 **Why:** Reference for library compatibility checks and `expo install` version pinning.
 **How to apply:** When adding a new library, verify SDK 54 compatibility. When touching reanimated, remember it's v4.

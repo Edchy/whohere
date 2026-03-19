@@ -1,10 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import FingerIcon from '../assets/icons/noun-finger-6748636.svg';
+import Mascot from '../src/components/Mascot';
 import {
   Animated,
   Dimensions,
   PanResponder,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -12,16 +15,17 @@ import {
 } from 'react-native';
 import {
   dimensions as dim,
-  fonts,
   radius,
   spacing,
   typography,
 } from '../src/constants/theme';
+import { useColors } from '../src/hooks/useColors';
 import { useGameStore } from '../src/store/gameStore';
 
 const ONBOARDING_KEY = '@whohere/hasSeenOnboarding';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH - spacing.xl * 2;
+const CAPPED_WIDTH = Math.min(SCREEN_WIDTH, 480);
+const CARD_WIDTH = CAPPED_WIDTH - spacing.xl * 2;
 
 const SWIPE_DISTANCE = 60;
 const SWIPE_VELOCITY = 400;
@@ -31,73 +35,143 @@ const DEPTH_OFFSET_X = 10;  // each card shifts right
 const DEPTH_OFFSET_Y = 12;  // each card shifts down
 const DEPTH_SCALE = 0.05;   // each card shrinks by this per level
 
-const TEXT_PRIMARY = '#FFFFFF';
-const TEXT_MUTED = 'rgba(255,255,255,0.4)';
 
 type Slide = {
   id: string;
   topLabel: string;
   headline: string;
+  subheading?: string;
   body: string;
   bottomLabel: string;
+  isWelcome?: boolean;
 };
 
 const SLIDES: Slide[] = [
   {
     id: '1',
-    topLabel: 'LOREM IPSUM',
-    headline: 'Lorem ipsum dolor sit amet.',
-    body: 'Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    bottomLabel: 'lorem ipsum',
+    topLabel: '',
+    headline: 'VEM$HÄR...?',
+    subheading: 'Intuitiva mikrohistorier om människor omkring.',
+    body: '',
+    bottomLabel: '',
+    isWelcome: true,
   },
   {
     id: '2',
-    topLabel: 'LOREM IPSUM',
-    headline: 'Ut enim ad minim veniam.',
-    body: 'Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    bottomLabel: 'lorem ipsum',
+    topLabel: 'THE GAME',
+    headline: 'Observera, välj, avslöja.',
+    body: 'Ni får ett antal frågor. Rummet fullt av människor. Vem passar in på beskrivningen? Alla väljer tyst, var för sig. Sen berättar ni.',
+    bottomLabel: 'bla bla',
   },
   {
     id: '3',
-    topLabel: 'LOREM IPSUM',
-    headline: 'Duis aute irure dolor.',
-    body: 'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-    bottomLabel: 'lorem ipsum',
+    topLabel: 'THE EXPERIMENT',
+    headline: 'Inga vinnare, inga förlorare. ',
+    body: 'Bara nya sätt att se på varandra. Det spelar ingen roll vem du väljer. Det intressanta är varför. Väjer ni samma eller olika? Varför? Det är hela grejen. Motiveringarna är det roliga, inte svaren.',
+    bottomLabel: 'lugnt och nyfiket',
   },
+
   {
     id: '4',
-    topLabel: 'LOREM IPSUM',
-    headline: 'Excepteur sint occaecat.',
-    body: 'Cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    bottomLabel: 'lorem ipsum',
+    topLabel: 'THE INSIGHT',
+    headline: 'Thin-slice judgment.',
+    body: 'Vi bedömer alla främlingar hela tiden, omedvetet, automatiskt, på en bråkdel av en sekund. Hot, status, karaktär. Det sker alltid. Men vi säger det aldrig högt. ',
+    bottomLabel: 'thin-slice judgment',
   },
   {
     id: '5',
-    topLabel: 'LOREM IPSUM',
-    headline: 'Sed ut perspiciatis unde.',
-    body: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.',
-    bottomLabel: 'lorem ipsum',
+    topLabel: 'THE INSIGHT',
+    headline: 'Valen speglar dig.',
+    body: 'Dina val avslöjar mer om dig än om dem. De blir små fönster in i hur du ser på världen, på andra människor, och kanske mest intressant av allt: hur du ser på dig själv.',
+    bottomLabel: 'svep för att börja spela',
+  },
+    {
+    id: '6',
+    topLabel: 'THE RESPECT',
+    headline: 'Spela osynligt.',
+    body: 'Ni är spöken i rummet. Osynliga, tysta, närvarande. Främlingarna är aldrig inblandade. De pekas aldrig ut, talas aldrig till. De vet ingenting. Det här är inte övervakning eller hån. Det är empatiträning i förklädnad. Varje val leder tillbaka till dig: varför valde du just den personen?',
+    bottomLabel: 'lugnt och nyfiket',
   },
 ];
 
-function SlideCard({ slide }: { slide: Slide }) {
+
+
+function SwipeHint() {
+  const colors = useColors();
+  const x = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.delay(800),
+        Animated.parallel([
+          Animated.timing(x, { toValue: -36, duration: 420, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0.2, duration: 420, useNativeDriver: true }),
+        ]),
+        Animated.parallel([
+          Animated.timing(x, { toValue: 0, duration: 320, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 1, duration: 320, useNativeDriver: true }),
+        ]),
+        Animated.delay(400),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, []);
+
   return (
-    <View style={styles.card}>
-      <Text selectable={false} style={styles.topLabel}>{slide.topLabel}</Text>
+    <Animated.View style={{ transform: [{ translateX: x }], opacity }}>
+      <FingerIcon width={32} height={32} fill={colors.textMuted} />
+    </Animated.View>
+  );
+}
+
+function SlideCard({ slide }: { slide: Slide }) {
+  const colors = useColors();
+
+  if (slide.isWelcome) {
+    return (
+      <View style={[styles.card, styles.cardWelcome, { backgroundColor: colors.bgPrimary, borderColor: colors.textPrimary }]}>
+        <View style={styles.welcomeHeadingGroup}>
+          <View style={styles.headlineRow}>
+            {slide.headline.split('$').map((part, i, arr) => (
+              <React.Fragment key={i}>
+                <Text selectable={false} style={[styles.headlineWelcome, { color: colors.textPrimary }]}>{part}</Text>
+                {i < arr.length - 1 && <Mascot size={32} style={{ marginHorizontal: spacing.sm }} />}
+              </React.Fragment>
+            ))}
+          </View>
+          {!!slide.subheading && (
+            <Text selectable={false} style={[styles.subheading, { color: colors.textMuted }]}>{slide.subheading}</Text>
+          )}
+        </View>
+        <View style={styles.swipeHintRow}>
+          <SwipeHint />
+          <Text selectable={false} style={[styles.swipeHintLabel, { color: colors.textMuted }]}>svep för att börja</Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.card, { backgroundColor: colors.bgPrimary, borderColor: colors.textPrimary }]}>
+      <Text selectable={false} style={[styles.topLabel, { color: colors.textMuted }]}>{slide.topLabel}</Text>
 
       <View style={styles.cardMiddle}>
-        <Text selectable={false} style={styles.headline}>{slide.headline}</Text>
-        <Text selectable={false} style={styles.body}>{slide.body}</Text>
+        <Text selectable={false} style={[styles.headline, { color: colors.textPrimary }]}>{slide.headline}</Text>
+        <Text selectable={false} style={[styles.body, { color: colors.textMuted }]}>{slide.body}</Text>
       </View>
 
       <View style={styles.cardBottom}>
-        <Text selectable={false} style={styles.bottomLabel}>{slide.bottomLabel}</Text>
+        <Mascot size={20} style={styles.mascotBottomRight} />
       </View>
     </View>
   );
 }
 
 export default function OnboardingScreen() {
+  const colors = useColors();
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const [topIndex, setTopIndex] = useState(0);
   const [dotIndex, setDotIndex] = useState(0);
@@ -232,7 +306,7 @@ export default function OnboardingScreen() {
   const behindSlides = SLIDES.slice(topIndex + 1, topIndex + 4);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
       <View style={styles.cardArea} {...panResponder.panHandlers}>
         {/* Stack of cards behind — deepest first so they render under */}
         {[...behindSlides].reverse().map((slide, reversedDepth) => {
@@ -274,7 +348,7 @@ export default function OnboardingScreen() {
 
       {topIndex < SLIDES.length - 1 && (
         <Pressable style={styles.skipButton} onPress={dismiss} hitSlop={12}>
-          <Text selectable={false} style={styles.skipText}>hoppa över</Text>
+          <Text selectable={false} style={[styles.skipText, { color: colors.textMuted }]}>hoppa över</Text>
         </Pressable>
       )}
 
@@ -287,7 +361,7 @@ export default function OnboardingScreen() {
               styles.dot,
               {
                 width: i === dotIndex ? 20 : dim.dotSize,
-                backgroundColor: i === dotIndex ? TEXT_PRIMARY : TEXT_MUTED,
+                backgroundColor: i === dotIndex ? colors.textPrimary : colors.textMuted,
               },
             ]}
           />
@@ -300,7 +374,7 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    ...(Platform.OS === 'web' ? { width: '100%', maxWidth: 480, alignSelf: 'center' as const } : {}),
   },
   cardArea: {
     flex: 1,
@@ -319,55 +393,69 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   skipText: {
-    fontFamily: fonts.ui,
-    fontSize: 12,
+    ...typography.caption,
     letterSpacing: 1,
-    color: TEXT_MUTED,
   },
   card: {
     width: CARD_WIDTH,
     height: dim.cardHeight,
     borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: '#FFFFFF',
-    backgroundColor: '#000000',
     padding: spacing.xl,
     justifyContent: 'space-between',
+    overflow: 'visible',
   },
   topLabel: {
-    fontFamily: fonts.ui,
-    fontSize: 10,
+    ...typography.badge,
     letterSpacing: 2,
-    color: TEXT_MUTED,
   },
   cardMiddle: {
     flex: 1,
     justifyContent: 'center',
     gap: spacing.lg,
-    marginBottom: spacing.xxxl,
   },
   headline: {
-    ...typography.heading,
-    fontFamily: fonts.question,
-    fontSize: 28,
-    color: TEXT_PRIMARY,
-    lineHeight: 36,
+    ...typography.display,
   },
   body: {
     ...typography.body,
-    fontFamily: fonts.copy,
-    color: 'rgba(255,255,255,0.65)',
-    lineHeight: 26,
   },
   cardBottom: {
+    alignItems: 'flex-end',
+  },
+  mascotBottomRight: {
+    alignSelf: 'flex-end',
+  },
+  mascotTopCenter: {
+    alignSelf: 'center',
+  },
+  cardWelcome: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  welcomeHeadingGroup: {
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+  },
+  headlineRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headlineWelcome: {
+    ...typography.brand,
+  },
+  subheading: {
+    ...typography.caption,
+  },
+  swipeHintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
-  bottomLabel: {
-    fontFamily: fonts.ui,
-    fontSize: 10,
+  swipeHintLabel: {
+    ...typography.caption,
     letterSpacing: 1.5,
-    color: TEXT_MUTED,
-    textAlign: 'right',
   },
   dots: {
     position: 'absolute',

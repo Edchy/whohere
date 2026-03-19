@@ -11,10 +11,14 @@ import {
 import { router } from 'expo-router';
 import MoonIcon from '../../assets/icons/noun-moon-4373688.svg';
 import SunIcon from '../../assets/icons/noun-sun-4373690.svg';
-import { animation, AppColors, fonts, radius, spacing, typography } from '../../src/constants/theme';
+import { animation, AppColors, radius, spacing, typography } from '../../src/constants/theme';
 import ScreenLayout from '../../src/components/ScreenLayout';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
+
+const COLOR_SCHEME_KEY = '@whohere/colorScheme';
+const HAPTICS_KEY = '@whohere/hapticsEnabled';
+const CARD_BACK_KEY = '@whohere/cardBackStyle';
 
 function makeStyles(colors: AppColors) {
   return StyleSheet.create({
@@ -45,13 +49,10 @@ function makeStyles(colors: AppColors) {
     },
     rowText: {
       flex: 1,
-      gap: 2,
+      gap: 0,
     },
     rowLabel: {
-      ...typography.body,
-      fontFamily: fonts.heading,
-      fontSize: 18,
-      textTransform: 'uppercase',
+      ...typography.heading,
       color: colors.textPrimary,
     },
     rowSublabel: {
@@ -72,10 +73,7 @@ function makeStyles(colors: AppColors) {
       backgroundColor: 'transparent',
     },
     appName: {
-      ...typography.body,
-      fontFamily: fonts.heading,
-      fontSize: 24,
-      textTransform: 'uppercase',
+      ...typography.brand,
       color: colors.textPrimary,
     },
     appTagline: {
@@ -95,7 +93,7 @@ function makeStyles(colors: AppColors) {
       lineHeight: 18,
     },
     version: {
-      ...typography.label,
+      ...typography.badge,
       color: colors.textMuted,
       textTransform: 'uppercase',
       letterSpacing: 1,
@@ -163,11 +161,15 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         <View style={styles.grid}>
-          <AnimatedRow onPress={() => setColorScheme(colorScheme === 'dark' ? 'light' : 'dark')}>
+          <AnimatedRow onPress={() => {
+            const next = colorScheme === 'dark' ? 'light' : 'dark';
+            setColorScheme(next);
+            AsyncStorage.setItem(COLOR_SCHEME_KEY, next);
+          }}>
             {(c) => (
               <>
                 <View style={styles.rowText}>
-                  <Text style={styles.rowLabel}>Utseende</Text>
+                  <Text style={styles.rowLabel}>UTSEENDE</Text>
                   <Text style={styles.rowSublabel}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
                 </View>
                 {colorScheme === 'dark' ? (
@@ -179,10 +181,14 @@ export default function SettingsScreen() {
             )}
           </AnimatedRow>
 
-          <AnimatedRow onPress={() => setHapticsEnabled(!hapticsEnabled)} backgroundColor={hapticsEnabled ? colors.bgBrand : undefined}>
+          <AnimatedRow onPress={() => {
+            const next = !hapticsEnabled;
+            setHapticsEnabled(next);
+            AsyncStorage.setItem(HAPTICS_KEY, String(next));
+          }} backgroundColor={hapticsEnabled ? colors.bgBrand : undefined}>
             {(c) => (
               <View style={styles.rowText}>
-                <Text style={[styles.rowLabel, hapticsEnabled ? { color: colors.textOnBrand } : undefined]}>Haptik</Text>
+                <Text style={[styles.rowLabel, hapticsEnabled ? { color: colors.textOnBrand } : undefined]}>HAPTIK</Text>
                 <Text style={[styles.rowSublabel, hapticsEnabled ? { color: colors.textOnBrand, opacity: 0.7 } : undefined]}>Vibrera när du byter kort</Text>
               </View>
             )}
@@ -192,7 +198,7 @@ export default function SettingsScreen() {
             {(c) => (
               <>
                 <View style={styles.rowText}>
-                  <Text style={styles.rowLabel}>Kortbaksida</Text>
+                  <Text style={styles.rowLabel}>KORTBAKSIDA</Text>
                   <Text style={styles.rowSublabel}>{cardBackLabel}</Text>
                 </View>
                 <Text style={[styles.rowSublabel, { fontSize: 18, opacity: 1 }]}>›</Text>
@@ -207,7 +213,7 @@ export default function SettingsScreen() {
           }}>
             {(c) => (
               <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>Intro</Text>
+                <Text style={styles.rowLabel}>INTRO</Text>
                 <Text style={styles.rowSublabel}>Visa igen</Text>
               </View>
             )}
@@ -215,7 +221,7 @@ export default function SettingsScreen() {
         </View>
 
         <View style={[styles.infoBlock, colorScheme === 'light' ? styles.infoBlockLight : undefined]}>
-          <Text style={styles.appName}>Vem här?</Text>
+          <Text style={styles.appName}>Vem här...?</Text>
           <Text style={styles.appTagline}>Ett spel om hur vi läser varandra.</Text>
           <View style={styles.divider} />
           <Text style={styles.appDesc}>

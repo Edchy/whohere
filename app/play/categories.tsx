@@ -5,7 +5,7 @@ import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-n
 import RandomSvg from "../../assets/icons/noun-doodle-element-7389160.svg";
 import { DeckTile } from "../../src/components/DeckTile";
 import ScreenLayout from "../../src/components/ScreenLayout";
-import { animation, AppColors, fonts, radius, spacing, typography } from "../../src/constants/theme";
+import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
 import { useColors } from "../../src/hooks/useColors";
 
 import { useGameStore } from "../../src/store/gameStore";
@@ -140,18 +140,18 @@ const HEADER_TITLES: Record<string, string[]> = {
 
 const HEADER_SUBTITLES: Record<string, string[]> = {
   partner: [
-    "Välj vad som lockar er — eller låt oss välja.",
+    "Välj vad som lockar er, eller låt oss välja.",
     "Plocka det ni vill dyka in i. Eller kasta tärningen.",
     "Era val. Eller slumpens.",
   ],
   group: [
     "Välj vad gruppen orkar med. Eller låt ödet avgöra.",
-    "Plocka ihop ert kvällsprogram — eller överlåt det åt slumpen.",
-    "Alla väljer, ingen bestämmer — eller låt oss sköta det.",
+    "Plocka ihop ert kvällsprogram, eller överlåt det åt slumpen.",
+    "Alla väljer, ingen bestämmer. Eller låt oss sköta det.",
   ],
   solo: [
     "Välj vad du vill brottas med. Eller låt slumpen ta rodret.",
-    "Dina val — eller överlåt dem till universum.",
+    "Dina val, eller överlåt dem till universum.",
     "Plocka det du vill gå in i. Eller låt det komma till dig.",
   ],
 };
@@ -201,22 +201,16 @@ function makeStyles(colors: AppColors) {
     },
     header: {
       paddingHorizontal: spacing.lg,
-      paddingVertical: spacing.xl,
-      borderRadius: radius.md,
-      borderColor: colors.border,
-      backgroundColor: colors.bgSecondary,
-      gap: spacing.xs,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.sm,
+      gap: 0,
     },
     title: {
-      ...typography.display,
-      fontFamily: fonts.heading,
+      ...typography.heading,
       color: colors.textPrimary,
-      textTransform: 'uppercase',
-      lineHeight: 24,
     },
     subtitle: {
       ...typography.caption,
-      fontFamily: fonts.copy,
       color: colors.textMuted,
     },
     tileList: {
@@ -226,6 +220,8 @@ function makeStyles(colors: AppColors) {
       paddingVertical: spacing.lg,
       paddingHorizontal: spacing.lg,
       borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
       backgroundColor: colors.bgSecondary,
     },
     surpriseInner: {
@@ -235,17 +231,13 @@ function makeStyles(colors: AppColors) {
     },
     surpriseText: {
       flex: 1,
-      gap: spacing.xs,
+      gap: 0,
     },
     surpriseTitle: {
-      ...typography.bodyMedium,
-      fontFamily: fonts.heading,
-      fontSize: 24,
-      textTransform: 'uppercase',
+      ...typography.heading,
     },
     surpriseDesc: {
       ...typography.caption,
-      fontFamily: fonts.copy,
     },
     startWrap: {
       marginTop: spacing.md,
@@ -313,7 +305,7 @@ export default function CategoriesScreen() {
     Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
   return (
-    <ScreenLayout>
+    <ScreenLayout edges={['bottom']}>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -334,13 +326,13 @@ export default function CategoriesScreen() {
                 Animated.timing(surpriseOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start()
               }
               onPress={handleSurpriseToggle}
-              style={[styles.surpriseTile, randomize && { backgroundColor: colors.accent }]}
+              style={[styles.surpriseTile, randomize && { backgroundColor: colors.accent, borderColor: 'transparent' }]}
             >
               <View style={styles.surpriseInner}>
                 <RandomSvg width={36} height={36} fill={randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary} />
                 <View style={styles.surpriseText}>
                   <Text style={[styles.surpriseTitle, { color: randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary }]}>
-                    Överraska mig!
+                    ÖVERRASKA MIG!
                   </Text>
                   <Text style={[styles.surpriseDesc, { color: randomize ? (colorScheme === 'light' ? '#44444499' : colors.bgPrimary + '99') : colors.textMuted }]}>
                     {surpriseDesc}
@@ -356,7 +348,7 @@ export default function CategoriesScreen() {
               key={deck.id}
               deck={deck}
               isSelected={selected.includes(deck.id)}
-              badge={defaults.includes(deck.id) && !selected.includes(deck.id) ? 'förslag' : undefined}
+              badge={defaults.includes(deck.id) ? 'förslag' : undefined}
               showCount={false}
               onPress={() => toggle(deck.id)}
             />

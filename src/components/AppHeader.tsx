@@ -6,6 +6,8 @@ import { spacing } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
 import Mascot from './Mascot';
 
+const SIZE = 40;
+
 export default function AppHeader({ onBack }: { onBack?: () => void }) {
   const colors = useColors();
   return (
@@ -17,9 +19,7 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
       ) : (
         <View style={styles.spacer} />
       )}
-      <TouchableOpacity onPress={() => router.replace('/')} activeOpacity={0.7}>
-        <Mascot size={60} />
-      </TouchableOpacity>
+      <Mascot size={SIZE} />
       <View style={styles.spacer} />
     </View>
   );
@@ -32,6 +32,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.md,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
   },
   spacer: {
     flex: 1,

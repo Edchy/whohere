@@ -35,11 +35,11 @@ function makeStyles(colors: AppColors) {
       backgroundColor: colors.accent + '15',
     },
     emoji: {
-      ...typography.heading,
+      fontSize: 24,
       marginBottom: spacing.xs,
     },
     label: {
-      ...typography.bodyMedium,
+      ...typography.body,
       color: colors.textSecondary,
       marginBottom: 2,
     },

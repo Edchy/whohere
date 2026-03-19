@@ -11,6 +11,9 @@ import Doodle7389193 from '../../assets/icons/noun-doodle-element-7389193.svg';
 import Gift8020579 from '../../assets/icons/noun-gift-8020579.svg';
 import Give8020580 from '../../assets/icons/noun-give-8020580.svg';
 import Piece8020583 from '../../assets/icons/noun-piece-8020583.svg';
+import MagicCards7798217 from '../../assets/icons/noun-magic-cards-7798217.svg';
+import CatHiding7798136 from '../../assets/icons/noun-cat-hiding-7798136.svg';
+import SmokingCigarette7798098 from '../../assets/icons/noun-smoking-cigarette-7798098.svg';
 
 type SvgComponent = React.FC<SvgProps>;
 
@@ -23,6 +26,9 @@ const deckIcons: Record<string, SvgComponent> = {
   'noun-gift-8020579': Gift8020579,
   'noun-give-8020580': Give8020580,
   'noun-piece-8020583': Piece8020583,
+  'noun-magic-cards-7798217': MagicCards7798217,
+  'noun-cat-hiding-7798136': CatHiding7798136,
+  'noun-smoking-cigarette-7798098': SmokingCigarette7798098,
 };
 
 export default deckIcons;

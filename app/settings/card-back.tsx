@@ -1,9 +1,12 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+
+const CARD_BACK_KEY = '@whohere/cardBackStyle';
 import { Circle, Defs, Path, Pattern, Rect, Svg } from 'react-native-svg';
-import { AppColors, darkColors, fonts, radius, spacing, typography } from '../../src/constants/theme';
+import { AppColors, darkColors, radius, spacing, typography } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
 import AppHeader from '../../src/components/AppHeader';
@@ -116,7 +119,6 @@ function makeStyles(colors: AppColors) {
       paddingVertical: spacing.sm,
       paddingHorizontal: spacing.md,
       ...typography.caption,
-      fontFamily: fonts.heading,
       fontSize: 13,
       textTransform: 'uppercase',
       letterSpacing: 0.5,
@@ -141,7 +143,10 @@ export default function CardBackPickerScreen() {
               <TouchableOpacity
                 key={opt.id}
                 style={[styles.option, { borderColor: selected ? colors.accent : 'transparent' }]}
-                onPress={() => setCardBackStyle(opt.id)}
+                onPress={() => {
+                  setCardBackStyle(opt.id);
+                  AsyncStorage.setItem(CARD_BACK_KEY, opt.id);
+                }}
                 activeOpacity={0.8}
               >
                 <View style={styles.preview}>

@@ -26,7 +26,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { animation, AppColors, dimensions, fonts, radius, spacing, typography } from "../../src/constants/theme";
+import { animation, AppColors, dimensions, radius, spacing, typography } from "../../src/constants/theme";
 import { useColors } from "../../src/hooks/useColors";
 import AppHeader from "../../src/components/AppHeader";
 import { useHaptics } from "../../src/hooks/useHaptics";
@@ -101,7 +101,7 @@ function makeStyles(colors: AppColors) {
       justifyContent: "center",
     },
     modeRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-    modeIndicatorText: { ...typography.label, letterSpacing: 1.5 },
+    modeIndicatorText: { ...typography.badge, letterSpacing: 1.5 },
     iconRow: { marginTop: spacing.sm, alignItems: "center" },
     questionBlock: { flex: 1, justifyContent: "center", marginBottom: spacing.xxxl },
     cardBottom: { gap: spacing.xs },
@@ -121,22 +121,18 @@ function makeStyles(colors: AppColors) {
       gap: spacing.xs,
     },
     bottomRowText: {
-      ...typography.label,
+      ...typography.badge,
       letterSpacing: 1.5,
-      fontFamily: fonts.heading,
       includeFontPadding: false,
       textAlignVertical: "center",
     },
     whoHere: {
-      ...typography.heading,
-      fontSize: 28,
+      ...typography.brand,
       color: colors.accent,
     },
     question: {
-      ...typography.heading,
-      fontFamily: fonts.question,
+      ...typography.card,
       color: colors.textPrimary,
-      letterSpacing: 0.1,
     },
     followUpBlock: {
       borderTopWidth: 1,
@@ -157,7 +153,7 @@ function makeStyles(colors: AppColors) {
       fontStyle: "italic",
     },
     cardCounter: {
-      ...typography.label,
+      ...typography.badge,
       letterSpacing: 1.5,
     },
     nav: {
@@ -176,7 +172,7 @@ function makeStyles(colors: AppColors) {
       borderRadius: radius.md,
       borderWidth: 1,
     },
-    finishBtnText: { ...typography.bodyMedium, letterSpacing: 0.5 },
+    finishBtnText: { ...typography.body, letterSpacing: 0.5 },
     backFollowUpContainer: {
       paddingHorizontal: spacing.xl,
       alignItems: "center",
@@ -189,13 +185,10 @@ function makeStyles(colors: AppColors) {
       textAlign: "center",
     },
     backFollowUpText: {
-      ...typography.heading,
-      fontFamily: fonts.question,
+      ...typography.card,
       fontSize: 22,
       fontStyle: "italic",
       textAlign: "center",
-      letterSpacing: 0.2,
-      lineHeight: 32,
     },
   });
 }
@@ -339,7 +332,7 @@ function CardBack({ card, deck, colors }: { card: Card; deck: Deck; colors: AppC
         /* Follow-up reflection prompt */
         <View style={styles.cardBackContent}>
           <View style={styles.backFollowUpContainer}>
-            <Text style={[styles.backFollowUpText, { color: resolvedText, fontFamily: fonts.heading }]}>Varför då?</Text>
+            <Text style={[styles.backFollowUpText, { color: resolvedText }]}>Varför då?</Text>
             <Text style={[styles.backFollowUpText, { color: `${resolvedText}99`, marginTop: spacing.lg }]}>{card.followUp}</Text>
           </View>
         </View>

@@ -21,7 +21,7 @@ function makeStyles(colors: AppColors) {
       justifyContent: 'center',
     },
     label: {
-      ...typography.label,
+      ...typography.badge,
       color: colors.accent,
       letterSpacing: 2,
       marginBottom: spacing.lg,
@@ -49,7 +49,7 @@ function makeStyles(colors: AppColors) {
       justifyContent: 'center',
     },
     primaryButtonText: {
-      ...typography.bodyMedium,
+      ...typography.body,
       color: colors.accent,
       letterSpacing: 0.5,
     },
@@ -80,7 +80,7 @@ export default function ResultsScreen() {
           <Text style={styles.label}>KLART</Text>
           <Text style={styles.title}>Det var{'\n'}alla kort.</Text>
           <Text style={styles.subtitle}>
-            De bästa samtalen börjar här — där korten tar slut.
+            De bästa samtalen börjar här, där korten tar slut.
           </Text>
         </View>
 

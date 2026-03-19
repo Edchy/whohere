@@ -29,7 +29,7 @@ function makeStyles(colors: AppColors) {
       justifyContent: 'center',
     },
     icon: {
-      ...typography.heading,
+      fontSize: 22,
       marginRight: spacing.md,
       marginTop: 2,
     },
@@ -37,7 +37,7 @@ function makeStyles(colors: AppColors) {
       flex: 1,
     },
     title: {
-      ...typography.bodyMedium,
+      ...typography.body,
       color: colors.textPrimary,
       marginBottom: spacing.xs,
     },
@@ -57,7 +57,7 @@ function makeStyles(colors: AppColors) {
       borderRadius: radius.full,
     },
     badgeText: {
-      ...typography.label,
+      ...typography.badge,
       textTransform: 'uppercase',
     },
     count: {
