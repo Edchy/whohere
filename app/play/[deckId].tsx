@@ -339,7 +339,8 @@ function CardBack({ card, deck, colors }: { card: Card; deck: Deck; colors: AppC
         /* Follow-up reflection prompt */
         <View style={styles.cardBackContent}>
           <View style={styles.backFollowUpContainer}>
-            <Text style={[styles.backFollowUpText, { color: resolvedText }]}>{card.followUp}</Text>
+            <Text style={[styles.backFollowUpText, { color: resolvedText, fontFamily: fonts.heading }]}>Varför då?</Text>
+            <Text style={[styles.backFollowUpText, { color: `${resolvedText}99`, marginTop: spacing.lg }]}>{card.followUp}</Text>
           </View>
         </View>
       ) : (

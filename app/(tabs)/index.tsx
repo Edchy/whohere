@@ -11,6 +11,7 @@ import { animation, AppColors, radius, spacing, typography } from "../../src/con
 import ScreenLayout from "../../src/components/ScreenLayout";
 import { useColors } from "../../src/hooks/useColors";
 import deckIcons from "../../src/constants/deckIcons";
+import Mascot from "../../src/components/Mascot";
 
 const MODES = [
   {
@@ -40,6 +41,10 @@ function makeStyles(colors: AppColors) {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
       gap: spacing.sm,
+    },
+    mascotWrap: {
+      alignItems: 'center',
+      paddingVertical: spacing.lg,
     },
     modeList: {
       gap: spacing.sm,
@@ -131,6 +136,9 @@ export default function HomeScreen() {
   return (
     <ScreenLayout>
       <View style={styles.container}>
+        <View style={styles.mascotWrap}>
+          <Mascot size={100} />
+        </View>
         <View style={styles.modeList}>
           {MODES.map((mode) => (
             <ModeRow key={mode.id} mode={mode} colors={colors} />

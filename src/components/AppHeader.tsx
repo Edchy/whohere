@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { spacing } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
-import EyesLogo from './EyesLogo';
+import Mascot from './Mascot';
 
 export default function AppHeader({ onBack }: { onBack?: () => void }) {
   const colors = useColors();
@@ -18,7 +18,7 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
         <View style={styles.spacer} />
       )}
       <TouchableOpacity onPress={() => router.replace('/')} activeOpacity={0.7}>
-        <EyesLogo size={72} />
+        <Mascot size={60} />
       </TouchableOpacity>
       <View style={styles.spacer} />
     </View>
