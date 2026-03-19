@@ -100,6 +100,7 @@ function SlideCard({ slide }: { slide: Slide }) {
 export default function OnboardingScreen() {
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const [topIndex, setTopIndex] = useState(0);
+  const [dotIndex, setDotIndex] = useState(0);
 
   const dragX = useRef(new Animated.Value(0)).current;
   const nextProgress = useRef(new Animated.Value(0)).current;
@@ -184,16 +185,17 @@ export default function OnboardingScreen() {
 
         if (goLeft) {
           if (isLast) {
-            // Navigate immediately so home screen loads underneath the flying card
             dismissRef.current();
             Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }).start();
           } else {
+            setDotIndex(cur + 1);
             Animated.parallel([
               Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
               Animated.spring(nextProgress, { toValue: 1, damping: 18, stiffness: 220, useNativeDriver: true }),
             ]).start(() => commitNextRef.current());
           }
         } else if (goRight) {
+          setDotIndex(cur - 1);
           Animated.parallel([
             Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
             Animated.timing(prevDragX, { toValue: 0, duration: 240, useNativeDriver: true }),
@@ -284,8 +286,8 @@ export default function OnboardingScreen() {
             style={[
               styles.dot,
               {
-                width: i === topIndex ? 20 : dim.dotSize,
-                backgroundColor: i === topIndex ? TEXT_PRIMARY : TEXT_MUTED,
+                width: i === dotIndex ? 20 : dim.dotSize,
+                backgroundColor: i === dotIndex ? TEXT_PRIMARY : TEXT_MUTED,
               },
             ]}
           />
