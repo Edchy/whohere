@@ -346,6 +346,7 @@ export default function PlayScreen() {
   const endGame = useGameStore((s) => s.endGame);
 
   const [topIndex, setTopIndex] = useState(0);
+  const [swipeDir, setSwipeDir] = useState<"forward" | "back">("forward");
 
   const dragX = useRef(new Animated.Value(0)).current;
 
@@ -383,6 +384,7 @@ export default function PlayScreen() {
   const goNext = () => {
     const cur = topIndexRef.current;
     const next = cur + 1;
+    setSwipeDir("forward");
     if (!deck || next >= deck.cards.length) {
       Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => dismissRef.current());
       return;
@@ -398,9 +400,15 @@ export default function PlayScreen() {
     const prev = topIndexRef.current - 1;
     if (prev < 0) return;
     prevCardStore();
-    // Snap back to center, then switch card — no fly-off for back navigation
-    Animated.timing(dragX, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => {
+    setSwipeDir("back");
+    Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
       setTopIndex(prev);
+      dragX.setValue(-SCREEN_WIDTH * 1.5);
+      requestAnimationFrame(() => {
+        Animated.timing(dragX, { toValue: 0, duration: 220, useNativeDriver: true }).start(() => {
+          setSwipeDir("forward");
+        });
+      });
     });
   };
 
@@ -491,7 +499,7 @@ export default function PlayScreen() {
 
       <View style={styles.cardArea} {...panResponder.panHandlers}>
         {/* Next card sits underneath — only visible when swiping left */}
-        {nextCard && (() => {
+        {nextCard && swipeDir === "forward" && (() => {
           const rc = resolveCardColors(nextCard, deck, colors);
           const nextCardOpacity = dragX.interpolate({
             inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0],
