@@ -4,9 +4,6 @@
   "description": "Lager på lager av fakta och fantasi.",
   "mode": "any",
   "category": "livssituationer",
-  "color": "#dfe5f3",
-  "cardBackground": "#e6c8b7",
-  "cardText": "#FFFFFF",
   "icon": "◈",
   "svgIcon": "noun-doodle-element-7389183"
 }

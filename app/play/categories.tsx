@@ -71,8 +71,7 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function buildDeck(selectedIds: string[], modeId: string, colors: AppColors): Deck {
-  const color = colors.accent;
+function buildDeck(selectedIds: string[], modeId: string): Deck {
 
   const deckCount = selectedIds.length;
   const basePerDeck = Math.floor(GAME_CARD_LIMIT / deckCount);
@@ -88,9 +87,6 @@ function buildDeck(selectedIds: string[], modeId: string, colors: AppColors): De
         deckIcon: source.icon,
         deckSvgIcon: source.svgIcon,
         deckTitle: source.title,
-        deckColor: source.color,
-        deckBackground: source.cardBackground,
-        deckText: source.cardText,
       }));
       const filtered = stamped.filter((card) => passesIntensityFilter(card, modeId));
       const pool = filtered.length > 0 ? filtered : stamped;
@@ -104,9 +100,6 @@ function buildDeck(selectedIds: string[], modeId: string, colors: AppColors): De
     description: "",
     mode: "any",
     category: "mixed",
-    color,
-    cardBackground: colors.card,
-    cardText: colors.textPrimary,
     icon: "",
     cards,
   };
@@ -293,7 +286,7 @@ export default function CategoriesScreen() {
     if (!canStart) return;
     const modePool = DEFAULT_SELECTIONS[mode ?? ""] ?? allDecks.map((d) => d.id);
     const ids = randomize ? randomSubset(modePool) : selected;
-    const deck = buildDeck(ids, mode ?? "partner", colors);
+    const deck = buildDeck(ids, mode ?? "partner");
     startGame(deck, "any");
     router.replace(`/play/${deck.id}`);
   };
@@ -305,7 +298,7 @@ export default function CategoriesScreen() {
     Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
   return (
-    <ScreenLayout edges={['bottom']}>
+    <ScreenLayout showHeader={false} backgroundColor={colors.bgTertiary}>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}

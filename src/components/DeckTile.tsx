@@ -97,7 +97,7 @@ export function DeckTile({ deck, isSelected = false, selectedColor, badge, showC
         style={[styles.tile, { backgroundColor: bg }, isSelected && { borderColor: 'transparent' }]}
       >
         <View style={styles.inner}>
-          <DeckIcon deck={deck} size={36} />
+          <DeckIcon deck={deck} size={36} color={iconColor} />
           <View style={styles.text}>
             <View style={styles.titleRow}>
               <Text style={[styles.title, { color: textColor }]}>{deck.title.toUpperCase()}</Text>

@@ -23,9 +23,6 @@ export type Card = {
   deckIcon?: string;
   deckSvgIcon?: string;
   deckTitle?: string;
-  deckColor?: string;
-  deckBackground?: string;
-  deckText?: string;
 };
 
 export type Deck = {
@@ -34,9 +31,6 @@ export type Deck = {
   description: string;
   mode: DeckMode;
   category: DeckCategory;
-  color: string;
-  cardBackground: string;
-  cardText: string;
   icon: string;
   svgIcon?: string;
   cards: Card[];

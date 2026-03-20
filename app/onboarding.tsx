@@ -175,47 +175,60 @@ export default function OnboardingScreen() {
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const [topIndex, setTopIndex] = useState(0);
   const [dotIndex, setDotIndex] = useState(0);
+  const [swipeDir, setSwipeDir] = useState<'forward' | 'back'>('forward');
 
   const dragX = useRef(new Animated.Value(0)).current;
   const nextProgress = useRef(new Animated.Value(0)).current;
-  // When swiping right: prevDragX starts at -SCREEN_WIDTH and follows finger
-  const prevDragX = useRef(new Animated.Value(-SCREEN_WIDTH * 1.5)).current;
-  const [showPrev, setShowPrev] = useState(false);
 
   const topIndexRef = useRef(topIndex);
   topIndexRef.current = topIndex;
 
   const dismissRef = useRef(async () => {});
-  const commitNextRef = useRef(() => {});
-  const commitPrevRef = useRef(() => {});
-
   dismissRef.current = async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
     setHasSeenOnboarding(true);
     router.replace('/');
   };
 
-  commitNextRef.current = () => {
-    const next = topIndexRef.current + 1;
-    if (next >= SLIDES.length) { dismissRef.current(); return; }
-    dragX.setValue(0);
-    nextProgress.setValue(0);
-    prevDragX.setValue(-SCREEN_WIDTH * 1.5);
-    setShowPrev(false);
-    setTopIndex(next);
+  const dismiss = () => dismissRef.current();
+
+  const goNext = () => {
+    const cur = topIndexRef.current;
+    const next = cur + 1;
+    setSwipeDir('forward');
+    setDotIndex(Math.min(next, SLIDES.length - 1));
+    if (next >= SLIDES.length) {
+      Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => dismissRef.current());
+      return;
+    }
+    Animated.parallel([
+      Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }),
+      Animated.spring(nextProgress, { toValue: 1, damping: 18, stiffness: 220, useNativeDriver: true }),
+    ]).start(() => {
+      setTopIndex(next);
+      requestAnimationFrame(() => {
+        dragX.setValue(0);
+        nextProgress.setValue(0);
+      });
+    });
   };
 
-  commitPrevRef.current = () => {
+  const goPrev = () => {
     const prev = topIndexRef.current - 1;
     if (prev < 0) return;
-    dragX.setValue(0);
-    nextProgress.setValue(0);
-    prevDragX.setValue(-SCREEN_WIDTH * 1.5);
-    setShowPrev(false);
-    setTopIndex(prev);
+    setSwipeDir('back');
+    setDotIndex(prev);
+    Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
+      setTopIndex(prev);
+      dragX.setValue(-SCREEN_WIDTH * 1.5);
+      nextProgress.setValue(0);
+      requestAnimationFrame(() => {
+        Animated.timing(dragX, { toValue: 0, duration: 220, useNativeDriver: true }).start(() => {
+          setSwipeDir('forward');
+        });
+      });
+    });
   };
-
-  const dismiss = () => dismissRef.current();
 
   const panResponder = useRef(
     PanResponder.create({
@@ -225,61 +238,27 @@ export default function OnboardingScreen() {
       onPanResponderGrant: () => {
         dragX.stopAnimation();
         nextProgress.stopAnimation();
-        prevDragX.stopAnimation();
       },
       onPanResponderMove: (_, g) => {
-        const cur = topIndexRef.current;
-        const isFirst = cur === 0;
-        const isLast = cur === SLIDES.length - 1;
+        if (g.dx > 0 && topIndexRef.current === 0) return;
+        dragX.setValue(g.dx);
         if (g.dx < 0) {
-          setShowPrev(false);
-          if (isLast) {
-            dragX.setValue(g.dx);
-            nextProgress.setValue(Math.min(1, -g.dx / (SCREEN_WIDTH * 0.55)));
-          } else {
-            dragX.setValue(g.dx);
-            nextProgress.setValue(Math.min(1, -g.dx / (SCREEN_WIDTH * 0.55)));
-          }
-        } else {
-          if (isFirst) {
-            dragX.setValue(g.dx * 0.08);
-          } else {
-            setShowPrev(true);
-            dragX.setValue(g.dx);
-            prevDragX.setValue(-SCREEN_WIDTH + g.dx);
-          }
+          nextProgress.setValue(Math.min(1, -g.dx / (SCREEN_WIDTH * 0.55)));
         }
       },
       onPanResponderRelease: (_, g) => {
         const cur = topIndexRef.current;
-        const isFirst = cur === 0;
-        const isLast = cur === SLIDES.length - 1;
         const goLeft = g.dx < -SWIPE_DISTANCE || g.vx < -(SWIPE_VELOCITY / 1000);
-        const goRight = !isFirst && (g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000));
-
+        const goRight = g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000);
         if (goLeft) {
-          if (isLast) {
-            dismissRef.current();
-            Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }).start();
-          } else {
-            setDotIndex(cur + 1);
-            Animated.parallel([
-              Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
-              Animated.spring(nextProgress, { toValue: 1, damping: 18, stiffness: 220, useNativeDriver: true }),
-            ]).start(() => commitNextRef.current());
-          }
-        } else if (goRight) {
-          setDotIndex(cur - 1);
-          Animated.parallel([
-            Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
-            Animated.timing(prevDragX, { toValue: 0, duration: 240, useNativeDriver: true }),
-          ]).start(() => commitPrevRef.current());
+          goNext();
+        } else if (goRight && cur > 0) {
+          goPrev();
         } else {
           Animated.parallel([
             Animated.spring(dragX, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }),
             Animated.spring(nextProgress, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }),
-            Animated.spring(prevDragX, { toValue: -SCREEN_WIDTH * 1.5, damping: 20, stiffness: 300, useNativeDriver: true }),
-          ]).start(() => setShowPrev(false));
+          ]).start();
         }
       },
     })
@@ -297,11 +276,6 @@ export default function OnboardingScreen() {
     ],
   };
 
-  const prevCardAnimStyle = {
-    transform: [{ translateX: prevDragX }],
-  };
-
-  const prevSlide = SLIDES[topIndex - 1];
   // Cards behind the top card — render from deepest to shallowest
   const behindSlides = SLIDES.slice(topIndex + 1, topIndex + 4);
 
@@ -332,13 +306,6 @@ export default function OnboardingScreen() {
             </Animated.View>
           );
         })}
-
-        {/* Prev card — slides in from left when swiping right */}
-        {showPrev && prevSlide && (
-          <Animated.View style={[styles.cardWrapper, prevCardAnimStyle]}>
-            <SlideCard slide={prevSlide} />
-          </Animated.View>
-        )}
 
         {/* Top card */}
         <Animated.View style={[styles.cardWrapper, topCardStyle]}>
