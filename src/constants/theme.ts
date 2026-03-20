@@ -107,7 +107,7 @@ export const fonts = {
 
 export const typography = {
   display: { fontFamily: fonts.sans,  fontSize: 24, fontWeight: '900' as const, lineHeight: 38, letterSpacing: -0.5 },
-  brand:   { fontFamily: fonts.s, fontSize: 24, fontWeight: '900' as const, lineHeight: 28, letterSpacing: 0 },  // "Who here" / "Vem här" only
+  brand:   { fontFamily: fonts.sans, fontSize: 24, fontWeight: '900' as const, lineHeight: 28, letterSpacing: 0 },  // "Who here" / "Vem här" only
   heading: { fontFamily: fonts.sans,  fontSize: 16, fontWeight: '700' as const, lineHeight: 20, letterSpacing: 0 },
   body:    { fontFamily: fonts.sans,  fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
   caption: { fontFamily: fonts.sans,  fontSize: 12, fontWeight: '400' as const, lineHeight: 18 },

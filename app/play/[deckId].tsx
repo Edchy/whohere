@@ -198,6 +198,7 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText, can
         <DeckIcon deck={{ icon, svgIcon }} size={36} color={colors.textPrimary} />
       </View>
       <View style={styles.questionBlock}>
+        <Text selectable={false} style={styles.whoHere}>Vem här…</Text>
         <Text selectable={false} style={[styles.question, { color: resolvedText }]}>{card.question}</Text>
       </View>
       <View style={styles.cardBottom}>
@@ -494,8 +495,6 @@ export default function PlayScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <AppHeader onBack={handleClose} />
-
-      <Text selectable={false} style={styles.whoHereAbove}>Vem här…</Text>
 
       <View style={styles.cardArea} {...panResponder.panHandlers}>
         {/* Next card sits underneath — only visible when swiping left */}
