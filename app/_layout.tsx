@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
 import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Platform, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { darkColors, lightColors } from '../src/constants/theme';
@@ -25,12 +25,13 @@ export default function RootLayout() {
   const setColorScheme = useGameStore((s) => s.setColorScheme);
   const setHapticsEnabled = useGameStore((s) => s.setHapticsEnabled);
   const setCardBackStyle = useGameStore((s) => s.setCardBackStyle);
-  const hydrated = useRef(false);
+  const hydratedRef = useRef(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (!fontsLoaded) return;
-    if (hydrated.current) return;
-    hydrated.current = true;
+    if (hydratedRef.current) return;
+    hydratedRef.current = true;
     Promise.all([
       AsyncStorage.getItem(ONBOARDING_KEY),
       AsyncStorage.getItem(COLOR_SCHEME_KEY),
@@ -53,6 +54,7 @@ export default function RootLayout() {
       } else {
         router.replace('/onboarding');
       }
+      setReady(true);
     });
   }, [fontsLoaded]);
 
@@ -65,7 +67,7 @@ export default function RootLayout() {
     });
   }, [systemColorScheme]);
 
-  if (!fontsLoaded) return <View style={{ flex: 1, backgroundColor: '#000000' }} />;
+  if (!fontsLoaded || !ready) return <View style={{ flex: 1, backgroundColor: colors.background }} />;
 
   return (
     <SafeAreaProvider>

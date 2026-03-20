@@ -33,20 +33,13 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const SWIPE_DISTANCE = 60;
 const SWIPE_VELOCITY = 400;
 
-// Stacked deck depth offsets (matching onboarding)
-const DEPTH_OFFSET_X = 10;
-const DEPTH_OFFSET_Y = 12;
-const DEPTH_SCALE = 0.05;
-
 // Flip animation config
 const FLIP_TOGGLE_CONFIG = { duration: animation.quick, easing: Easing.inOut(Easing.ease) };
 
-// In light mode: white card + dark text.
-// Use deck-defined background/text in both light and dark mode.
-function resolveCardColors(card: Card, deck: Deck, colors: AppColors): { bg: string; text: string } {
+function resolveCardColors(_card: Card, _deck: Deck, colors: AppColors): { bg: string; text: string } {
   return {
     bg: colors.bgSecondary,
-    text: card.deckText ?? deck.cardText ?? colors.textPrimary,
+    text: colors.textPrimary,
   };
 }
 
@@ -148,6 +141,12 @@ function makeStyles(colors: AppColors) {
       ...typography.badge,
       letterSpacing: 1.5,
     },
+    whoHereAbove: {
+      ...typography.brand,
+      color: colors.accent,
+      textAlign: "center",
+      marginBottom: spacing.md,
+    },
     nav: {
       flexDirection: "row",
       alignItems: "center",
@@ -191,28 +190,25 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText, can
   const icon = card.deckIcon ?? deck.icon;
   const svgIcon = card.deckSvgIcon ?? deck.svgIcon;
   const title = card.deckTitle ?? deck.title;
-  const color = card.deckColor ?? deck.color;
-  const cardText = resolvedText;
 
   return (
     <>
 
       <View style={styles.iconRow}>
-        <DeckIcon deck={{ icon, svgIcon, color }} size={36} color={color} />
+        <DeckIcon deck={{ icon, svgIcon }} size={36} color={colors.textPrimary} />
       </View>
       <View style={styles.questionBlock}>
-        <Text selectable={false} style={[styles.whoHere, { color }]}>Vem här…</Text>
-        <Text selectable={false} style={[styles.question, { color: cardText }]}>{card.question}</Text>
+        <Text selectable={false} style={[styles.question, { color: resolvedText }]}>{card.question}</Text>
       </View>
       <View style={styles.cardBottom}>
         <View style={styles.bottomRow}>
           <View style={styles.bottomRowLeft}>
-            <Text selectable={false} style={[styles.bottomRowText, { color: canGoBack ? color : colors.textMuted }]}>‹</Text>
+            <Text selectable={false} style={[styles.bottomRowText, { color: canGoBack ? colors.accent : colors.textMuted }]}>‹</Text>
             <Text selectable={false} style={[styles.bottomRowText, { color: colors.textMuted }]}>{title.toUpperCase()}</Text>
           </View>
           <View style={styles.bottomRowRight}>
             <Text selectable={false} style={[styles.bottomRowText, { color: colors.textMuted }]}>{cardIndex + 1} / {totalCards}</Text>
-            <Text selectable={false} style={[styles.bottomRowText, { color: canGoForward ? color : colors.textMuted }]}>›</Text>
+            <Text selectable={false} style={[styles.bottomRowText, { color: canGoForward ? colors.accent : colors.textMuted }]}>›</Text>
           </View>
         </View>
       </View>
@@ -300,38 +296,36 @@ function CardBack({ card, deck, colors }: { card: Card; deck: Deck; colors: AppC
   const styles = makeStyles(colors);
   const icon = card.deckIcon ?? deck.icon;
   const svgIcon = card.deckSvgIcon ?? deck.svgIcon;
-  const color = card.deckColor ?? deck.color;
   const cardBackStyle = useGameStore((s) => s.cardBackStyle);
-  const resolvedText = card.deckText ?? deck.cardText ?? colors.textPrimary;
 
   return (
     <View style={{ flex: 1 }}>
-      {cardBackStyle === 'pattern' && <CardBackPattern color={color} />}
-      {cardBackStyle === 'bubbles' && <CardBackBubbles color={color} />}
-      {cardBackStyle === 'chevron' && <CardBackChevron color={color} />}
-      {cardBackStyle === 'polka' && <CardBackPolka color={color} />}
-      {cardBackStyle === 'tictactoe' && <CardBackTicTacToe color={color} />}
+      {cardBackStyle === 'pattern' && <CardBackPattern color={colors.accent} />}
+      {cardBackStyle === 'bubbles' && <CardBackBubbles color={colors.accent} />}
+      {cardBackStyle === 'chevron' && <CardBackChevron color={colors.accent} />}
+      {cardBackStyle === 'polka' && <CardBackPolka color={colors.accent} />}
+      {cardBackStyle === 'tictactoe' && <CardBackTicTacToe color={colors.accent} />}
 
       {/* Corner pips — top-left & bottom-right (rotated 180) */}
       <View style={{ position: "absolute", top: 22, left: 22, opacity: 0.7 }}>
-        <DeckIcon deck={{ icon, svgIcon, color }} size={18} color={color} />
+        <DeckIcon deck={{ icon, svgIcon }} size={18} color={colors.textPrimary} />
       </View>
       <View style={{ position: "absolute", bottom: 22, right: 22, opacity: 0.7, transform: [{ rotate: "180deg" }] }}>
-        <DeckIcon deck={{ icon, svgIcon, color }} size={18} color={color} />
+        <DeckIcon deck={{ icon, svgIcon }} size={18} color={colors.textPrimary} />
       </View>
 
       {card.followUp ? (
         /* Follow-up reflection prompt */
         <View style={styles.cardBackContent}>
           <View style={styles.backFollowUpContainer}>
-            <Text selectable={false} style={[styles.backFollowUpText, { color: resolvedText }]}>Varför då?</Text>
-            <Text selectable={false} style={[styles.backFollowUpText, { color: `${resolvedText}99`, marginTop: spacing.lg }]}>{card.followUp}</Text>
+            <Text selectable={false} style={[styles.backFollowUpText, { color: colors.textPrimary }]}>Varför då?</Text>
+            <Text selectable={false} style={[styles.backFollowUpText, { color: colors.textSecondary, marginTop: spacing.lg }]}>{card.followUp}</Text>
           </View>
         </View>
       ) : (
         /* Center icon (fallback when no followUp) */
         <View style={styles.cardBackContent}>
-          <DeckIcon deck={{ icon, svgIcon, color }} size={96} color={color} />
+          <DeckIcon deck={{ icon, svgIcon }} size={96} color={colors.textPrimary} />
         </View>
       )}
     </View>
@@ -352,13 +346,8 @@ export default function PlayScreen() {
   const endGame = useGameStore((s) => s.endGame);
 
   const [topIndex, setTopIndex] = useState(0);
-  const swipedRef = useRef(false);
 
-  // Animated values (RN core — matching onboarding)
   const dragX = useRef(new Animated.Value(0)).current;
-  const nextProgress = useRef(new Animated.Value(0)).current;
-  const prevDragX = useRef(new Animated.Value(-SCREEN_WIDTH * 1.5)).current;
-  const [showPrev, setShowPrev] = useState(false);
 
   // Flip state (reanimated — kept for flip animation only)
   const flipProgress = useSharedValue(0);
@@ -367,8 +356,6 @@ export default function PlayScreen() {
   topIndexRef.current = topIndex;
 
   const dismissRef = useRef(() => {});
-  const commitNextRef = useRef(() => {});
-  const commitPrevRef = useRef(() => {});
   const handleFlipRef = useRef(() => {});
 
   useEffect(() => {
@@ -393,92 +380,57 @@ export default function PlayScreen() {
     router.replace("/play/results");
   };
 
-  commitNextRef.current = () => {
-    const next = topIndexRef.current + 1;
-    if (!deck || next >= deck.cards.length) { dismissRef.current(); return; }
+  const goNext = () => {
+    const cur = topIndexRef.current;
+    const next = cur + 1;
+    if (!deck || next >= deck.cards.length) {
+      Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => dismissRef.current());
+      return;
+    }
     nextCardStore();
-    dragX.setValue(0);
-    nextProgress.setValue(0);
-    prevDragX.setValue(-SCREEN_WIDTH * 1.5);
-    setShowPrev(false);
-    setTopIndex(next);
+    Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
+      setTopIndex(next);
+      requestAnimationFrame(() => dragX.setValue(0));
+    });
   };
 
-  commitPrevRef.current = () => {
+  const goPrev = () => {
     const prev = topIndexRef.current - 1;
     if (prev < 0) return;
     prevCardStore();
-    dragX.setValue(0);
-    nextProgress.setValue(0);
-    prevDragX.setValue(-SCREEN_WIDTH * 1.5);
-    setShowPrev(false);
-    setTopIndex(prev);
+    // Snap back to center, then switch card — no fly-off for back navigation
+    Animated.timing(dragX, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => {
+      setTopIndex(prev);
+    });
   };
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_, g) =>
+        Math.abs(g.dx) > 8 && Math.abs(g.dx) > Math.abs(g.dy),
       onPanResponderGrant: () => {
-        swipedRef.current = false;
         dragX.stopAnimation();
-        nextProgress.stopAnimation();
-        prevDragX.stopAnimation();
       },
       onPanResponderMove: (_, g) => {
-        const cur = topIndexRef.current;
-        const isFirst = cur === 0;
-        if (Math.abs(g.dx) < 4 && Math.abs(g.dy) < 4) return;
-        swipedRef.current = true;
-        if (g.dx < 0) {
-          setShowPrev(false);
-          dragX.setValue(g.dx);
-          nextProgress.setValue(Math.min(1, -g.dx / (SCREEN_WIDTH * 0.55)));
-        } else {
-          if (isFirst) {
-            dragX.setValue(g.dx * 0.08);
-          } else {
-            setShowPrev(true);
-            dragX.setValue(g.dx);
-            prevDragX.setValue(-SCREEN_WIDTH + g.dx);
-          }
-        }
+        dragX.setValue(g.dx);
       },
       onPanResponderRelease: (_, g) => {
-        const cur = topIndexRef.current;
-        const isFirst = cur === 0;
-        const isLast = !deck || cur === deck.cards.length - 1;
         const isTap = Math.abs(g.dx) < 6 && Math.abs(g.dy) < 6;
         if (isTap) {
           handleFlipRef.current();
           return;
         }
         const goLeft = g.dx < -SWIPE_DISTANCE || g.vx < -(SWIPE_VELOCITY / 1000);
-        const goRight = !isFirst && (g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000));
-
+        const goRight = g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000);
         if (goLeft) {
           haptics.light();
-          if (isLast) {
-            Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }).start(() => dismissRef.current());
-          } else {
-            Animated.parallel([
-              Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
-              Animated.spring(nextProgress, { toValue: 1, damping: 18, stiffness: 220, useNativeDriver: true }),
-            ]).start(() => commitNextRef.current());
-          }
+          goNext();
         } else if (goRight) {
           haptics.light();
-          Animated.parallel([
-            Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
-            Animated.timing(prevDragX, { toValue: 0, duration: 240, useNativeDriver: true }),
-          ]).start(() => commitPrevRef.current());
+          goPrev();
         } else {
-          swipedRef.current = false;
-          Animated.parallel([
-            Animated.spring(dragX, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }),
-            Animated.spring(nextProgress, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }),
-            Animated.spring(prevDragX, { toValue: -SCREEN_WIDTH * 1.5, damping: 20, stiffness: 300, useNativeDriver: true }),
-          ]).start(() => setShowPrev(false));
+          Animated.spring(dragX, { toValue: 0, useNativeDriver: true, damping: 20, stiffness: 300 }).start();
         }
       },
     })
@@ -494,10 +446,6 @@ export default function PlayScreen() {
         }),
       },
     ],
-  };
-
-  const prevCardAnimStyle = {
-    transform: [{ translateX: prevDragX }],
   };
 
   const frontFaceStyle = useAnimatedStyle(() => ({
@@ -529,9 +477,7 @@ export default function PlayScreen() {
 
   const topCard: Card | undefined = deck.cards[topIndex];
   const isLast = topIndex === deck.cards.length - 1;
-  const prevCard: Card | undefined = deck.cards[topIndex - 1];
-  // Cards behind the top — up to 3 deep (matching onboarding)
-  const behindCards = deck.cards.slice(topIndex + 1, topIndex + 4);
+  const nextCard: Card | undefined = deck.cards[topIndex + 1];
 
   if (!topCard) return null;
 
@@ -541,46 +487,27 @@ export default function PlayScreen() {
     <SafeAreaView style={styles.safe}>
       <AppHeader onBack={handleClose} />
 
-      <View style={styles.cardArea} {...panResponder.panHandlers}>
-        {/* Stacked cards behind — deepest first */}
-        {[...behindCards].reverse().map((card, reversedDepth) => {
-          const depth = behindCards.length - reversedDepth;
-          const isNext = depth === 1;
-          const translateX = isNext
-            ? nextProgress.interpolate({ inputRange: [0, 1], outputRange: [DEPTH_OFFSET_X * depth, 0] })
-            : DEPTH_OFFSET_X * depth;
-          const translateY = isNext
-            ? nextProgress.interpolate({ inputRange: [0, 1], outputRange: [DEPTH_OFFSET_Y * depth, 0] })
-            : DEPTH_OFFSET_Y * depth;
-          const scale = isNext
-            ? nextProgress.interpolate({ inputRange: [0, 1], outputRange: [1 - DEPTH_SCALE * depth, 1] })
-            : 1 - DEPTH_SCALE * depth;
-          const rc = resolveCardColors(card, deck, colors);
-          return (
-            <Animated.View
-              key={card.id}
-              style={[styles.cardWrapper, { transform: [{ translateX }, { translateY }, { scale }] }]}
-            >
-              <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
-                <CardFace card={card} deck={deck} cardIndex={topIndex + depth} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={false} canGoForward={false} />
-              </View>
-            </Animated.View>
-          );
-        })}
+      <Text selectable={false} style={styles.whoHereAbove}>Vem här…</Text>
 
-        {/* Prev card — slides in from left */}
-        {showPrev && prevCard && (() => {
-          const rc = resolveCardColors(prevCard, deck, colors);
+      <View style={styles.cardArea} {...panResponder.panHandlers}>
+        {/* Next card sits underneath — only visible when swiping left */}
+        {nextCard && (() => {
+          const rc = resolveCardColors(nextCard, deck, colors);
+          const nextCardOpacity = dragX.interpolate({
+            inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0],
+            outputRange: [1, 1, 0],
+            extrapolate: "clamp",
+          });
           return (
-            <Animated.View style={[styles.cardWrapper, prevCardAnimStyle]}>
+            <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
               <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
-                <CardFace card={prevCard} deck={deck} cardIndex={topIndex - 1} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={topIndex - 1 > 0} canGoForward={true} />
+                <CardFace card={nextCard} deck={deck} cardIndex={topIndex + 1} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={false} canGoForward={false} />
               </View>
             </Animated.View>
           );
         })()}
 
-        {/* Top card */}
+        {/* Top card — draggable */}
         <Animated.View style={[styles.cardWrapper, topCardAnimStyle]}>
           <View style={styles.cardPressable}>
             <ReAnimated.View style={[styles.cardFace, { backgroundColor: topRc.bg }, frontFaceStyle]}>
@@ -600,9 +527,9 @@ export default function PlayScreen() {
               haptics.light();
               dismissRef.current();
             }}
-            style={[styles.finishBtn, { borderColor: deck.color }]}
+            style={[styles.finishBtn, { borderColor: colors.accent }]}
           >
-            <Text style={[styles.finishBtnText, { color: deck.color }]}>
+            <Text style={[styles.finishBtnText, { color: colors.accent }]}>
               klar
             </Text>
           </TouchableOpacity>

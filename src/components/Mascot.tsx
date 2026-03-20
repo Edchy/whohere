@@ -155,23 +155,26 @@ export default function Mascot({ size = 24, style }: MascotProps) {
   }, [scanTravel]);
 
   useEffect(() => {
-    scheduleSaccade();
+    const t = setTimeout(() => {
+      scheduleSaccade();
 
-    blinkSY.value = withRepeat(
-      withSequence(
-        withDelay(BLINK_DELAY, withTiming(0.05, { duration: BLINK_CLOSE })),
-        withTiming(0.05, { duration: BLINK_HOLD }),
-        withTiming(1,    { duration: BLINK_OPEN }),
-      ),
-      -1,
-      false,
-    );
+      blinkSY.value = withRepeat(
+        withSequence(
+          withDelay(BLINK_DELAY, withTiming(0.05, { duration: BLINK_CLOSE })),
+          withTiming(0.05, { duration: BLINK_HOLD }),
+          withTiming(1,    { duration: BLINK_OPEN }),
+        ),
+        -1,
+        false,
+      );
 
-    breathe.value = withRepeat(
-      withTiming(1.02, { duration: BREATHE_HALF }),
-      -1,
-      true,
-    );
+      breathe.value = withRepeat(
+        withTiming(1.02, { duration: BREATHE_HALF }),
+        -1,
+        true,
+      );
+    }, 500);
+    return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

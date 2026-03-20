@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RandomSvg from "../../assets/icons/noun-doodle-element-7389160.svg";
 import { DeckTile } from "../../src/components/DeckTile";
-import ScreenLayout from "../../src/components/ScreenLayout";
 import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
 import { useColors } from "../../src/hooks/useColors";
 
@@ -88,9 +88,6 @@ function buildDeck(selectedIds: string[], modeId: string, colors: AppColors): De
         deckIcon: source.icon,
         deckSvgIcon: source.svgIcon,
         deckTitle: source.title,
-        deckColor: source.color,
-        deckBackground: source.cardBackground,
-        deckText: source.cardText,
       }));
       const filtered = stamped.filter((card) => passesIntensityFilter(card, modeId));
       const pool = filtered.length > 0 ? filtered : stamped;
@@ -260,6 +257,7 @@ function makeStyles(colors: AppColors) {
 export default function CategoriesScreen() {
   const colors = useColors();
   const colorScheme = useGameStore((s) => s.colorScheme);
+  const insets = useSafeAreaInsets();
   const styles = makeStyles(colors);
 
   const router = useRouter();
@@ -305,7 +303,7 @@ export default function CategoriesScreen() {
     Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
   return (
-    <ScreenLayout edges={['bottom']}>
+    <View style={{ flex: 1, backgroundColor: colors.bgTertiary, paddingTop: insets.top }}>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -368,6 +366,6 @@ export default function CategoriesScreen() {
           </Pressable>
         </Animated.View>
       </ScrollView>
-    </ScreenLayout>
+    </View>
   );
 }

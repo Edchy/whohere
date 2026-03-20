@@ -49,7 +49,8 @@ function makeStyles(colors: AppColors) {
       gap: spacing.sm,
     },
     row: {
-      paddingVertical: spacing.xl,
+      height: 88,
+      justifyContent: 'center',
       paddingHorizontal: spacing.lg,
       borderRadius: radius.md,
       borderWidth: 1,
@@ -120,7 +121,7 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
           )}
           <View style={styles.rowText}>
             <Text style={styles.rowLabel}>{mode.label}</Text>
-            <Text style={styles.rowSublabel}>{mode.sublabel}</Text>
+            <Text style={styles.rowSublabel} numberOfLines={1}>{mode.sublabel}</Text>
           </View>
         </View>
       </Pressable>
