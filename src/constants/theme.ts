@@ -1,142 +1,68 @@
 // ─── Primitive tokens ────────────────────────────────────────────────────────
-// Raw named values. No semantic meaning — never use these directly in UI code.
-// "brand" is color-agnostic: swap the hex values here to change the brand color
-// without touching any semantic token names or call sites.
+// 5 base colors. Swap hex here to rebrand — never reference these directly in UI.
 
 const palette = {
-  // Brand scale (red)
-  brand500: 'rgb(254, 153, 217)',   // pure brand red — base
-  brand400: '#FF2F00',   // orange-red variant
-  brand700: '#CC0000',   // darker red for destructive/hover
-
-  // Neutral scale (black → white)
-  neutral900: '#101010',   // near-black — primary surface
-  neutral700: '#666666',   // mid grey
-  neutral500: '#ABABAB',   // light grey
-  neutral300: '#D9D9D9',   // very light grey
-  neutral200: '#DDDDDD',   // very light grey 2
-  neutral150: '#EDEDED',   // off-white
-  neutral100: '#FAFAFA',   // near-white
-  neutral50:  '#FFFFFF',   // pure white
-
-  // Special use (badges only)
-  green:      '#00D816',   // badge: positive/correct
-  greenMint:  '#5CFFA8',   // badge: secondary positive
-  yellow:     '#FFB700',   // badge: warning/highlight
-
-  // Absolute
-  black:      '#000000',
-  white:      '#FFFFFF',
-  transparent: 'rgba(0,0,0,0)',
+  brand:   '#FE99D9',   // pink accent
+  brand2: '#dfe5f3',   // light blue accent (currently unused)
+  black:   '#000000',
+  dark:    '#0a0a0a',   // near-black surface
+  grey:    '#666666',   // mid grey
+  white:   '#FFFFFF',
 } as const;
 
 // ─── Semantic tokens ──────────────────────────────────────────────────────────
-// Named by role, derived from palette. Never hardcode hex here.
-//
-// Two surface+text pairs underpin the whole UI:
-//
-//   Neutral surface  →  brand text      (cream bg, red text  — default)
-//   Brand surface    →  neutral text    (red bg,   cream text — inverted)
 
 export const darkColors = {
   // Backgrounds
-  bgPrimary:   palette.black,              // main app background (#000)
-  bgSecondary: palette.neutral900,         // cards, sheets (#101010)
-  bgTertiary:  '#1A1A1A',                  // inset surfaces
-  bgBrand:     palette.brand500,           // brand-colored surface (buttons)
-  bgBrandSoft: palette.brand500 + '20',    // red @ 12% opacity
-  bgBlack:     palette.black,              // discretion screen
+  bgPrimary:   palette.black,
+  bgSecondary: palette.dark,
+  bgTertiary:  '#1A1A1A',
+  bgBrand:     palette.brand,
+  bgBlack:     palette.black,
 
-  // Text — on dark surfaces (white/grey)
-  textPrimary:   palette.white,            // high emphasis
-  textSecondary: palette.neutral300,       // medium emphasis
-  textMuted:     palette.neutral500,       // low emphasis
+  // Text
+  textPrimary:   palette.white,
+  textSecondary: '#D9D9D9',
+  textMuted:     '#ABABAB',
+  textOnBrand:   palette.white,
 
-  // Text — on brand (red) surfaces
-  textOnBrand:      palette.white,
-  textOnBrandMuted: palette.white + '99',
-  textOnBlack:      '#111111',             // barely-visible on black
+  // UI
+  accent:     palette.brand,
+  border:     palette.grey,
+  card:       '#1A1A1A',
 
-  // Accent
-  accent:     palette.brand500,            // #FF0000
-  accentDim:  palette.brand500 + '20',
-  accentSoft: palette.brand500 + '33',
-
-  // Mode tints
-  datingTint:  palette.brand500,           // red
-  friendsTint: palette.brand400,           // orange-red
-  soloTint:    palette.neutral500,         // grey
-
-  // Badge colors (use sparingly)
-  badgeGreen:  palette.green,
-  badgeMint:   palette.greenMint,
-  badgeYellow: palette.yellow,
-
-  // UI chrome
-  border:      palette.neutral700,         // #666
-  overlay:     palette.black + 'F2',       // black @ 95%
-  destructive: palette.brand700,
-  white:       palette.white,
-
-  // Legacy aliases
-  background:  palette.black,
-  surface:     palette.neutral900,
-  card:        '#1A1A1A',
-  cardBorder:  palette.neutral700,
-  brandBg:     palette.brand500,
+  // Legacy aliases (kept for backward compat — map to semantic equivalents)
+  background: palette.black,
+  surface:    palette.dark,
 } as const;
 
 export const lightColors = {
   // Backgrounds
-  bgPrimary:   '#FAFAFA',
-  bgSecondary: '#F0F0F0',
-  bgTertiary:  '#E8E8E8',
-  bgBrand:     palette.brand500,
-  bgBrandSoft: palette.brand500 + '20',
-  bgBlack:     palette.black,              // always black (discretion screen)
+  bgPrimary:   '#F5F0EB',
+  bgSecondary: '#EDE8E2',
+  bgTertiary:  '#E2DDD7',
+  bgBrand:     palette.brand,
+  bgBlack:     palette.black,
 
-  // Text — on light surfaces (dark)
+  // Text
   textPrimary:   '#111111',
   textSecondary: '#444444',
   textMuted:     '#888888',
+  textOnBrand:   palette.white,
 
-  // Text — on brand (red) surfaces
-  textOnBrand:      palette.white,
-  textOnBrandMuted: palette.white + '99',
-  textOnBlack:      '#111111',
-
-  // Accent
-  accent:     palette.brand500,
-  accentDim:  palette.brand500 + '20',
-  accentSoft: palette.brand500 + '33',
-
-  // Mode tints
-  datingTint:  palette.brand500,
-  friendsTint: palette.brand400,
-  soloTint:    palette.neutral500,
-
-  // Badge colors (use sparingly)
-  badgeGreen:  palette.green,
-  badgeMint:   palette.greenMint,
-  badgeYellow: palette.yellow,
-
-  // UI chrome
-  border:      '#CCCCCC',
-  overlay:     'rgba(255,255,255,0.95)',
-  destructive: palette.brand700,
-  white:       palette.white,
+  // UI
+  accent:     palette.brand,
+  border:     '#C8C3BD',
+  card:       '#E2DDD7',
 
   // Legacy aliases
-  background:  '#FAFAFA',
-  surface:     '#F0F0F0',
-  card:        '#FFFFFF',
-  cardBorder:  '#DDDDDD',
-  brandBg:     palette.brand500,
+  background: '#F5F0EB',
+  surface:    '#EDE8E2',
 } as const;
 
 export type AppColors = typeof darkColors;
 
-// Backward-compat alias — components that have not yet migrated can still import `colors`
+// Backward-compat alias
 export const colors = darkColors;
 
 // ─── Spacing ──────────────────────────────────────────────────────────────────
@@ -164,49 +90,47 @@ export const radius = {
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
 export const fonts = {
-  heading:   'Pecita',    // loaded via useFonts in app/_layout.tsx
-  copy:      'MonumentRegular',      // loaded via useFonts in app/_layout.tsx
-  copyLight: 'MonumentLight',
-  ui:        'MonumentLight',   // system default
-  question:  'MonumentRegular',   // card question text — swap as needed
+  sans: 'Author',
+  serif: 'Telma',
+  s: 'S',
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
-// 5-level scale. Every font size in the app maps to one of these.
 //
-//   display  36  — home screen mode titles
-//   heading  24  — screen headings, card questions
-//   body     16  — descriptions, card prefix, row labels
-//   caption  12  — secondary info, deck descriptions
-//   label    10  — uppercase micro-labels, badges
+//   display  32  Satoshi bold    — screen-level titles (results, onboarding)
+//   brand    22  Telma serif     — "Who here" / "Vem här" phrase only
+//   heading  16  Satoshi bold    — section headings, category titles, settings rows
+//   body     16  Satoshi regular — descriptive text under headings
+//   caption  12  Satoshi regular — secondary info, deck descriptions
+//   badge    10  Satoshi medium  — uppercase micro-labels, counters, tab text
+//   card     28  Telma serif     — question card text
 
 export const typography = {
-  display:      { fontFamily: fonts.heading, fontSize: 36, fontWeight: '400' as const, lineHeight: 44, letterSpacing: -1 },
-  heading:      { fontFamily: fonts.heading, fontSize: 24, fontWeight: '400' as const, lineHeight: 32, letterSpacing: -0.3 },
-  body:         { fontFamily: fonts.copy,    fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
-  bodyMedium:   { fontFamily: fonts.copy,    fontSize: 16, fontWeight: '500' as const, lineHeight: 24 },
-  caption:      { fontFamily: fonts.copy,    fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
-  label:        { fontFamily: fonts.ui,      fontSize: 10, fontWeight: '500' as const, lineHeight: 14, letterSpacing: 1 },
+  display: { fontFamily: fonts.sans,  fontSize: 24, fontWeight: '900' as const, lineHeight: 38, letterSpacing: -0.5 },
+  brand:   { fontFamily: fonts.s, fontSize: 24, fontWeight: '900' as const, lineHeight: 28, letterSpacing: 0 },  // "Who here" / "Vem här" only
+  heading: { fontFamily: fonts.sans,  fontSize: 16, fontWeight: '700' as const, lineHeight: 20, letterSpacing: 0 },
+  body:    { fontFamily: fonts.sans,  fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
+  caption: { fontFamily: fonts.sans,  fontSize: 12, fontWeight: '400' as const, lineHeight: 18 },
+  badge:   { fontFamily: fonts.sans,  fontSize: 10, fontWeight: '100' as const, lineHeight: 14, letterSpacing: 1 },
+  card:    { fontFamily: fonts.sans,  fontSize: 24, fontWeight: '500' as const, lineHeight: 24, letterSpacing: 0.1, textTransform: 'uppercase' as const },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────
-// Fixed sizes for reusable UI elements. Use these instead of hardcoded px values.
 
 export const dimensions = {
-  cardHeight:    400,   // play screen card height
-  buttonHeight:   52,   // primary action button height
-  iconTouchSize:  44,   // minimum tappable icon area
-  checkboxSize:   22,   // checkbox / radio circle diameter
-  iconContainer:  32,   // icon wrapper in list rows
-  dotSize:         5,   // navigation / pagination dot
-  rowHeight:      80,   // standard list row height
+  cardHeight:    400,
+  buttonHeight:   52,
+  iconTouchSize:  44,
+  checkboxSize:   22,
+  iconContainer:  32,
+  dotSize:         5,
+  rowHeight:      80,
 } as const;
 
 // ─── Animation ────────────────────────────────────────────────────────────────
-// Shared durations (ms) for Animated / Reanimated transitions.
 
 export const animation = {
-  press:  60,   // press-in feedback
-  quick: 160,   // fast transitions (card flip)
-  base:  200,   // default transition (press-out, fade)
+  press:  60,
+  quick: 160,
+  base:  200,
 } as const;

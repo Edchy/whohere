@@ -1,9 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { spacing } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
-import EyesLogo from './EyesLogo';
+import Mascot from './Mascot';
+
+const SIZE = 40;
 
 export default function AppHeader({ onBack }: { onBack?: () => void }) {
   const colors = useColors();
@@ -16,7 +19,7 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
       ) : (
         <View style={styles.spacer} />
       )}
-      <EyesLogo size={72} />
+      <Mascot size={SIZE} />
       <View style={styles.spacer} />
     </View>
   );
@@ -29,6 +32,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.md,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
   },
   spacer: {
     flex: 1,

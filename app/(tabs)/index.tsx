@@ -15,21 +15,21 @@ import deckIcons from "../../src/constants/deckIcons";
 const MODES = [
   {
     id: "partner",
-    label: "På date",
+    label: "On a date",
     sublabel: "Lär känna varandra genom att betrakta andra.",
-    svgIcon: "noun-give-8020580",
+    svgIcon: "noun-wine-1064743",
   },
   {
     id: "group",
-    label: "Med vänner",
+    label: "With frens",
     sublabel: "Fantasi och intuition i en ohelig kombination.",
-    svgIcon: "noun-piece-8020583",
+    svgIcon: "noun-wine-3811155",
   },
   {
     id: "solo",
-    label: "På egen hand",
+    label: "Riding solo",
     sublabel: "Upptäck din inre värld genom utblickar och insikter.",
-    svgIcon: "noun-gift-8020579",
+    svgIcon: "noun-wine-glass-1047711",
   },
 ];
 
@@ -40,6 +40,10 @@ function makeStyles(colors: AppColors) {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
       gap: spacing.sm,
+    },
+    mascotWrap: {
+      alignItems: 'center',
+      paddingVertical: spacing.lg,
     },
     modeList: {
       gap: spacing.sm,
@@ -131,7 +135,7 @@ export default function HomeScreen() {
   return (
     <ScreenLayout>
       <View style={styles.container}>
-        <View style={styles.modeList}>
+<View style={styles.modeList}>
           {MODES.map((mode) => (
             <ModeRow key={mode.id} mode={mode} colors={colors} />
           ))}

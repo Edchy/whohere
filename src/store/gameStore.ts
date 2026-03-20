@@ -13,6 +13,10 @@ type GameState = {
   setHapticsEnabled: (enabled: boolean) => void;
   colorScheme: 'dark' | 'light';
   setColorScheme: (scheme: 'dark' | 'light') => void;
+  cardBackStyle: 'plain' | 'pattern' | 'bubbles' | 'chevron' | 'polka' | 'tictactoe';
+  setCardBackStyle: (style: 'plain' | 'pattern' | 'bubbles' | 'chevron' | 'polka' | 'tictactoe') => void;
+  hasSeenOnboarding: boolean;
+  setHasSeenOnboarding: (seen: boolean) => void;
 
   // Actions
   startGame: (deck: Deck, mode: DeckMode) => void;
@@ -37,6 +41,10 @@ export const useGameStore = create<GameState>((set, get) => ({
   setHapticsEnabled: (enabled) => set({ hapticsEnabled: enabled }),
   colorScheme: 'dark' as const,
   setColorScheme: (scheme) => set({ colorScheme: scheme }),
+  cardBackStyle: 'plain' as const,
+  setCardBackStyle: (style) => set({ cardBackStyle: style }),
+  hasSeenOnboarding: false,
+  setHasSeenOnboarding: (seen) => set({ hasSeenOnboarding: seen }),
 
   startGame: (deck, mode) =>
     set({ activeDeck: deck, currentCardIndex: 0, mode, isFlipped: false }),

@@ -21,7 +21,6 @@ export default function DecksScreen() {
           <DeckTile
             key={deck.id}
             deck={deck}
-            isSelected
             onPress={() => {
               startGame(deck, deck.mode);
               router.push(`/play/${deck.id}`);

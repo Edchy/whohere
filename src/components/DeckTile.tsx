@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import OkeySvg from '../../assets/icons/noun-okey-8020578.svg';
-import { animation, AppColors, fonts, radius, spacing, typography } from '../constants/theme';
+import { animation, AppColors, radius, spacing, typography } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
 import { DeckIcon } from './DeckIcon';
 import type { Deck } from '../types';
@@ -9,6 +9,7 @@ import type { Deck } from '../types';
 interface Props {
   deck: Deck;
   isSelected?: boolean;
+  selectedColor?: string;
   badge?: string;
   showCount?: boolean;
   onPress: () => void;
@@ -33,6 +34,8 @@ function makeStyles(colors: AppColors) {
       paddingVertical: spacing.lg,
       paddingHorizontal: spacing.lg,
       borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
     },
     inner: {
       flexDirection: 'row',
@@ -41,7 +44,7 @@ function makeStyles(colors: AppColors) {
     },
     text: {
       flex: 1,
-      gap: spacing.xs,
+      gap: 0,
     },
     titleRow: {
       flexDirection: 'row',
@@ -55,21 +58,19 @@ function makeStyles(colors: AppColors) {
       gap: spacing.xs,
     },
     title: {
-      ...typography.bodyMedium,
+      ...typography.heading,
     },
     desc: {
       ...typography.caption,
-      fontFamily: fonts.copyLight,
     },
     count: {
-      ...typography.label,
-      fontFamily: fonts.copyLight,
+      ...typography.badge,
     },
 
   });
 }
 
-export function DeckTile({ deck, isSelected = false, badge, showCount = true, onPress }: Props) {
+export function DeckTile({ deck, isSelected = false, selectedColor, badge, showCount = true, onPress }: Props) {
   const colors = useColors();
   const styles = makeStyles(colors);
   const opacity = useRef(new Animated.Value(1)).current;
@@ -80,8 +81,9 @@ export function DeckTile({ deck, isSelected = false, badge, showCount = true, on
   const onPressOut = () =>
     Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
-  const bg = isSelected ? deck.color : colors.bgSecondary;
-  const onColor = isSelected ? contrastText(deck.color) : colors.textPrimary;
+  const activeBg = selectedColor ?? colors.accent;
+  const bg = isSelected ? activeBg : colors.bgSecondary;
+  const onColor = isSelected ? contrastText(activeBg) : colors.textPrimary;
   const textColor = onColor;
   const subColor = isSelected ? onColor + '99' : colors.textMuted;
   const iconColor = onColor;
@@ -92,15 +94,15 @@ export function DeckTile({ deck, isSelected = false, badge, showCount = true, on
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={onPress}
-        style={[styles.tile, { backgroundColor: bg }]}
+        style={[styles.tile, { backgroundColor: bg }, isSelected && { borderColor: 'transparent' }]}
       >
         <View style={styles.inner}>
-          <DeckIcon deck={deck} size={36} color={iconColor} />
+          <DeckIcon deck={deck} size={36} />
           <View style={styles.text}>
             <View style={styles.titleRow}>
-              <Text style={[styles.title, { color: textColor }]}>{deck.title}</Text>
+              <Text style={[styles.title, { color: textColor }]}>{deck.title.toUpperCase()}</Text>
               <View style={styles.titleRight}>
-                {badge && <OkeySvg width={24} height={24} fill={colors.textMuted} />}
+                <OkeySvg width={24} height={24} fill={badge ? (isSelected ? '#000000' : colors.textMuted) : 'transparent'} />
                 {showCount && <Text style={[styles.count, { color: textColor }]}>{deck.cards.length} kort</Text>}
               </View>
             </View>
