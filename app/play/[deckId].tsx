@@ -422,6 +422,7 @@ export default function PlayScreen() {
         dragX.stopAnimation();
       },
       onPanResponderMove: (_, g) => {
+        if (g.dx > 0 && topIndexRef.current === 0) return;
         dragX.setValue(g.dx);
       },
       onPanResponderRelease: (_, g) => {
@@ -435,7 +436,7 @@ export default function PlayScreen() {
         if (goLeft) {
           haptics.light();
           goNext();
-        } else if (goRight) {
+        } else if (goRight && topIndexRef.current > 0) {
           haptics.light();
           goPrev();
         } else {
