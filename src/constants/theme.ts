@@ -5,7 +5,7 @@ const palette = {
   brand:   '#FE99D9',   // pink accent
   brand2: '#dfe5f3',   // light blue accent (currently unused)
   black:   '#000000',
-  dark:    '#0b0b0b9b',   // near-black surface
+  dark:    '#0a0a0a',   // near-black surface
   grey:    '#666666',   // mid grey
   white:   '#FFFFFF',
 } as const;
@@ -90,7 +90,7 @@ export const radius = {
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
 export const fonts = {
-  sans: 'Satoshi',
+  sans: 'Author',
   serif: 'Telma',
   s: 'S',
 } as const;
@@ -112,7 +112,7 @@ export const typography = {
   body:    { fontFamily: fonts.sans,  fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
   caption: { fontFamily: fonts.sans,  fontSize: 12, fontWeight: '400' as const, lineHeight: 18 },
   badge:   { fontFamily: fonts.sans,  fontSize: 10, fontWeight: '100' as const, lineHeight: 14, letterSpacing: 1 },
-  card:    { fontFamily: fonts.sans,  fontSize: 24, fontWeight: '900' as const, lineHeight: 36, letterSpacing: 0.1, textTransform: 'uppercase' as const },
+  card:    { fontFamily: fonts.sans,  fontSize: 24, fontWeight: '500' as const, lineHeight: 24, letterSpacing: 0.1, textTransform: 'uppercase' as const },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────

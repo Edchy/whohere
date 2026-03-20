@@ -15,7 +15,7 @@ const CARD_BACK_KEY = '@whohere/cardBackStyle';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    'Satoshi': require('../assets/fonts/Satoshi-Variable.ttf'), 'S': require('../assets/fonts/seasum.otf'), 'Telma': require('../assets/fonts/Telma-Variable.ttf'),
+    'Satoshi': require('../assets/fonts/Satoshi-Variable.ttf'), 'S': require('../assets/fonts/seasum.otf'), 'Telma': require('../assets/fonts/Telma-Variable.ttf'), 'Author': require('../assets/fonts/Author-Variable.ttf'),
   });
 
   const systemColorScheme = useColorScheme();

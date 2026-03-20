@@ -15,21 +15,21 @@ import deckIcons from "../../src/constants/deckIcons";
 const MODES = [
   {
     id: "partner",
-    label: "På date",
+    label: "On a date",
     sublabel: "Lär känna varandra genom att betrakta andra.",
-    svgIcon: "noun-smoking-cigarette-7798098",
+    svgIcon: "noun-wine-1064743",
   },
   {
     id: "group",
-    label: "Med vänner",
+    label: "With frens",
     sublabel: "Fantasi och intuition i en ohelig kombination.",
-    svgIcon: "noun-magic-cards-7798217",
+    svgIcon: "noun-wine-3811155",
   },
   {
     id: "solo",
-    label: "På egen hand",
+    label: "Riding solo",
     sublabel: "Upptäck din inre värld genom utblickar och insikter.",
-    svgIcon: "noun-cat-hiding-7798136",
+    svgIcon: "noun-wine-glass-1047711",
   },
 ];
 
