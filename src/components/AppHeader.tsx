@@ -5,7 +5,6 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { spacing } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
 import Mascot from './Mascot';
-import MascotFly from './MascotFly';
 
 const SIZE = 40;
 

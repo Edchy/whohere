@@ -1,8 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AppColors, radius, spacing, typography } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
 
@@ -21,7 +20,7 @@ function makeStyles(colors: AppColors) {
       borderColor: colors.accent,
       backgroundColor: colors.background,
       marginHorizontal: spacing.lg,
-      marginBottom: 0,
+      marginBottom: 24,
       paddingBottom: 12,
       paddingTop: 12,
       paddingHorizontal: spacing.md,
@@ -53,11 +52,10 @@ function makeStyles(colors: AppColors) {
 
 function CustomTabBar({ state, descriptors, navigation }: any) {
   const colors = useColors();
-  const insets = useSafeAreaInsets();
   const tabStyles = makeStyles(colors);
 
   return (
-    <View style={[tabStyles.bar, { marginBottom: Math.max(insets.bottom, 24) }]}>
+    <View style={tabStyles.bar}>
       {state.routes
         .map((route: any) => {
           const focused = state.routes[state.index]?.key === route.key;
@@ -90,14 +88,22 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
 }
 
 export default function TabsLayout() {
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(opacity, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+  }, []);
+
   return (
-    <Tabs
-      tabBar={(props) => <CustomTabBar {...props} />}
-      screenOptions={{ headerShown: false, animation: 'none' }}
-    >
-      <Tabs.Screen name="index" options={{ title: 'Play' }} />
-      <Tabs.Screen name="decks" options={{ title: 'Decks' }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
-    </Tabs>
+    <Animated.View style={{ flex: 1, opacity }}>
+      <Tabs
+        tabBar={(props) => <CustomTabBar {...props} />}
+        screenOptions={{ headerShown: false }}
+      >
+        <Tabs.Screen name="index" options={{ title: 'Play' }} />
+        <Tabs.Screen name="decks" options={{ title: 'Decks' }} />
+        <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
+      </Tabs>
+    </Animated.View>
   );
 }

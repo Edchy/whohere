@@ -73,7 +73,7 @@ export function DeckCard({ deck, onPress }: Props) {
 
   return (
     <TouchableOpacity
-      style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      style={[styles.container, { backgroundColor: deck.color + '22', borderColor: deck.color + '44' }]}
       onPress={onPress}
       activeOpacity={0.8}
     >
@@ -86,8 +86,8 @@ export function DeckCard({ deck, onPress }: Props) {
           {deck.description}
         </Text>
         <View style={styles.meta}>
-          <View style={[styles.badge, { backgroundColor: colors.bgSecondary }]}>
-            <Text style={[styles.badgeText, { color: colors.textMuted }]}>{deck.mode}</Text>
+          <View style={[styles.badge, { backgroundColor: deck.color + '33' }]}>
+            <Text style={[styles.badgeText, { color: deck.color }]}>{deck.mode}</Text>
           </View>
           <Text style={styles.count}>{deck.cards.length} cards</Text>
         </View>
