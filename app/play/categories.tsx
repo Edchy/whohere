@@ -298,7 +298,7 @@ export default function CategoriesScreen() {
     Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
   return (
-    <ScreenLayout showHeader={false} backgroundColor={colors.bgTertiary} noTopInset>
+    <ScreenLayout showHeader={false} backgroundColor={colors.bgSecondary} noTopInset>
       <View style={{ alignItems: 'center', paddingTop: spacing.md, paddingBottom: spacing.xs }}>
         <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border }} />
       </View>

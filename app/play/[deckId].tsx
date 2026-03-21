@@ -38,7 +38,7 @@ const FLIP_TOGGLE_CONFIG = { duration: animation.quick, easing: Easing.inOut(Eas
 
 function resolveCardColors(_card: Card, _deck: Deck, colors: AppColors): { bg: string; text: string } {
   return {
-    bg: colors.bgSecondary,
+    bg: colors.bgCard,
     text: colors.textPrimary,
   };
 }

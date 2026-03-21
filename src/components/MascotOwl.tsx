@@ -14,7 +14,7 @@ import Svg, { Path } from 'react-native-svg';
 import { colors } from '../constants/theme';
 
 const PUPIL_COLOR  = colors.accent;
-const SOCKET_COLOR = colors.bgTertiary;
+const SOCKET_COLOR = colors.bgSecondary;
 
 const SNAP_MS      = 120;
 const BLINK_CLOSE  =  80;

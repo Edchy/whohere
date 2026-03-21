@@ -29,7 +29,7 @@ export const warmTones = {
 export const darkColors = {
   bgPrimary:   palette.ink,
   bgSecondary: palette.dim,
-  bgTertiary:  palette.smoke,
+  bgCard:      warmTones.espresso,
   bgBrand:     palette.brand,
   bgBlack:     palette.ink,
 
@@ -45,7 +45,7 @@ export const darkColors = {
 export const lightColors = {
   bgPrimary:   palette.fog,
   bgSecondary: palette.mist,
-  bgTertiary:  palette.stone,
+  bgCard:      warmTones.blush,
   bgBrand:     palette.brand,
   bgBlack:     palette.ink,
 
