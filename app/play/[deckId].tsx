@@ -74,7 +74,7 @@ function makeStyles(colors: AppColors) {
       justifyContent: "space-between",
       backfaceVisibility: "hidden",
       shadowColor: colors.bgBlack,
-      shadowOffset: { width: -10, height: 10 },
+      shadowOffset: { width: 10, height: 10 },
       shadowOpacity: 0.12,
       shadowRadius: spacing.sm,
       elevation: 3,
