@@ -28,7 +28,7 @@ function makeStyles(colors: AppColors) {
       borderRadius: radius.md,
       borderWidth: 1,
       borderColor: colors.border,
-      backgroundColor: colors.surface,
+      backgroundColor: colors.bgSecondary,
     },
     optionSelected: {
       borderColor: colors.accent,

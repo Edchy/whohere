@@ -18,7 +18,7 @@ function makeStyles(colors: AppColors) {
       borderRadius: radius.md,
       borderWidth: 1,
       borderColor: colors.accent,
-      backgroundColor: colors.background,
+      backgroundColor: colors.bgPrimary,
       marginHorizontal: spacing.lg,
       marginBottom: 24,
       paddingBottom: 12,

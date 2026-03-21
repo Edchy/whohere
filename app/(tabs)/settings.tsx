@@ -222,7 +222,7 @@ export default function SettingsScreen() {
 
         <View style={[styles.infoBlock, colorScheme === 'light' ? styles.infoBlockLight : undefined]}>
           <Text style={styles.appName}>Vem här...?</Text>
-          <Text style={styles.appTagline}>Ett spel om hur vi läser varandra.</Text>
+          <Text style={styles.appTagline}>Intuitiva mikrohistorier om människorna omkring dig.</Text>
           <View style={styles.divider} />
           <Text style={styles.appDesc}>
             Tre lägen. Inget internet. Inga konton.{'\n'}

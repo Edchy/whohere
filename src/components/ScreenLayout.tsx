@@ -12,13 +12,15 @@ interface Props {
   backgroundColor?: string;
   /** Hide the AppHeader/mascot (default: true) */
   showHeader?: boolean;
+  /** Skip safe area top inset (e.g. for modals where the handle sits at the very top) */
+  noTopInset?: boolean;
 }
 
-export default function ScreenLayout({ children, mainStyle, backgroundColor, showHeader = true }: Props) {
+export default function ScreenLayout({ children, mainStyle, backgroundColor, showHeader = true, noTopInset = false }: Props) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   return (
-    <View style={{ flex: 1, backgroundColor: backgroundColor ?? colors.background, paddingTop: insets.top }}>
+    <View style={{ flex: 1, backgroundColor: backgroundColor ?? colors.bgPrimary, paddingTop: noTopInset ? 0 : insets.top }}>
       {showHeader && <AppHeader />}
       <View style={[{ flex: 1 }, mainStyle]}>
         {children}

@@ -73,14 +73,14 @@ export default function RootLayout() {
       <View style={Platform.OS === 'web' ? {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: colors.background,
+        backgroundColor: colors.bgPrimary,
       } : { flex: 1 }}>
         <View style={Platform.OS === 'web' ? {
           flex: 1,
           width: '100%',
           maxWidth: 480,
         } : { flex: 1 }}>
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bgPrimary } }}>
             <Stack.Screen name="onboarding" options={{ presentation: Platform.OS === 'web' ? 'card' : 'fullScreenModal', gestureEnabled: false, headerShown: false }} />
             <Stack.Screen name="play/categories" options={{ presentation: "modal" }} />
             <Stack.Screen name="play/[deckId]" options={{ presentation: "card" }} />

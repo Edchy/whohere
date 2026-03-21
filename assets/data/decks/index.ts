@@ -12,6 +12,12 @@ import livBakgrundCards from "../cards/liv-bakgrund.cards.json";
 import relationerKanslorMeta from "./relationer-kanslor.json";
 import relationerKanslorCards from "../cards/relationer-kanslor.cards.json";
 
+import hemligheterHistorierMeta from "./hemligheter-historier.json";
+import hemligheterHistorierCards from "../cards/hemligheter-historier.cards.json";
+
+import absurtOvantatMeta from "./absurt-ovantat.json";
+import absurtOvantatCards from "../cards/absurt-ovantat.cards.json";
+
 function assemble(meta: Omit<Deck, "cards">, cards: Card[]): Deck {
   return { ...meta, cards } as Deck;
 }
@@ -23,6 +29,8 @@ const allDecks: Deck[] = [
   assemble(personlighetMeta as Omit<Deck, "cards">, personlighetCards as Card[]),
   assemble(livBakgrundMeta as Omit<Deck, "cards">, livBakgrundCards as Card[]),
   assemble(relationerKanslorMeta as Omit<Deck, "cards">, relationerKanslorCards as Card[]),
+  assemble(hemligheterHistorierMeta as Omit<Deck, "cards">, hemligheterHistorierCards as Card[]),
+  assemble(absurtOvantatMeta as Omit<Deck, "cards">, absurtOvantatCards as Card[]),
 ];
 
 export default allDecks;

@@ -5,6 +5,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { spacing } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
 import Mascot from './Mascot';
+import FlyMascot from './FlyMascot';
 
 const SIZE = 40;
 
@@ -19,7 +20,8 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
       ) : (
         <View style={styles.spacer} />
       )}
-      <Mascot size={SIZE} />
+      {/* <Mascot size={SIZE} /> */}
+      <FlyMascot size={SIZE} />
       <View style={styles.spacer} />
     </View>
   );

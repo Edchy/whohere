@@ -2,65 +2,63 @@
 // 5 base colors. Swap hex here to rebrand — never reference these directly in UI.
 
 const palette = {
-  brand:   '#FE99D9',   // pink accent
-  brand2: '#dfe5f3',   // light blue accent (currently unused)
-  black:   '#000000',
-  dark:    '#0a0a0a',   // near-black surface
-  grey:    '#666666',   // mid grey
-  white:   '#FFFFFF',
+  brand:    '#FE99D9',   // pink accent
+  ink:      '#111111',   // near-black (never pure black)
+  dim:      '#1A1A1A',   // dark surface
+  smoke:    '#2E2E2E',   // dark secondary surface
+  grey:     '#666666',   // mid grey
+  silver:   '#AAAAAA',   // muted text
+  fog:      '#F2EEE9',   // off-white (never pure white)
+  mist:     '#E8E3DD',   // light secondary surface
+  stone:    '#D6D0CA',   // light border / tertiary surface
+  
 } as const;
+
+export const warmTones = {
+  periwinkle: '#dfe5f3',  // light blue
+  blush:      '#f9edf0',  // very light pink
+  champagne:  '#e6c8b7',  // soft peach-cream
+  cognac:     '#c3955b',  // warm brown
+  amber:      '#ba6a36',  // burnt orange
+  espresso:   '#261311',  // very dark brown
+} as const;
+
 
 // ─── Semantic tokens ──────────────────────────────────────────────────────────
 
 export const darkColors = {
-  // Backgrounds
-  bgPrimary:   palette.black,
-  bgSecondary: palette.dark,
-  bgTertiary:  '#1A1A1A',
+  bgPrimary:   palette.ink,
+  bgSecondary: palette.dim,
+  bgTertiary:  palette.smoke,
   bgBrand:     palette.brand,
-  bgBlack:     palette.black,
+  bgBlack:     palette.ink,
 
-  // Text
-  textPrimary:   palette.white,
-  textSecondary: '#D9D9D9',
-  textMuted:     '#ABABAB',
-  textOnBrand:   palette.white,
+  textPrimary:   palette.fog,
+  textSecondary: palette.silver,
+  textMuted:     palette.grey,
+  textOnBrand:   palette.fog,
 
-  // UI
-  accent:     palette.brand,
-  border:     palette.grey,
-  card:       '#1A1A1A',
-
-  // Legacy aliases (kept for backward compat — map to semantic equivalents)
-  background: palette.black,
-  surface:    palette.dark,
+  accent:  palette.brand,
+  border:  palette.smoke,
 } as const;
 
 export const lightColors = {
-  // Backgrounds
-  bgPrimary:   '#F5F0EB',
-  bgSecondary: '#EDE8E2',
-  bgTertiary:  '#E2DDD7',
+  bgPrimary:   palette.fog,
+  bgSecondary: palette.mist,
+  bgTertiary:  palette.stone,
   bgBrand:     palette.brand,
-  bgBlack:     palette.black,
+  bgBlack:     palette.ink,
 
-  // Text
-  textPrimary:   '#111111',
-  textSecondary: '#444444',
-  textMuted:     '#888888',
-  textOnBrand:   palette.white,
+  textPrimary:   palette.ink,
+  textSecondary: palette.grey,
+  textMuted:     palette.silver,
+  textOnBrand:   palette.fog,
 
-  // UI
-  accent:     palette.brand,
-  border:     '#C8C3BD',
-  card:       '#E2DDD7',
-
-  // Legacy aliases
-  background: '#F5F0EB',
-  surface:    '#EDE8E2',
+  accent:  palette.brand,
+  border:  palette.stone,
 } as const;
 
-export type AppColors = typeof darkColors;
+export type AppColors = { [K in keyof typeof darkColors]: string };
 
 // Backward-compat alias
 export const colors = darkColors;

@@ -47,7 +47,7 @@ function makeStyles(colors: AppColors) {
   return StyleSheet.create({
     safe: {
       flex: 1,
-      backgroundColor: colors.background,
+      backgroundColor: colors.bgPrimary,
       paddingHorizontal: spacing.md,
     },
     cardArea: {

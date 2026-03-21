@@ -6,6 +6,7 @@ import Mascot from '../src/components/Mascot';
 import {
   Animated,
   Dimensions,
+  Image,
   PanResponder,
   Platform,
   Pressable,
@@ -49,52 +50,64 @@ type Slide = {
 const SLIDES: Slide[] = [
   {
     id: '1',
-    topLabel: '',
-    headline: 'VEM$HÄR...?',
-    subheading: 'Intuitiva mikrohistorier om människor omkring.',
+    topLabel: '...?',
+    headline: 'VEM HÄR',
+    subheading: 'Intuitiva mikrohistorier\nom människor omkring oss',
     body: '',
     bottomLabel: '',
     isWelcome: true,
   },
   {
     id: '2',
-    topLabel: 'THE GAME',
-    headline: 'Observera, välj, avslöja.',
-    body: 'Ni får ett antal frågor. Rummet fullt av människor. Vem passar in på beskrivningen? Alla väljer tyst, var för sig. Sen berättar ni.',
+    topLabel: 'VEM HÄR ÄR',
+    headline: 'Ett helt nytt spel.',
+    body: 'Som du redan har spelat i hela ditt liv. Du är omgiven av människor du inte känner - men vad har de att berätta, utan att säga ett ord? Vi möter ständigt omvärlden med både intuition och intellekt. Genom erfarenhet och undermedvetna fördomar drar vi snabba slutsatser om andra människors inre världar.',
     bottomLabel: 'bla bla',
   },
   {
     id: '3',
-    topLabel: 'THE EXPERIMENT',
-    headline: 'Inga vinnare, inga förlorare. ',
-    body: 'Bara nya sätt att se på varandra. Det spelar ingen roll vem du väljer. Det intressanta är varför. Väjer ni samma eller olika? Varför? Det är hela grejen. Motiveringarna är det roliga, inte svaren.',
+    topLabel: 'VEM HÄR ÄR',
+    headline: 'Självreflektion',
+    body: 'Vi tror oss veta något om främlingars bakgrunder, personligheter och liv. Men det vi tror oss kunna se säger minst lika mycket om oss själva som om de människor vi betraktar. Vad som är sant är inte det intressanta här, det är våra egna mikrohistorier som är det.',
     bottomLabel: 'lugnt och nyfiket',
   },
 
   {
     id: '4',
-    topLabel: 'THE INSIGHT',
-    headline: 'Thin-slice judgment.',
-    body: 'Vi bedömer alla främlingar hela tiden, omedvetet, automatiskt, på en bråkdel av en sekund. Hot, status, karaktär. Det sker alltid. Men vi säger det aldrig högt. ',
+    topLabel: 'VEM HÄR ÄR',
+    headline: 'Inte en tävling',
+    body: 'Det finns inga rätt eller fel svar, inga vinnare eller förlorare, bara skratt, gemensam reflektion och nya perspektiv.',
     bottomLabel: 'thin-slice judgment',
   },
   {
     id: '5',
-    topLabel: 'THE INSIGHT',
-    headline: 'Valen speglar dig.',
-    body: 'Dina val avslöjar mer om dig än om dem. De blir små fönster in i hur du ser på världen, på andra människor, och kanske mest intressant av allt: hur du ser på dig själv.',
+    topLabel: 'SÅ HÄR GÅR DET TILL',
+    headline: 'Observera',
+    body: 'Spela tillsammans med en dejt, i en grupp vänner eller på egen hand. Befinn er på en plats med människor omkring er. I en restaurang, tunnelbanan eller en park.',
     bottomLabel: 'svep för att börja spela',
   },
     {
     id: '6',
-    topLabel: 'THE RESPECT',
-    headline: 'Spela osynligt.',
-    body: 'Ni är spöken i rummet. Osynliga, tysta, närvarande. Främlingarna är aldrig inblandade. De pekas aldrig ut, talas aldrig till. De vet ingenting. Det här är inte övervakning eller hån. Det är empatiträning i förklädnad. Varje val leder tillbaka till dig: varför valde du just den personen?',
+    topLabel: 'SÅ HÄR GÅR DET TILL',
+    headline: 'Välj',
+    body: 'Välj en kategori eller blanda helt fritt. Läs frågan tillsammans, besvara den var och en.',
+    bottomLabel: 'lugnt och nyfiket',
+  },
+    {
+    id: '7',
+    topLabel: 'SÅ HÄR GÅR DET TILL',
+    headline: 'Motivera',
+    body: 'Berätta vem som passar in och varför? Väljer ni samma person eller helt olika? Övertänk inte, men motivera gärna.',
+    bottomLabel: 'lugnt och nyfiket',
+  },
+    {
+    id: '8',
+    topLabel: 'KOM IHÅG',
+    headline: 'Du är en fluga på väggen - den som betraktar utan att synas.',
+    body: 'Syften är inte att göra andra obekväma, utan att sätta ord på era egna tankar. Se utan att stirra - välj utan att peka. Människorna omkring er är inte med i spelet. de är bara era livs levande projektionsytor. Det ni tror er veta om dem är mikrohistorier som ni själva vanemässigt skapar. Skillnaden mot vardagen är enkel: Här får ni syn på era sätt att se.',
     bottomLabel: 'lugnt och nyfiket',
   },
 ];
-
-
 
 function SwipeHint() {
   const colors = useColors();
@@ -133,18 +146,18 @@ function SlideCard({ slide }: { slide: Slide }) {
   if (slide.isWelcome) {
     return (
       <View style={[styles.card, styles.cardWelcome, { backgroundColor: colors.bgPrimary, borderColor: colors.textPrimary }]}>
-        <View style={styles.welcomeHeadingGroup}>
-          <View style={styles.headlineRow}>
-            {slide.headline.split('$').map((part, i, arr) => (
-              <React.Fragment key={i}>
-                <Text selectable={false} style={[styles.headlineWelcome, { color: colors.textPrimary }]}>{part}</Text>
-                {i < arr.length - 1 && <Mascot size={32} style={{ marginHorizontal: spacing.sm }} />}
-              </React.Fragment>
-            ))}
+        <Text selectable={false} style={[styles.topLabel, { color: colors.textMuted, alignSelf: 'flex-start' }]}>{slide.topLabel}</Text>
+        <View style={styles.rotatedContainer}>
+          <View style={styles.welcomeHeadingGroup}>
+            <View style={styles.logoRow}>
+              <Text selectable={false} style={[styles.headlineWelcome, { color: colors.textPrimary, transform: [{ rotate: '-90deg' }, { scale: 2 }] }]}>VEM</Text>
+              <Mascot size={96} />
+              <Text selectable={false} style={[styles.headlineWelcome, { color: colors.textPrimary, transform: [{ rotate: '90deg' }, { scale: 2 }] }]}>HÄR</Text>
+            </View>
+            {!!slide.subheading && (
+              <Text selectable={false} style={[styles.subheading, { color: colors.textMuted, textAlign: 'center' }]}>{slide.subheading}</Text>
+            )}
           </View>
-          {!!slide.subheading && (
-            <Text selectable={false} style={[styles.subheading, { color: colors.textMuted }]}>{slide.subheading}</Text>
-          )}
         </View>
         <View style={styles.swipeHintRow}>
           <SwipeHint />
@@ -164,7 +177,7 @@ function SlideCard({ slide }: { slide: Slide }) {
       </View>
 
       <View style={styles.cardBottom}>
-        <Mascot size={20} style={styles.mascotBottomRight} />
+        <Image source={require('../assets/icon.png')} style={{ width: 24, height: 24 }} />
       </View>
     </View>
   );
@@ -399,11 +412,21 @@ const styles = StyleSheet.create({
   cardWelcome: {
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'hidden',
+  },
+  rotatedContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   welcomeHeadingGroup: {
     alignItems: 'center',
     gap: spacing.sm,
-    marginTop: spacing.lg,
+  },
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   headlineRow: {
     flexDirection: 'row',

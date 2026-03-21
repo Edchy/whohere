@@ -1,0 +1,5 @@
+[
+  { "id": "heh-1", "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit?", "followUp": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 2, "controversial": 0, "dark": 0, "funny": 1 } },
+  { "id": "heh-2", "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod?", "followUp": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 0, "dark": 0, "funny": 1 } },
+  { "id": "heh-3", "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor?", "followUp": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 2, "controversial": 0, "dark": 1, "funny": 2 } }
+]
