@@ -427,11 +427,6 @@ export default function PlayScreen() {
         dragX.setValue(g.dx);
       },
       onPanResponderRelease: (_, g) => {
-        const isTap = Math.abs(g.dx) < 6 && Math.abs(g.dy) < 6;
-        if (isTap) {
-          handleFlipRef.current();
-          return;
-        }
         const goLeft = g.dx < -SWIPE_DISTANCE || g.vx < -(SWIPE_VELOCITY / 1000);
         const goRight = g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000);
         if (goLeft) {
@@ -518,14 +513,14 @@ export default function PlayScreen() {
 
         {/* Top card — draggable */}
         <Animated.View style={[styles.cardWrapper, topCardAnimStyle]}>
-          <View style={styles.cardPressable}>
+          <TouchableOpacity activeOpacity={1} style={styles.cardPressable} onPress={() => handleFlipRef.current()}>
             <ReAnimated.View style={[styles.cardFace, { backgroundColor: topRc.bg }, frontFaceStyle]}>
               <CardFace card={topCard} deck={deck} cardIndex={topIndex} totalCards={deck.cards.length} colors={colors} resolvedText={topRc.text} canGoBack={topIndex > 0} canGoForward={!isLast} />
             </ReAnimated.View>
             <ReAnimated.View style={[styles.cardFace, { backgroundColor: topRc.bg, padding: 0 }, backFaceStyle]}>
               <CardBack card={topCard} deck={deck} colors={colors} />
             </ReAnimated.View>
-          </View>
+          </TouchableOpacity>
         </Animated.View>
       </View>
 

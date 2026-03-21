@@ -13,6 +13,7 @@ type: project
 - react-native-reanimated ^4.1.1 (v4 — uses worklets, not runOnJS for cross-thread calls)
 - react-native-worklets ^0.5.1
 - zustand ^5.0.11
+- expo-blur (SDK 54 compatible, installed via `npx expo install expo-blur`)
 - expo-haptics ^15.0.8
 - expo-splash-screen (installed via `npx expo install`, SDK 54 compatible)
 - @react-native-async-storage/async-storage ^2.2.0

@@ -1,7 +1,10 @@
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import {
   Animated,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -10,6 +13,7 @@ import {
 import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
 import ScreenLayout from "../../src/components/ScreenLayout";
 import { useColors } from "../../src/hooks/useColors";
+import { useGameStore } from "../../src/store/gameStore";
 import deckIcons from "../../src/constants/deckIcons";
 
 const MODES = [
@@ -49,12 +53,13 @@ function makeStyles(colors: AppColors) {
       gap: spacing.sm,
     },
     row: {
+      overflow: 'hidden',
       paddingVertical: spacing.xl,
       paddingHorizontal: spacing.lg,
       borderRadius: radius.md,
       borderWidth: 1,
-      borderColor: colors.bgSecondary,
-      backgroundColor: colors.bgSecondary,
+      borderColor: colors.accent + '18', // 10% opacity
+      backgroundColor: 'rgba(255, 255, 255, 0.02)',
     },
     rowInner: {
       flexDirection: "row",
@@ -83,6 +88,7 @@ function makeStyles(colors: AppColors) {
 
 function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors }) {
   const router = useRouter();
+  const colorScheme = useGameStore((s) => s.colorScheme);
   const styles = makeStyles(colors);
   const opacity = useRef(new Animated.Value(1)).current;
 
@@ -112,6 +118,27 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
         onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
         style={styles.row}
       >
+        {Platform.OS !== 'web' && colorScheme === 'dark' && (
+          <BlurView style={StyleSheet.absoluteFillObject} intensity={20} tint="dark" />
+        )}
+        {colorScheme === 'light' && (
+          <>
+            <LinearGradient
+              colors={[colors.accent + '15', 'transparent']}
+              locations={[0, 0.6]}
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0.2, y: 1 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+            <LinearGradient
+              colors={[colors.accent + '15', 'transparent']}
+              locations={[0, 0.6]}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 0.8, y: 0 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+          </>
+        )}
         <View style={styles.rowInner}>
           {SvgIcon && (
             <View style={styles.rowIconWrap}>

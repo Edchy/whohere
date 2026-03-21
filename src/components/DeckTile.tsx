@@ -1,8 +1,11 @@
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useRef } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import OkeySvg from '../../assets/icons/noun-okey-8020578.svg';
 import { animation, AppColors, radius, spacing, typography } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
+import { useGameStore } from '../store/gameStore';
 import { DeckIcon } from './DeckIcon';
 import type { Deck } from '../types';
 
@@ -31,11 +34,13 @@ function contrastText(hex: string): string {
 function makeStyles(colors: AppColors) {
   return StyleSheet.create({
     tile: {
+      overflow: 'hidden',
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.md,
       borderRadius: radius.md,
       borderWidth: 1,
-      borderColor: colors.bgSecondary,
+      borderColor: colors.accent + '18',
+      backgroundColor: 'rgba(255, 255, 255, 0.02)',
     },
     inner: {
       flexDirection: 'row',
@@ -74,6 +79,7 @@ function makeStyles(colors: AppColors) {
 
 export function DeckTile({ deck, isSelected = false, selectedColor, badge, showCount = true, onPress }: Props) {
   const colors = useColors();
+  const colorScheme = useGameStore((s) => s.colorScheme);
   const styles = makeStyles(colors);
   const opacity = useRef(new Animated.Value(1)).current;
 
@@ -96,8 +102,29 @@ export function DeckTile({ deck, isSelected = false, selectedColor, badge, showC
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={onPress}
-        style={[styles.tile, { backgroundColor: bg }, isSelected && { borderColor: 'transparent' }]}
+        style={[styles.tile, isSelected && { backgroundColor: bg, borderColor: 'transparent' }]}
       >
+        {!isSelected && Platform.OS !== 'web' && colorScheme === 'dark' && (
+          <BlurView style={StyleSheet.absoluteFillObject} intensity={20} tint="dark" />
+        )}
+        {!isSelected && colorScheme === 'light' && (
+          <>
+            <LinearGradient
+              colors={[colors.accent + '15', 'transparent']}
+              locations={[0, 0.6]}
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0.2, y: 1 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+            <LinearGradient
+              colors={[colors.accent + '15', 'transparent']}
+              locations={[0, 0.6]}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 0.8, y: 0 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+          </>
+        )}
         <View style={styles.inner}>
           <DeckIcon deck={deck} size={24} color={iconColor} />
           <View style={styles.text}>

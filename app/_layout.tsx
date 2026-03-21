@@ -96,7 +96,7 @@ export default function RootLayout() {
           width: '100%',
           maxWidth: 480,
         } : { flex: 1 }}>
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bgPrimary } }}>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
             <Stack.Screen name="onboarding" options={{ presentation: Platform.OS === 'web' ? 'card' : 'fullScreenModal', gestureEnabled: false, headerShown: false }} />
             <Stack.Screen name="play/categories" options={{ presentation: "modal" }} />
             <Stack.Screen name="play/[deckId]" options={{ presentation: "card" }} />

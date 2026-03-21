@@ -1,14 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import React, { useRef } from 'react';
 import {
   Animated,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { router } from 'expo-router';
 import MoonIcon from '../../assets/icons/noun-moon-4373688.svg';
 import SunIcon from '../../assets/icons/noun-sun-4373690.svg';
 import { animation, AppColors, radius, spacing, typography } from '../../src/constants/theme';
@@ -34,18 +37,16 @@ function makeStyles(colors: AppColors) {
       gap: spacing.md,
     },
     row: {
+      overflow: 'hidden',
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.md,
       borderRadius: radius.md,
       borderWidth: 1,
-      borderColor: colors.bgSecondary,
-      backgroundColor: colors.bgSecondary,
+      borderColor: colors.accent + '18',
+      backgroundColor: 'rgba(255, 255, 255, 0.02)',
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.xs,
-    },
-    rowLight: {
-      backgroundColor: 'transparent',
     },
     rowText: {
       flex: 1,
@@ -115,12 +116,37 @@ function AnimatedRow({ onPress, backgroundColor, children }: { onPress?: () => v
 
   const tileStyle = [
     styles.row,
-    colorScheme === 'light' ? styles.rowLight : undefined,
     backgroundColor ? { backgroundColor, borderColor: backgroundColor } : undefined,
   ];
 
+  const glassContent = !backgroundColor && (
+    <>
+      {Platform.OS !== 'web' && colorScheme === 'dark' && (
+        <BlurView style={StyleSheet.absoluteFillObject} intensity={20} tint="dark" />
+      )}
+      {colorScheme === 'light' && (
+        <>
+          <LinearGradient
+            colors={[colors.accent + '15', 'transparent']}
+            locations={[0, 0.6]}
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0.2, y: 1 }}
+            style={StyleSheet.absoluteFillObject}
+          />
+          <LinearGradient
+            colors={[colors.accent + '15', 'transparent']}
+            locations={[0, 0.6]}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 0.8, y: 0 }}
+            style={StyleSheet.absoluteFillObject}
+          />
+        </>
+      )}
+    </>
+  );
+
   if (!onPress) {
-    return <View style={[tileStyle, { width: '47%' }]}>{children(colors)}</View>;
+    return <View style={[tileStyle, { width: '47%' }]}>{glassContent}{children(colors)}</View>;
   }
 
   return (
@@ -131,6 +157,7 @@ function AnimatedRow({ onPress, backgroundColor, children }: { onPress?: () => v
         onPress={onPress}
         style={tileStyle}
       >
+        {glassContent}
         {children(colors)}
       </Pressable>
     </Animated.View>

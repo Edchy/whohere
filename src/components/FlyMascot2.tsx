@@ -10,7 +10,7 @@ import Animated, {
   Easing,
   SharedValue,
 } from 'react-native-reanimated';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Ellipse, Path, Circle } from 'react-native-svg';
 import { useColors } from '../hooks/useColors';
 import { useGameStore } from '../store/gameStore';
 
@@ -22,38 +22,88 @@ const BLINK_DELAY  = 4800;
 const BREATHE_HALF = 1500;
 
 // ─── Fly body SVG ─────────────────────────────────────────────────────────────
-// Round head with two antennae curving up from the top.
+// ViewBox 100×100. Layout:
+//   Wings: two overlapping ellipses top-right, rotated ~-30°
+//   Body:  dark oval, slightly tilted, centre ~(42, 58)
+//   Head:  circle left of body, centre ~(28, 52)
+//   Legs:  six short lines below body
+//   Antennae: two curves from top of head
 
 function FlyBody({ w, h, color }: { w: number; h: number; color: string }) {
-  const r = w / 2; // head is a circle
-  // Antennae: left curves up-left, right curves up-right, each with a round tip
-  const tipR = w * 0.06;
-  const strokeW = w * 0.06;
+  const sw = 2.2; // stroke width in viewBox units
 
   return (
-    <Svg width={w} height={h} style={{ position: 'absolute', top: 0, left: 0 }}>
-      {/* Left antenna */}
-      <Path
-        d={`M ${w * 0.38} ${h * 0.20} Q ${w * 0.26} ${h * 0.06} ${w * 0.22} ${h * 0.02}`}
+    <Svg
+      width={w}
+      height={h}
+      viewBox="0 0 100 100"
+      style={{ position: 'absolute', top: 0, left: 0 }}
+    >
+      {/* ── Wings (behind body) ── */}
+      {/* Upper wing */}
+      <Ellipse
+        cx={60} cy={30} rx={28} ry={13}
+        transform="rotate(-25 60 30)"
+        fill="none"
         stroke={color}
-        strokeWidth={strokeW}
+        strokeWidth={sw}
+        opacity={0.7}
+      />
+      {/* Lower wing */}
+      <Ellipse
+        cx={66} cy={42} rx={22} ry={10}
+        transform="rotate(-20 66 42)"
+        fill="none"
+        stroke={color}
+        strokeWidth={sw}
+        opacity={0.5}
+      />
+
+      {/* ── Body (dark filled oval) ── */}
+      <Ellipse
+        cx={54} cy={58} rx={20} ry={14}
+        transform="rotate(-15 54 58)"
+        fill={color}
+        stroke={color}
+        strokeWidth={sw * 0.5}
+      />
+
+      {/* ── Head ── */}
+      <Circle
+        cx={30} cy={54} r={16}
+        fill={color}
+        stroke={color}
+        strokeWidth={sw * 0.5}
+      />
+
+      {/* ── Antennae ── */}
+      <Path
+        d="M 22 39 Q 14 26 10 18"
+        stroke={color}
+        strokeWidth={sw}
         strokeLinecap="round"
         fill="none"
       />
-      <Circle cx={w * 0.20} cy={h * 0.01} r={tipR} fill={color} />
+      <Circle cx={9} cy={16} r={2.2} fill={color} />
 
-      {/* Right antenna */}
       <Path
-        d={`M ${w * 0.62} ${h * 0.20} Q ${w * 0.74} ${h * 0.06} ${w * 0.78} ${h * 0.02}`}
+        d="M 34 38 Q 34 24 36 16"
         stroke={color}
-        strokeWidth={strokeW}
+        strokeWidth={sw}
         strokeLinecap="round"
         fill="none"
       />
-      <Circle cx={w * 0.80} cy={h * 0.01} r={tipR} fill={color} />
+      <Circle cx={36} cy={14} r={2.2} fill={color} />
 
-      {/* Round head */}
-      <Circle cx={r} cy={h * 0.60} r={r * 0.88} fill={color} />
+      {/* ── Legs (3 per side, from underside of body/head join) ── */}
+      {/* Left legs */}
+      <Path d="M 20 64 L 8 72"  stroke={color} strokeWidth={sw} strokeLinecap="round" fill="none" />
+      <Path d="M 24 67 L 14 78" stroke={color} strokeWidth={sw} strokeLinecap="round" fill="none" />
+      <Path d="M 30 68 L 24 80" stroke={color} strokeWidth={sw} strokeLinecap="round" fill="none" />
+      {/* Right legs */}
+      <Path d="M 42 68 L 50 76" stroke={color} strokeWidth={sw} strokeLinecap="round" fill="none" />
+      <Path d="M 50 70 L 60 78" stroke={color} strokeWidth={sw} strokeLinecap="round" fill="none" />
+      <Path d="M 60 66 L 72 72" stroke={color} strokeWidth={sw} strokeLinecap="round" fill="none" />
     </Svg>
   );
 }
@@ -106,52 +156,52 @@ function Eye({ socketWidth, socketHeight, pupilWidth, pupilHeight, scanValue, bl
   );
 }
 
-// ─── FlyMascot ────────────────────────────────────────────────────────────────
+// ─── FlyMascot2 ───────────────────────────────────────────────────────────────
 
-interface FlyMascotProps {
+interface FlyMascot2Props {
   size?:  number;
   style?: StyleProp<ViewStyle>;
 }
 
-export default function FlyMascot({ size = 24, style }: FlyMascotProps) {
+export default function FlyMascot2({ size = 24, style }: FlyMascot2Props) {
   const colors      = useColors();
   const colorScheme = useGameStore((s) => s.colorScheme);
 
-  // Body is a square canvas; the circle head sits in the lower 80%, antennae in the top 20%
-  const bodyWidth  = size * 1.2;
-  const bodyHeight = size * 1.4; // taller than ghost to fit antennae
+  // Canvas is square; the viewBox handles all proportions
+  const bodyWidth  = size * 1.4;
+  const bodyHeight = size * 1.4;
 
-  const socketWidth  = size * 0.36;
-  const socketHeight = size * 0.40;
-  const pupilWidth   = socketWidth  * 0.82;
-  const pupilHeight  = socketHeight * 0.88;
+  // Eyes are positioned on the head circle.
+  // Head centre in viewBox: (30, 54), r=16 → in px at size*1.4/100 scale:
+  const vbToPx = (bodyWidth) / 100;
+  const headCx = 30 * vbToPx;
+  const headCy = 54 * vbToPx;
 
-  const eyeGap     = size * 0.08;
-  // Eyes sit in the upper-middle of the circular head area
-  const eyeTop     = bodyHeight * 0.38;
-  const scanTravel = socketWidth * 0.22;
+  const socketWidth  = size * 0.28;
+  const socketHeight = size * 0.30;
+  const pupilWidth   = socketWidth  * 0.70;
+  const pupilHeight  = socketHeight * 0.70;
+
+  const eyeGap     = size * 0.05;
+  // Eye row centred on head
+  const eyeRowWidth = socketWidth * 2 + eyeGap;
+  const eyeLeft    = headCx - eyeRowWidth / 2;
+  const eyeTop     = headCy - socketHeight / 2 - size * 0.04;
+
+  const scanTravel = socketWidth * 0.20;
 
   const scanX   = useSharedValue(0);
   const blinkSY = useSharedValue(1);
   const breathe = useSharedValue(1);
 
   const scheduleSaccade = useCallback(() => {
-    const targets = [
-      -scanTravel,
-       scanTravel,
-      -scanTravel,
-       0,
-       scanTravel,
-       0,
-    ];
-
+    const targets = [-scanTravel, scanTravel, -scanTravel, 0, scanTravel, 0];
     const seq: any[] = [];
     for (const target of targets) {
       const holdMs = 1000 + Math.random() * 3000;
       seq.push(withTiming(target, { duration: SNAP_MS, easing: Easing.out(Easing.cubic) }));
       seq.push(withTiming(target, { duration: holdMs,  easing: Easing.steps(1, true) }));
     }
-
     scanX.value = withRepeat(withSequence(...seq), -1, false);
   }, [scanTravel]);
 
@@ -180,23 +230,19 @@ export default function FlyMascot({ size = 24, style }: FlyMascotProps) {
     transform: [{ scale: breathe.value }],
   }));
 
+  const bodyColor = colorScheme === 'light' ? '#2a2a2a' : colors.textPrimary;
+
   return (
     <Animated.View style={[{ width: bodyWidth, height: bodyHeight }, containerAnimStyle, style]}>
-      <FlyBody
-        w={bodyWidth}
-        h={bodyHeight}
-        color={colorScheme === 'light' ? '#dfe5f3' : colors.textPrimary}
-      />
+      <FlyBody w={bodyWidth} h={bodyHeight} color={bodyColor} />
 
-      {/* Eyes sit on top of the SVG */}
+      {/* Eyes overlaid on the head */}
       <View
         style={{
           position: 'absolute',
           top: eyeTop,
-          left: 0,
-          right: 0,
+          left: eyeLeft,
           flexDirection: 'row',
-          justifyContent: 'center',
           alignItems: 'center',
           gap: eyeGap,
         }}
@@ -208,8 +254,8 @@ export default function FlyMascot({ size = 24, style }: FlyMascotProps) {
           pupilHeight={pupilHeight}
           scanValue={scanX}
           blinkValue={blinkSY}
-          socketColor='#000000'
-          pupilColor={colors.accent}
+          socketColor='#ffffff'
+          pupilColor={bodyColor}
         />
         <Eye
           socketWidth={socketWidth}
@@ -218,8 +264,8 @@ export default function FlyMascot({ size = 24, style }: FlyMascotProps) {
           pupilHeight={pupilHeight}
           scanValue={scanX}
           blinkValue={blinkSY}
-          socketColor='#000000'
-          pupilColor={colors.accent}
+          socketColor='#ffffff'
+          pupilColor={bodyColor}
         />
       </View>
     </Animated.View>
