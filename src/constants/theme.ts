@@ -88,29 +88,30 @@ export const radius = {
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
 export const fonts = {
-  sans: 'Author',
-  serif: 'Telma',
-  s: 'S',
+  regular: 'MetropolisRegular',
+  bold:    'MetropolisBold',
+  black:   'MetropolisBlack',
+  thin:    'MetropolisThin',
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
 //
-//   display  32  Satoshi bold    — screen-level titles (results, onboarding)
-//   brand    22  Telma serif     — "Who here" / "Vem här" phrase only
-//   heading  16  Satoshi bold    — section headings, category titles, settings rows
-//   body     16  Satoshi regular — descriptive text under headings
-//   caption  12  Satoshi regular — secondary info, deck descriptions
-//   badge    10  Satoshi medium  — uppercase micro-labels, counters, tab text
-//   card     28  Telma serif     — question card text
+//   display  — screen-level titles
+//   brand    — "Who here" / "Vem här" phrase only
+//   heading  — section headings, settings rows
+//   body     — descriptive text
+//   caption  — secondary info, deck descriptions
+//   badge    — uppercase micro-labels, counters, tab text
+//   card     — question card text
 
 export const typography = {
-  display: { fontFamily: fonts.sans,  fontSize: 24, fontWeight: '900' as const, lineHeight: 38, letterSpacing: -0.5 },
-  brand:   { fontFamily: fonts.sans, fontSize: 24, fontWeight: '900' as const, lineHeight: 28, letterSpacing: 0 },  // "Who here" / "Vem här" only
-  heading: { fontFamily: fonts.sans,  fontSize: 16, fontWeight: '700' as const, lineHeight: 20, letterSpacing: 0 },
-  body:    { fontFamily: fonts.sans,  fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
-  caption: { fontFamily: fonts.sans,  fontSize: 12, fontWeight: '400' as const, lineHeight: 18 },
-  badge:   { fontFamily: fonts.sans,  fontSize: 10, fontWeight: '100' as const, lineHeight: 14, letterSpacing: 1 },
-  card:    { fontFamily: fonts.sans,  fontSize: 24, fontWeight: '500' as const, lineHeight: 24, letterSpacing: 0.1, textTransform: 'uppercase' as const },
+  display: { fontFamily: fonts.black, fontSize: 24, lineHeight: 38, letterSpacing: -0.5 },
+  brand:   { fontFamily: fonts.thin, fontSize: 20, lineHeight: 28, letterSpacing: 0 },
+  heading: { fontFamily: fonts.bold,  fontSize: 14, lineHeight: 20, letterSpacing: 0 },
+  body:    { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24 },
+  caption: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18 },
+  badge:   { fontFamily: fonts.regular, fontSize: 10, lineHeight: 14, letterSpacing: 1 },
+  card:    { fontFamily: fonts.bold,  fontSize: 20, lineHeight: 24, letterSpacing: 0.1, textTransform: 'uppercase' as const },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────

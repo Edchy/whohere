@@ -53,7 +53,7 @@ function makeStyles(colors: AppColors) {
       paddingHorizontal: spacing.lg,
       borderRadius: radius.md,
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: colors.bgSecondary,
       backgroundColor: colors.bgSecondary,
     },
     rowInner: {

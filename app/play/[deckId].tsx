@@ -114,6 +114,7 @@ function makeStyles(colors: AppColors) {
     whoHere: {
       ...typography.brand,
       color: colors.accent,
+      marginBottom: spacing.sm,
     },
     question: {
       ...typography.card,

@@ -31,11 +31,11 @@ function contrastText(hex: string): string {
 function makeStyles(colors: AppColors) {
   return StyleSheet.create({
     tile: {
-      paddingVertical: spacing.lg,
-      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.md,
       borderRadius: radius.md,
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: colors.bgSecondary,
     },
     inner: {
       flexDirection: 'row',
@@ -54,11 +54,13 @@ function makeStyles(colors: AppColors) {
     },
     titleRight: {
       flexDirection: 'row',
-      alignItems: 'center',
+      alignItems: 'flex-start',
+      flexShrink: 0,
       gap: spacing.xs,
     },
     title: {
       ...typography.heading,
+      flex: 1,
     },
     desc: {
       ...typography.caption,
@@ -97,13 +99,13 @@ export function DeckTile({ deck, isSelected = false, selectedColor, badge, showC
         style={[styles.tile, { backgroundColor: bg }, isSelected && { borderColor: 'transparent' }]}
       >
         <View style={styles.inner}>
-          <DeckIcon deck={deck} size={36} color={iconColor} />
+          <DeckIcon deck={deck} size={24} color={iconColor} />
           <View style={styles.text}>
             <View style={styles.titleRow}>
               <Text style={[styles.title, { color: textColor }]}>{deck.title.toUpperCase()}</Text>
               <View style={styles.titleRight}>
                 <OkeySvg width={24} height={24} fill={badge ? (isSelected ? '#000000' : colors.textMuted) : 'transparent'} />
-                {showCount && <Text style={[styles.count, { color: textColor }]}>{deck.cards.length} kort</Text>}
+                {showCount && <Text style={[styles.count, { color: subColor }]}>{deck.cards.length} kort</Text>}
               </View>
             </View>
             <Text style={[styles.desc, { color: subColor }]}>{deck.description}</Text>
