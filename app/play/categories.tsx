@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -189,7 +190,7 @@ function makeStyles(colors: AppColors) {
     scroll: {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
-      paddingBottom: spacing.xxxl,
+      paddingBottom: 160,
       gap: spacing.sm,
     },
     header: {
@@ -232,12 +233,10 @@ function makeStyles(colors: AppColors) {
     surpriseDesc: {
       ...typography.caption,
     },
-    startWrap: {
-      marginTop: spacing.md,
-    },
     startBtn: {
-      height: 52,
-      borderRadius: radius.md,
+      width: 64,
+      height: 64,
+      borderRadius: 32,
       backgroundColor: colors.accent,
       alignItems: "center",
       justifyContent: "center",
@@ -300,7 +299,7 @@ export default function CategoriesScreen() {
   return (
     <ScreenLayout showHeader={false} backgroundColor={colors.bgPrimary} noTopInset>
       <View style={{ alignItems: 'center', paddingTop: spacing.md, paddingBottom: spacing.xs }}>
-        <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: colors.bgSecondary }} />
+        <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: colors.accent + '60' }} />
       </View>
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -325,7 +324,7 @@ export default function CategoriesScreen() {
               style={[styles.surpriseTile, randomize && { backgroundColor: colors.accent, borderColor: 'transparent' }]}
             >
               <View style={styles.surpriseInner}>
-                <RandomSvg width={36} height={36} fill={randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary} />
+                <RandomSvg width={24} height={24} fill={randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary} />
                 <View style={styles.surpriseText}>
                   <Text style={[styles.surpriseTitle, { color: randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary }]}>
                     ÖVERRASKA MIG!
@@ -350,20 +349,26 @@ export default function CategoriesScreen() {
             />
           ))}
         </View>
-
-        {/* Start button */}
-        <Animated.View style={[styles.startWrap, { opacity: startOpacity }]}>
-          <Pressable
-            onPressIn={onStartPressIn}
-            onPressOut={onStartPressOut}
-            onPress={handleStart}
-            disabled={!canStart}
-            style={[styles.startBtn, !canStart && styles.startBtnDisabled]}
-          >
-            <Ionicons name="play" size={22} color={colors.textOnBrand} />
-          </Pressable>
-        </Animated.View>
       </ScrollView>
+
+      {/* Fade gradient behind floating button */}
+      <LinearGradient
+        colors={[colors.bgPrimary + '00', colors.bgPrimary + 'EE', colors.bgPrimary]}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 240, pointerEvents: 'none' }}
+      />
+
+      {/* Floating start button */}
+      <Animated.View style={[{ position: 'absolute', bottom: spacing.xl, alignSelf: 'center' }, { opacity: startOpacity }]}>
+        <Pressable
+          onPressIn={onStartPressIn}
+          onPressOut={onStartPressOut}
+          onPress={handleStart}
+          disabled={!canStart}
+          style={[styles.startBtn, !canStart && styles.startBtnDisabled]}
+        >
+          <Ionicons name="play" size={24} color={colors.textOnBrand} />
+        </Pressable>
+      </Animated.View>
     </ScreenLayout>
   );
 }

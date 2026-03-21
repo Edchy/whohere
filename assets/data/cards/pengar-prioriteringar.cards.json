@@ -1,0 +1,5 @@
+[
+  { "id": "pen-1", "question": "spenderar mer på kaffe per månad än på sin pensionssparning?", "followUp": "Är det ett val du förstår, avundas, eller ser som ett varningstecken du inte kan låta bli att notera?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 1, "controversial": 0, "dark": 0, "funny": 3 } },
+  { "id": "pen-2", "question": "aldrig pratar om pengar men har tänkt på dem varje dag i tio år?", "followUp": "Är tystnaden kring pengar något du delar — och vad tror du döljer sig under den?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 2, "controversial": 1, "dark": 0, "funny": 1 } },
+  { "id": "pen-3", "question": "skänker bort pengar de knappt har råd med för att det känns rätt?", "followUp": "Ser du det som en styrka, en sårbarhet, eller båda — och vad säger det om hur du ser på generositet?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 2, "controversial": 1, "dark": 0, "funny": 0 } }
+]
