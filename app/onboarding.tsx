@@ -6,7 +6,6 @@ import Mascot from '../src/components/Mascot';
 import {
   Animated,
   Dimensions,
-  Image,
   PanResponder,
   Platform,
   Pressable,
@@ -30,11 +29,6 @@ const CARD_WIDTH = CAPPED_WIDTH - spacing.xl * 2;
 
 const SWIPE_DISTANCE = 60;
 const SWIPE_VELOCITY = 400;
-
-// Per-depth offsets for the stacked deck look
-const DEPTH_OFFSET_X = 10;  // each card shifts right
-const DEPTH_OFFSET_Y = 12;  // each card shifts down
-const DEPTH_SCALE = 0.05;   // each card shrinks by this per level
 
 
 type Slide = {
@@ -146,19 +140,7 @@ function SlideCard({ slide }: { slide: Slide }) {
   if (slide.isWelcome) {
     return (
       <View style={[styles.card, styles.cardWelcome, { backgroundColor: colors.bgPrimary, borderColor: colors.textPrimary }]}>
-        <Text selectable={false} style={[styles.topLabel, { color: colors.textMuted, alignSelf: 'flex-start' }]}>{slide.topLabel}</Text>
-        <View style={styles.rotatedContainer}>
-          <View style={styles.welcomeHeadingGroup}>
-            <View style={styles.logoRow}>
-              <Text selectable={false} style={[styles.headlineWelcome, { color: colors.textPrimary, transform: [{ rotate: '-90deg' }, { scale: 2 }] }]}>VEM</Text>
-              <Mascot size={96} />
-              <Text selectable={false} style={[styles.headlineWelcome, { color: colors.textPrimary, transform: [{ rotate: '90deg' }, { scale: 2 }] }]}>HÄR</Text>
-            </View>
-            {!!slide.subheading && (
-              <Text selectable={false} style={[styles.subheading, { color: colors.textMuted, textAlign: 'center' }]}>{slide.subheading}</Text>
-            )}
-          </View>
-        </View>
+        <Text selectable={false} style={{ color: colors.textPrimary, fontSize: 48, lineHeight: 56, textAlign: 'center' }}>HELLO</Text>
         <View style={styles.swipeHintRow}>
           <SwipeHint />
           <Text selectable={false} style={[styles.swipeHintLabel, { color: colors.textMuted }]}>svep för att börja</Text>
@@ -176,9 +158,7 @@ function SlideCard({ slide }: { slide: Slide }) {
         <Text selectable={false} style={[styles.body, { color: colors.textMuted }]}>{slide.body}</Text>
       </View>
 
-      <View style={styles.cardBottom}>
-        <Image source={require('../assets/icon.png')} style={{ width: 24, height: 24 }} />
-      </View>
+      <View style={styles.cardBottom} />
     </View>
   );
 }
@@ -189,9 +169,9 @@ export default function OnboardingScreen() {
   const [topIndex, setTopIndex] = useState(0);
   const [dotIndex, setDotIndex] = useState(0);
   const [swipeDir, setSwipeDir] = useState<'forward' | 'back'>('forward');
+  const frozenUndercardIndex = useRef<number | null>(null);
 
   const dragX = useRef(new Animated.Value(0)).current;
-  const nextProgress = useRef(new Animated.Value(0)).current;
 
   const topIndexRef = useRef(topIndex);
   topIndexRef.current = topIndex;
@@ -214,29 +194,25 @@ export default function OnboardingScreen() {
       Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => dismissRef.current());
       return;
     }
-    Animated.parallel([
-      Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }),
-      Animated.spring(nextProgress, { toValue: 1, damping: 18, stiffness: 220, useNativeDriver: true }),
-    ]).start(() => {
+    Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
       setTopIndex(next);
-      requestAnimationFrame(() => {
-        dragX.setValue(0);
-        nextProgress.setValue(0);
-      });
+      requestAnimationFrame(() => dragX.setValue(0));
     });
   };
 
   const goPrev = () => {
-    const prev = topIndexRef.current - 1;
+    const cur = topIndexRef.current;
+    const prev = cur - 1;
     if (prev < 0) return;
     setSwipeDir('back');
     setDotIndex(prev);
-    Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
-      setTopIndex(prev);
+    frozenUndercardIndex.current = cur + 1;
+    Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 150, useNativeDriver: true }).start(() => {
       dragX.setValue(-SCREEN_WIDTH * 1.5);
-      nextProgress.setValue(0);
+      setTopIndex(prev);
       requestAnimationFrame(() => {
-        Animated.timing(dragX, { toValue: 0, duration: 220, useNativeDriver: true }).start(() => {
+        Animated.spring(dragX, { toValue: 0, useNativeDriver: true, damping: 22, stiffness: 400, mass: 0.8 }).start(() => {
+          frozenUndercardIndex.current = null;
           setSwipeDir('forward');
         });
       });
@@ -250,14 +226,10 @@ export default function OnboardingScreen() {
         Math.abs(g.dx) > 8 && Math.abs(g.dx) > Math.abs(g.dy),
       onPanResponderGrant: () => {
         dragX.stopAnimation();
-        nextProgress.stopAnimation();
       },
       onPanResponderMove: (_, g) => {
         if (g.dx > 0 && topIndexRef.current === 0) return;
         dragX.setValue(g.dx);
-        if (g.dx < 0) {
-          nextProgress.setValue(Math.min(1, -g.dx / (SCREEN_WIDTH * 0.55)));
-        }
       },
       onPanResponderRelease: (_, g) => {
         const cur = topIndexRef.current;
@@ -268,10 +240,7 @@ export default function OnboardingScreen() {
         } else if (goRight && cur > 0) {
           goPrev();
         } else {
-          Animated.parallel([
-            Animated.spring(dragX, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }),
-            Animated.spring(nextProgress, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }),
-          ]).start();
+          Animated.spring(dragX, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }).start();
         }
       },
     })
@@ -289,38 +258,25 @@ export default function OnboardingScreen() {
     ],
   };
 
-  // Cards behind the top card — render from deepest to shallowest
-  const behindSlides = SLIDES.slice(topIndex + 1, topIndex + 4);
+  const undercardIdx = frozenUndercardIndex.current ?? topIndex + 1;
+  const nextSlide: Slide | undefined = SLIDES[undercardIdx];
+  const nextCardOpacity = dragX.interpolate({
+    inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
+    outputRange: [1, 1, 0, 1, 1],
+    extrapolate: 'clamp',
+  });
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
       <View style={styles.cardArea} {...panResponder.panHandlers}>
-        {/* Stack of cards behind — deepest first so they render under */}
-        {[...behindSlides].reverse().map((slide, reversedDepth) => {
-          const depth = behindSlides.length - reversedDepth; // 1 = closest behind
-          // As top card is dragged left, the next card (depth=1) animates toward depth=0
-          const isNext = depth === 1;
-          const translateX = isNext
-            ? nextProgress.interpolate({ inputRange: [0, 1], outputRange: [DEPTH_OFFSET_X * depth, 0] })
-            : DEPTH_OFFSET_X * depth;
-          const translateY = isNext
-            ? nextProgress.interpolate({ inputRange: [0, 1], outputRange: [DEPTH_OFFSET_Y * depth, 0] })
-            : DEPTH_OFFSET_Y * depth;
-          const scale = isNext
-            ? nextProgress.interpolate({ inputRange: [0, 1], outputRange: [1 - DEPTH_SCALE * depth, 1] })
-            : 1 - DEPTH_SCALE * depth;
+        {/* Next slide sits underneath — peeks when swiping left or right (not on welcome slide) */}
+        {nextSlide && (
+          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
+            <SlideCard slide={nextSlide} />
+          </Animated.View>
+        )}
 
-          return (
-            <Animated.View
-              key={slide.id}
-              style={[styles.cardWrapper, { transform: [{ translateX }, { translateY }, { scale }] }]}
-            >
-              <SlideCard slide={slide} />
-            </Animated.View>
-          );
-        })}
-
-        {/* Top card */}
+        {/* Top card — draggable */}
         <Animated.View style={[styles.cardWrapper, topCardStyle]}>
           <SlideCard slide={SLIDES[topIndex]} />
         </Animated.View>
@@ -331,7 +287,6 @@ export default function OnboardingScreen() {
           <Text selectable={false} style={[styles.skipText, { color: colors.textMuted }]}>hoppa över</Text>
         </Pressable>
       )}
-
 
       <View style={styles.dots} pointerEvents="none">
         {SLIDES.map((_, i) => (
@@ -391,7 +346,8 @@ const styles = StyleSheet.create({
   },
   cardMiddle: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: spacing.xl,
     gap: spacing.lg,
   },
   headline: {
@@ -411,8 +367,8 @@ const styles = StyleSheet.create({
   },
   cardWelcome: {
     alignItems: 'center',
-    justifyContent: 'space-between',
-    overflow: 'hidden',
+    justifyContent: 'center',
+    gap: spacing.xl,
   },
   rotatedContainer: {
     flex: 1,
