@@ -110,12 +110,12 @@ export const fonts = {
 
 export const typography = {
   display: { fontFamily: fonts.black, fontSize: 24, lineHeight: 38, letterSpacing: -0.5 },
-  brand:   { fontFamily: fonts.thin, fontSize: 20, lineHeight: 28, letterSpacing: 0 },
+  brand:   { fontFamily: fonts.semiBoldItalic, fontSize: 20, lineHeight: 28, letterSpacing: 0 },
   heading: { fontFamily: fonts.bold,  fontSize: 14, lineHeight: 20, letterSpacing: 0 },
   body:    { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24 },
   caption: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18 },
   badge:   { fontFamily: fonts.regular, fontSize: 10, lineHeight: 14, letterSpacing: 1 },
-  card:    { fontFamily: fonts.bold,  fontSize: 20, lineHeight: 24, letterSpacing: 0.1, textTransform: 'uppercase' as const },
+  card:    { fontFamily: fonts.extraLight,  fontSize: 20, lineHeight: 24, letterSpacing: 0.1, textTransform: 'uppercase' as const },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────

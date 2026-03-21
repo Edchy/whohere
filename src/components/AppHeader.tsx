@@ -6,6 +6,7 @@ import { spacing } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
 import FlyMascot2 from './FlyMascot2';
 import FlyMascot from './FlyMascot';
+import Mascot from './Mascot';
 
 const SIZE = 40;
 
@@ -20,7 +21,7 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
       ) : (
         <View style={styles.spacer} />
       )}
-      <FlyMascot2 size={SIZE} />
+      <Mascot size={SIZE} />
       <View style={styles.spacer} />
     </View>
   );
