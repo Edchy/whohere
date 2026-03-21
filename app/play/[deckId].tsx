@@ -352,8 +352,10 @@ export default function PlayScreen() {
   const [topIndex, setTopIndex] = useState(0);
   const [swipeDir, setSwipeDir] = useState<"forward" | "back">("forward");
   const frozenUndercardIndex = useRef<number | null>(null);
+  const [incomingIndex, setIncomingIndex] = useState<number | null>(null);
 
   const dragX = useRef(new Animated.Value(0)).current;
+  const incomingX = useRef(new Animated.Value(0)).current;
 
   // Flip state (reanimated — kept for flip animation only)
   const flipProgress = useSharedValue(0);
@@ -407,16 +409,18 @@ export default function PlayScreen() {
     if (prev < 0) return;
     prevCardStore();
     setSwipeDir("back");
-    frozenUndercardIndex.current = topIndexRef.current + 1;
-    Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
-      dragX.setValue(-SCREEN_WIDTH * 1.5);
+    frozenUndercardIndex.current = cur + 1;
+    incomingX.setValue(SCREEN_WIDTH * 1.5);
+    setIncomingIndex(prev);
+    Animated.parallel([
+      Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 200, useNativeDriver: true }),
+      Animated.spring(incomingX, { toValue: 0, useNativeDriver: true, damping: 22, stiffness: 400, mass: 0.8 }),
+    ]).start(() => {
+      frozenUndercardIndex.current = null;
+      setIncomingIndex(null);
+      dragX.setValue(0);
       setTopIndex(prev);
-      requestAnimationFrame(() => {
-        Animated.timing(dragX, { toValue: 0, duration: 220, useNativeDriver: true }).start(() => {
-          frozenUndercardIndex.current = null;
-          setSwipeDir("forward");
-        });
-      });
+      setSwipeDir("forward");
     });
   };
 
@@ -491,6 +495,7 @@ export default function PlayScreen() {
   const isLast = topIndex === deck.cards.length - 1;
   const undercardIdx = frozenUndercardIndex.current ?? topIndex + 1;
   const nextCard: Card | undefined = deck.cards[undercardIdx];
+  const incomingCard: Card | undefined = incomingIndex !== null ? deck.cards[incomingIndex] : undefined;
 
   if (!topCard) return null;
 
@@ -513,6 +518,18 @@ export default function PlayScreen() {
             <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
               <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
                 <CardFace card={nextCard} deck={deck} cardIndex={undercardIdx} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={false} canGoForward={false} />
+              </View>
+            </Animated.View>
+          );
+        })()}
+
+        {/* Incoming prev card — slides in from the right during back-swipe */}
+        {incomingCard && (() => {
+          const rc = resolveCardColors(incomingCard, deck, colors);
+          return (
+            <Animated.View style={[styles.cardWrapper, { transform: [{ translateX: incomingX }] }]}>
+              <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
+                <CardFace card={incomingCard} deck={deck} cardIndex={incomingIndex!} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={incomingIndex! > 0} canGoForward={true} />
               </View>
             </Animated.View>
           );
