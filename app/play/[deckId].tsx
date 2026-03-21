@@ -119,6 +119,8 @@ function makeStyles(colors: AppColors) {
     question: {
       ...typography.card,
       color: colors.textPrimary,
+      includeFontPadding: false,
+      lineHeight: 28,
     },
     followUpBlock: {
       borderTopWidth: 1,
@@ -349,6 +351,7 @@ export default function PlayScreen() {
 
   const [topIndex, setTopIndex] = useState(0);
   const [swipeDir, setSwipeDir] = useState<"forward" | "back">("forward");
+  const frozenUndercardIndex = useRef<number | null>(null);
 
   const dragX = useRef(new Animated.Value(0)).current;
 
@@ -399,15 +402,18 @@ export default function PlayScreen() {
   };
 
   const goPrev = () => {
-    const prev = topIndexRef.current - 1;
+    const cur = topIndexRef.current;
+    const prev = cur - 1;
     if (prev < 0) return;
     prevCardStore();
     setSwipeDir("back");
+    frozenUndercardIndex.current = topIndexRef.current + 1;
     Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
       dragX.setValue(-SCREEN_WIDTH * 1.5);
       setTopIndex(prev);
       requestAnimationFrame(() => {
         Animated.timing(dragX, { toValue: 0, duration: 220, useNativeDriver: true }).start(() => {
+          frozenUndercardIndex.current = null;
           setSwipeDir("forward");
         });
       });
@@ -483,7 +489,8 @@ export default function PlayScreen() {
 
   const topCard: Card | undefined = deck.cards[topIndex];
   const isLast = topIndex === deck.cards.length - 1;
-  const nextCard: Card | undefined = deck.cards[topIndex + 1];
+  const undercardIdx = frozenUndercardIndex.current ?? topIndex + 1;
+  const nextCard: Card | undefined = deck.cards[undercardIdx];
 
   if (!topCard) return null;
 
@@ -494,18 +501,18 @@ export default function PlayScreen() {
       <AppHeader onBack={handleClose} />
 
       <View style={styles.cardArea} {...panResponder.panHandlers}>
-        {/* Next card sits underneath — only visible when swiping left */}
-        {nextCard && swipeDir === "forward" && (() => {
+        {/* Next card sits underneath — peeks when swiping left or right */}
+        {nextCard && (() => {
           const rc = resolveCardColors(nextCard, deck, colors);
           const nextCardOpacity = dragX.interpolate({
-            inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0],
-            outputRange: [1, 1, 0],
+            inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
+            outputRange: [1, 1, 0, 1, 1],
             extrapolate: "clamp",
           });
           return (
             <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
               <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
-                <CardFace card={nextCard} deck={deck} cardIndex={topIndex + 1} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={false} canGoForward={false} />
+                <CardFace card={nextCard} deck={deck} cardIndex={undercardIdx} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={false} canGoForward={false} />
               </View>
             </Animated.View>
           );
