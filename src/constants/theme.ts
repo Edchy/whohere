@@ -88,10 +88,14 @@ export const radius = {
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
 export const fonts = {
-  regular: 'MetropolisRegular',
-  bold:    'MetropolisBold',
-  black:   'MetropolisBlack',
-  thin:    'MetropolisThin',
+  thin:            'MetropolisThin',
+  extraLight:      'MetropolisExtraLight',
+  regular:         'MetropolisRegular',
+  medium:          'MetropolisMedium',
+  bold:            'MetropolisBold',
+  semiBoldItalic:  'MetropolisSemiBoldItalic',
+  black:           'MetropolisBlack',
+  blackItalic:     'MetropolisBlackItalic',
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
