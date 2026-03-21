@@ -404,8 +404,8 @@ export default function PlayScreen() {
     prevCardStore();
     setSwipeDir("back");
     Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
-      setTopIndex(prev);
       dragX.setValue(-SCREEN_WIDTH * 1.5);
+      setTopIndex(prev);
       requestAnimationFrame(() => {
         Animated.timing(dragX, { toValue: 0, duration: 220, useNativeDriver: true }).start(() => {
           setSwipeDir("forward");
