@@ -114,7 +114,7 @@ function makeStyles(colors: AppColors) {
     whoHere: {
       ...typography.brand,
       color: colors.accent,
-      marginBottom: spacing.sm,
+      marginBottom: spacing.xs,
     },
     question: {
       ...typography.card,
@@ -207,12 +207,10 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText, can
       <View style={styles.cardBottom}>
         <View style={styles.bottomRow}>
           <View style={styles.bottomRowLeft}>
-            <Text selectable={false} style={[styles.bottomRowText, { color: canGoBack ? colors.accent : colors.textMuted }]}>‹</Text>
             <Text selectable={false} style={[styles.bottomRowText, { color: colors.textMuted }]}>{title.toUpperCase()}</Text>
           </View>
           <View style={styles.bottomRowRight}>
             <Text selectable={false} style={[styles.bottomRowText, { color: colors.textMuted }]}>{cardIndex + 1} / {totalCards}</Text>
-            <Text selectable={false} style={[styles.bottomRowText, { color: canGoForward ? colors.accent : colors.textMuted }]}>›</Text>
           </View>
         </View>
       </View>
