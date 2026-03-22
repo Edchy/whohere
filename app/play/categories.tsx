@@ -1,9 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import RandomSvg from "../../assets/icons/noun-doodle-element-7389160.svg";
+import PlayArrowSvg from "../../assets/icons/noun-arrow-8300346.svg";
+import RandomSvg from "../../assets/icons/noun-grid-8300333.svg";
 import { DeckTile } from "../../src/components/DeckTile";
 import ScreenLayout from "../../src/components/ScreenLayout";
 import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
@@ -366,7 +366,7 @@ export default function CategoriesScreen() {
           disabled={!canStart}
           style={[styles.startBtn, !canStart && styles.startBtnDisabled]}
         >
-          <Ionicons name="play" size={24} color={colors.textOnBrand} />
+          <PlayArrowSvg width={24} height={24} fill={colors.textOnBrand} />
         </Pressable>
       </Animated.View>
     </ScreenLayout>

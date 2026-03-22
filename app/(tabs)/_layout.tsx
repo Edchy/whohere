@@ -3,6 +3,9 @@ import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import PlayArrowSvg from '../../assets/icons/noun-arrow-8300346.svg';
+import LayersSvg from '../../assets/icons/noun-pattern-8300370.svg';
+import AsteriskSvg from '../../assets/icons/noun-asterisk-8300387.svg';
 import { AppColors, radius, spacing, typography } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
@@ -101,11 +104,31 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
                 activeOpacity={0.7}
               >
                 <View style={tabStyles.iconWrap}>
-                  <Ionicons
-                    name={(focused ? iconOn : iconOff) as any}
-                    size={22}
-                    color={focused ? colors.accent : colors.textMuted}
-                  />
+                  {route.name === 'index' ? (
+                    <PlayArrowSvg
+                      width={16}
+                      height={16}
+                      fill={focused ? colors.accent : colors.textMuted}
+                    />
+                  ) : route.name === 'decks' ? (
+                    <LayersSvg
+                      width={22}
+                      height={22}
+                      fill={focused ? colors.accent : colors.textMuted}
+                    />
+                  ) : route.name === 'settings' ? (
+                    <AsteriskSvg
+                      width={22}
+                      height={22}
+                      fill={focused ? colors.accent : colors.textMuted}
+                    />
+                  ) : (
+                    <Ionicons
+                      name={(focused ? iconOn : iconOff) as any}
+                      size={22}
+                      color={focused ? colors.accent : colors.textMuted}
+                    />
+                  )}
                 </View>
                 <Text style={[tabStyles.label, focused && tabStyles.labelActive]}>
                   {label}

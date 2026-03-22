@@ -21,19 +21,19 @@ const MODES = [
     id: "partner",
     label: "On a date",
     sublabel: "Lär känna varandra genom att betrakta andra.",
-    svgIcon: "noun-wine-1064743",
+    svgIcon: "noun-happy-heart-eyes-4034952",
   },
   {
     id: "group",
     label: "With frens",
     sublabel: "Fantasi och intuition i en ohelig kombination.",
-    svgIcon: "noun-wine-3811155",
+    svgIcon: "noun-satisfied-big-grin-4034956",
   },
   {
     id: "solo",
     label: "Riding solo",
     sublabel: "Upptäck din inre värld genom utblickar och insikter.",
-    svgIcon: "noun-wine-glass-1047711",
+    svgIcon: "noun-sad-4034920",
   },
 ];
 

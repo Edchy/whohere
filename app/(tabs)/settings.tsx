@@ -12,8 +12,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import MoonIcon from '../../assets/icons/noun-moon-4373688.svg';
-import SunIcon from '../../assets/icons/noun-sun-4373690.svg';
+import MoonIcon from '../../assets/icons/noun-moons-8300397.svg';
+import SunIcon from '../../assets/icons/noun-explosion-8298220.svg';
+import ChevronIcon from '../../assets/icons/noun-arrow-8300346.svg';
+import StairsIcon from '../../assets/icons/noun-stairs-8300405.svg';
+import SpringIcon from '../../assets/icons/noun-spring-8298165.svg';
 import { animation, AppColors, radius, spacing, typography } from '../../src/constants/theme';
 import ScreenLayout from '../../src/components/ScreenLayout';
 import { useColors } from '../../src/hooks/useColors';
@@ -200,9 +203,9 @@ export default function SettingsScreen() {
                   <Text style={styles.rowSublabel}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
                 </View>
                 {colorScheme === 'dark' ? (
-                  <SunIcon width={16} height={16} fill={colors.textMuted} />
-                ) : (
                   <MoonIcon width={16} height={16} fill={colors.textMuted} />
+                ) : (
+                  <SunIcon width={16} height={16} fill={colors.textMuted} />
                 )}
               </>
             )}
@@ -214,10 +217,13 @@ export default function SettingsScreen() {
             AsyncStorage.setItem(HAPTICS_KEY, String(next));
           }} backgroundColor={hapticsEnabled ? colors.bgBrand : undefined}>
             {(c) => (
-              <View style={styles.rowText}>
-                <Text style={[styles.rowLabel, hapticsEnabled ? { color: colors.textOnBrand } : undefined]}>HAPTIK</Text>
-                <Text style={[styles.rowSublabel, hapticsEnabled ? { color: colors.textOnBrand, opacity: 0.7 } : undefined]}>Vibrera när du byter kort</Text>
-              </View>
+              <>
+                <View style={styles.rowText}>
+                  <Text style={[styles.rowLabel, hapticsEnabled ? { color: colors.textOnBrand } : undefined]}>HAPTIK</Text>
+                  <Text style={[styles.rowSublabel, hapticsEnabled ? { color: colors.textOnBrand, opacity: 0.7 } : undefined]}>Vibrera när du byter kort</Text>
+                </View>
+                <SpringIcon width={16} height={16} fill={hapticsEnabled ? colors.textOnBrand : colors.textMuted} />
+              </>
             )}
           </AnimatedRow>
 
@@ -228,7 +234,7 @@ export default function SettingsScreen() {
                   <Text style={styles.rowLabel}>KORTBAKSIDA</Text>
                   <Text style={styles.rowSublabel}>{cardBackLabel}</Text>
                 </View>
-                <Text style={[styles.rowSublabel, { fontSize: 18, opacity: 1 }]}>›</Text>
+                <ChevronIcon width={12} height={12} fill={colors.textMuted} />
               </>
             )}
           </AnimatedRow>
@@ -239,10 +245,13 @@ export default function SettingsScreen() {
             router.replace('/onboarding');
           }}>
             {(c) => (
-              <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>INTRO</Text>
-                <Text style={styles.rowSublabel}>Visa igen</Text>
-              </View>
+              <>
+                <View style={styles.rowText}>
+                  <Text style={styles.rowLabel}>INTRO</Text>
+                  <Text style={styles.rowSublabel}>Visa igen</Text>
+                </View>
+                <StairsIcon width={16} height={16} fill={colors.textMuted} />
+              </>
             )}
           </AnimatedRow>
         </View>

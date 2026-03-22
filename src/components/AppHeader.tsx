@@ -4,11 +4,9 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { spacing } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
-import FlyMascot2 from './FlyMascot2';
-import FlyMascot from './FlyMascot';
-import Mascot from './Mascot';
+import GroovyEmoji from './GroovyEmoji';
 
-const SIZE = 40;
+const SIZE = 80;
 
 export default function AppHeader({ onBack }: { onBack?: () => void }) {
   const colors = useColors();
@@ -21,7 +19,7 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
       ) : (
         <View style={styles.spacer} />
       )}
-      <Mascot size={SIZE} />
+      <GroovyEmoji size={SIZE} />
       <View style={styles.spacer} />
     </View>
   );

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import FingerIcon from '../assets/icons/noun-finger-6748636.svg';
+import FingerIcon from '../assets/icons/noun-finger-3414109.svg';
 import Mascot from '../src/components/Mascot';
 import {
   Animated,

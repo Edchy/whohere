@@ -21,6 +21,10 @@ import WineBottles1047714 from '../../assets/icons/noun-wine-bottles-1047714.svg
 import Wine1064743 from '../../assets/icons/noun-wine-1064743.svg';
 import Wine3811155 from '../../assets/icons/noun-wine-3811155.svg';
 import WineGlass1047711 from '../../assets/icons/noun-wine-glass-1047711.svg';
+import ImpossibleHeart3612693 from '../../assets/icons/noun-impossible-heart-3612693.svg';
+import HappyHeartEyes4034952 from '../../assets/icons/noun-happy-heart-eyes-4034952.svg';
+import Sad4034920 from '../../assets/icons/noun-sad-4034920.svg';
+import SatisfiedBigGrin4034956 from '../../assets/icons/noun-satisfied-big-grin-4034956.svg';
 
 type SvgComponent = React.FC<SvgProps>;
 
@@ -43,6 +47,10 @@ const deckIcons: Record<string, SvgComponent> = {
   'noun-wine-1064743': Wine1064743,
   'noun-wine-3811155': Wine3811155,
   'noun-wine-glass-1047711': WineGlass1047711,
+  'noun-impossible-heart-3612693': ImpossibleHeart3612693,
+  'noun-happy-heart-eyes-4034952': HappyHeartEyes4034952,
+  'noun-sad-4034920': Sad4034920,
+  'noun-satisfied-big-grin-4034956': SatisfiedBigGrin4034956,
 };
 
 export default deckIcons;
