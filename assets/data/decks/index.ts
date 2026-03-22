@@ -30,8 +30,6 @@ import pengarPrioriCards from "../cards/pengar-prioriteringar.cards.json";
 import radslaModMeta from "./radsla-mod.json";
 import radslaModCards from "../cards/radsla-mod.cards.json";
 
-import vanorVardagslivMeta from "./vanor-vardagsliv.json";
-import vanorVardagslivCards from "../cards/vanor-vardagsliv.cards.json";
 
 function assemble(meta: Omit<Deck, "cards">, cards: Card[]): Deck {
   return { ...meta, cards } as Deck;
@@ -50,7 +48,6 @@ const allDecks: Deck[] = [
   assemble(kroppHalsaMeta as Omit<Deck, "cards">, kroppHalsaCards as Card[]),
   assemble(pengarPrioriMeta as Omit<Deck, "cards">, pengarPrioriCards as Card[]),
   assemble(radslaModMeta as Omit<Deck, "cards">, radslaModCards as Card[]),
-  assemble(vanorVardagslivMeta as Omit<Deck, "cards">, vanorVardagslivCards as Card[]),
 ];
 
 export default allDecks;

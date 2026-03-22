@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import PlayArrowSvg from "../../assets/icons/noun-arrow-8300346.svg";
-import RandomSvg from "../../assets/icons/noun-grid-8300333.svg";
+import RandomSvg from "../../assets/icons/category-icons/noun-question-8320435.svg";
 import { DeckTile } from "../../src/components/DeckTile";
 import ScreenLayout from "../../src/components/ScreenLayout";
 import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
@@ -212,7 +212,7 @@ function makeStyles(colors: AppColors) {
     },
     surpriseTile: {
       paddingVertical: spacing.lg,
-      paddingHorizontal: spacing.lg,
+      paddingHorizontal: spacing.md,
       borderRadius: radius.md,
       borderWidth: 1,
       borderColor: colors.bgSecondary,
@@ -324,7 +324,9 @@ export default function CategoriesScreen() {
               style={[styles.surpriseTile, randomize && { backgroundColor: colors.accent, borderColor: 'transparent' }]}
             >
               <View style={styles.surpriseInner}>
-                <RandomSvg width={24} height={24} fill={randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary} />
+                <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+                  <RandomSvg width={32} height={32} fill={randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary} />
+                </View>
                 <View style={styles.surpriseText}>
                   <Text style={[styles.surpriseTitle, { color: randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary }]}>
                     ÖVERRASKA MIG!

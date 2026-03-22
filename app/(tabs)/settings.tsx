@@ -17,6 +17,39 @@ import ScreenLayout from '../../src/components/ScreenLayout';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
 
+// ─── Shared indicator components ──────────────────────────────────────────────
+
+function TogglePill({ active }: { active: boolean }) {
+  const colors = useColors();
+  return (
+    <View style={{
+      width: 36,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: active ? colors.accent : 'transparent',
+      borderWidth: 1.5,
+      borderColor: active ? colors.accent : colors.border,
+      justifyContent: 'center',
+      paddingHorizontal: 3,
+      alignItems: active ? 'flex-end' : 'flex-start',
+    }}>
+      <View style={{
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: active ? colors.bgPrimary : colors.border,
+      }} />
+    </View>
+  );
+}
+
+function Chevron() {
+  const colors = useColors();
+  return (
+    <Text style={{ color: colors.textMuted, fontSize: 18, lineHeight: 22, fontWeight: '300' }}>›</Text>
+  );
+}
+
 const COLOR_SCHEME_KEY = '@whohere/colorScheme';
 const HAPTICS_KEY = '@whohere/hapticsEnabled';
 const CARD_BACK_KEY = '@whohere/cardBackStyle';
@@ -98,7 +131,7 @@ function makeStyles(colors: AppColors) {
   });
 }
 
-function AnimatedRow({ onPress, backgroundColor, children }: { onPress?: () => void; backgroundColor?: string; children: (colors: AppColors) => React.ReactNode }) {
+function AnimatedRow({ onPress, right, children }: { onPress?: () => void; right?: React.ReactNode; children: (colors: AppColors) => React.ReactNode }) {
   const colors = useColors();
   const styles = makeStyles(colors);
   const colorScheme = useGameStore((s) => s.colorScheme);
@@ -110,12 +143,7 @@ function AnimatedRow({ onPress, backgroundColor, children }: { onPress?: () => v
   const onPressOut = () =>
     Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
-  const tileStyle = [
-    styles.row,
-    backgroundColor ? { backgroundColor, borderColor: backgroundColor } : undefined,
-  ];
-
-  const glassContent = !backgroundColor && (
+  const glassContent = (
     <>
       {Platform.OS !== 'web' && colorScheme === 'dark' && (
         <BlurView style={StyleSheet.absoluteFillObject} intensity={20} tint="dark" />
@@ -141,8 +169,16 @@ function AnimatedRow({ onPress, backgroundColor, children }: { onPress?: () => v
     </>
   );
 
+  const inner = (
+    <>
+      {glassContent}
+      {children(colors)}
+      {right && <View style={{ marginLeft: 'auto' }}>{right}</View>}
+    </>
+  );
+
   if (!onPress) {
-    return <View style={tileStyle}>{glassContent}{children(colors)}</View>;
+    return <View style={styles.row}>{inner}</View>;
   }
 
   return (
@@ -151,10 +187,9 @@ function AnimatedRow({ onPress, backgroundColor, children }: { onPress?: () => v
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={onPress}
-        style={tileStyle}
+        style={styles.row}
       >
-        {glassContent}
-        {children(colors)}
+        {inner}
       </Pressable>
     </Animated.View>
   );
@@ -184,33 +219,39 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         <View style={styles.grid}>
-          <AnimatedRow onPress={() => {
-            const next = colorScheme === 'dark' ? 'light' : 'dark';
-            setColorScheme(next);
-            AsyncStorage.setItem(COLOR_SCHEME_KEY, next);
-          }}>
+          <AnimatedRow
+            onPress={() => {
+              const next = colorScheme === 'dark' ? 'light' : 'dark';
+              setColorScheme(next);
+              AsyncStorage.setItem(COLOR_SCHEME_KEY, next);
+            }}
+            right={<TogglePill active={colorScheme === 'dark'} />}
+          >
             {(c) => (
               <View style={styles.rowText}>
                 <Text style={styles.rowLabel}>UTSEENDE</Text>
-                <Text style={styles.rowSublabel}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
+                <Text style={styles.rowSublabel}>Dark mode</Text>
               </View>
             )}
           </AnimatedRow>
 
-          <AnimatedRow onPress={() => {
-            const next = !hapticsEnabled;
-            setHapticsEnabled(next);
-            AsyncStorage.setItem(HAPTICS_KEY, String(next));
-          }} backgroundColor={hapticsEnabled ? colors.bgBrand : undefined}>
+          <AnimatedRow
+            onPress={() => {
+              const next = !hapticsEnabled;
+              setHapticsEnabled(next);
+              AsyncStorage.setItem(HAPTICS_KEY, String(next));
+            }}
+            right={<TogglePill active={hapticsEnabled} />}
+          >
             {(c) => (
               <View style={styles.rowText}>
-                <Text style={[styles.rowLabel, hapticsEnabled ? { color: colors.textOnBrand } : undefined]}>HAPTIK</Text>
-                <Text style={[styles.rowSublabel, hapticsEnabled ? { color: colors.textOnBrand, opacity: 0.7 } : undefined]}>Vibrera när du byter kort</Text>
+                <Text style={styles.rowLabel}>HAPTIK</Text>
+                <Text style={styles.rowSublabel}>Vibrera när du byter kort</Text>
               </View>
             )}
           </AnimatedRow>
 
-          <AnimatedRow onPress={() => router.push('/settings/card-back')}>
+          <AnimatedRow onPress={() => router.push('/settings/card-back')} right={<Chevron />}>
             {(c) => (
               <View style={styles.rowText}>
                 <Text style={styles.rowLabel}>KORTBAKSIDA</Text>
@@ -219,11 +260,14 @@ export default function SettingsScreen() {
             )}
           </AnimatedRow>
 
-          <AnimatedRow onPress={() => {
-            AsyncStorage.removeItem('@whohere/hasSeenOnboarding');
-            setHasSeenOnboarding(false);
-            router.replace('/onboarding');
-          }}>
+          <AnimatedRow
+            onPress={() => {
+              AsyncStorage.removeItem('@whohere/hasSeenOnboarding');
+              setHasSeenOnboarding(false);
+              router.replace('/onboarding');
+            }}
+            right={<Chevron />}
+          >
             {(c) => (
               <View style={styles.rowText}>
                 <Text style={styles.rowLabel}>INTRO</Text>
@@ -245,6 +289,10 @@ export default function SettingsScreen() {
         </View>
 
       </ScrollView>
+      <LinearGradient
+        colors={[colors.bgPrimary + '00', colors.bgPrimary + 'EE', colors.bgPrimary]}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 220, pointerEvents: 'none' }}
+      />
     </ScreenLayout>
   );
 }

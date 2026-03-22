@@ -14,26 +14,22 @@ import { animation, AppColors, radius, spacing, typography } from "../../src/con
 import ScreenLayout from "../../src/components/ScreenLayout";
 import { useColors } from "../../src/hooks/useColors";
 import { useGameStore } from "../../src/store/gameStore";
-import deckIcons from "../../src/constants/deckIcons";
 
 const MODES = [
   {
     id: "partner",
     label: "On a date",
     sublabel: "Lär känna varandra genom att betrakta andra.",
-    svgIcon: "noun-pattern-8300354",
   },
   {
     id: "group",
     label: "With frens",
     sublabel: "Fantasi och intuition i en ohelig kombination.",
-    svgIcon: "noun-shutter-8300343",
   },
   {
     id: "solo",
     label: "Riding solo",
     sublabel: "Upptäck din inre värld genom utblickar och insikter.",
-    svgIcon: "noun-ornament-8300338",
   },
 ];
 
@@ -45,10 +41,6 @@ function makeStyles(colors: AppColors) {
       paddingTop: spacing.lg,
       gap: spacing.sm,
     },
-    mascotWrap: {
-      alignItems: 'center',
-      paddingVertical: spacing.lg,
-    },
     modeList: {
       gap: spacing.sm,
     },
@@ -58,16 +50,12 @@ function makeStyles(colors: AppColors) {
       paddingHorizontal: spacing.lg,
       borderRadius: radius.md,
       borderWidth: 1,
-      borderColor: colors.accent + '18', // 10% opacity
+      borderColor: colors.accent + '18',
       backgroundColor: 'rgba(255, 255, 255, 0.02)',
     },
     rowInner: {
       flexDirection: "row",
       alignItems: "flex-start",
-    },
-    rowIconWrap: {
-      marginRight: spacing.sm,
-      marginTop: 3,
     },
     rowText: {
       flex: 1,
@@ -109,8 +97,6 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
     }).start();
   };
 
-  const SvgIcon = deckIcons[mode.svgIcon];
-
   return (
     <Animated.View style={{ opacity }}>
       <Pressable
@@ -141,11 +127,6 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
           </>
         )}
         <View style={styles.rowInner}>
-          {SvgIcon && (
-            <View style={styles.rowIconWrap}>
-              <SvgIcon width={20} height={20} fill={colors.textPrimary} />
-            </View>
-          )}
           <View style={styles.rowText}>
             <Text style={styles.rowLabel}>{mode.label}</Text>
             <Text style={styles.rowSublabel}>{mode.sublabel}</Text>
@@ -163,7 +144,7 @@ export default function HomeScreen() {
   return (
     <ScreenLayout>
       <View style={styles.container}>
-<View style={styles.modeList}>
+        <View style={styles.modeList}>
           {MODES.map((mode) => (
             <ModeRow key={mode.id} mode={mode} colors={colors} />
           ))}

@@ -1,5 +1,0 @@
-[
-  { "id": "van-1", "question": "har en helt specifik ordning för hur morgonen måste se ut för att dagen ska kännas rätt?", "followUp": "Är det en kontroll du beundrar, förstår för väl, eller hittar lite löjlig — och vad säger det om dig?", "intensity": { "bold": 1, "daring": 1, "sexual": 0, "vulnerable": 1, "controversial": 0, "dark": 0, "funny": 3 } },
-  { "id": "van-2", "question": "äter lunch ensam med avsikt och mår genuint bra av det?", "followUp": "Är det en vana du avundas, förstår, eller aldrig skulle vilja ha — och vad säger det om hur du laddar?", "intensity": { "bold": 1, "daring": 1, "sexual": 0, "vulnerable": 2, "controversial": 0, "dark": 0, "funny": 1 } },
-  { "id": "van-3", "question": "lyssnar på exakt samma låt varje gång de behöver samla sig?", "followUp": "Har du din egen version av det — och är det något du skulle berätta om för en främling?", "intensity": { "bold": 1, "daring": 1, "sexual": 0, "vulnerable": 2, "controversial": 0, "dark": 0, "funny": 2 } }
-]
