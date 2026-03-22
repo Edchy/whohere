@@ -88,7 +88,6 @@ function makeStyles(colors: AppColors) {
     },
     modeRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
     modeIndicatorText: { ...typography.badge, letterSpacing: 1.5 },
-    iconRow: { marginTop: spacing.sm, alignItems: "center" },
     questionBlock: { flex: 1, justifyContent: "center", marginBottom: spacing.xxxl },
     cardBottom: { gap: spacing.xs },
     bottomRow: {
@@ -121,7 +120,7 @@ function makeStyles(colors: AppColors) {
       ...typography.card,
       color: colors.textPrimary,
       includeFontPadding: false,
-      lineHeight: 28,
+      flexShrink: 1,
     },
     followUpBlock: {
       borderTopWidth: 1,
@@ -196,11 +195,7 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText, can
   const title = card.deckTitle ?? deck.title;
 
   return (
-    <>
-
-      <View style={styles.iconRow}>
-        <DeckIcon deck={{ icon, svgIcon }} size={36} color={colors.textPrimary} />
-      </View>
+    <View style={{ flex: 1 }}>
       <View style={styles.questionBlock}>
         <Text selectable={false} style={styles.whoHere}>Vem här…</Text>
         <Text selectable={false} style={[styles.question, { color: resolvedText }]}>{card.question}</Text>
@@ -208,6 +203,7 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText, can
       <View style={styles.cardBottom}>
         <View style={styles.bottomRow}>
           <View style={styles.bottomRowLeft}>
+            <DeckIcon deck={{ icon, svgIcon }} size={18} color={colors.textMuted} />
             <Text selectable={false} style={[styles.bottomRowText, { color: colors.textMuted }]}>{title.toUpperCase()}</Text>
           </View>
           <View style={styles.bottomRowRight}>
@@ -215,7 +211,7 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText, can
           </View>
         </View>
       </View>
-    </>
+    </View>
   );
 }
 

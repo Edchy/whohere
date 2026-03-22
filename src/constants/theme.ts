@@ -115,7 +115,7 @@ export const typography = {
   body:    { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24 },
   caption: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18 },
   badge:   { fontFamily: fonts.regular, fontSize: 10, lineHeight: 14, letterSpacing: 1 },
-  card:    { fontFamily: fonts.bold,  fontSize: 18, lineHeight: 24, letterSpacing: 0.1, textTransform: 'uppercase' as const },
+  card:    { fontFamily: fonts.bold,  fontSize: 24, lineHeight: 32, letterSpacing: 0.1, textTransform: 'uppercase' as const },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────
