@@ -53,6 +53,7 @@ function makeStyles(colors: AppColors) {
     cardArea: {
       flex: 1,
       justifyContent: "center",
+      paddingBottom: spacing.lg + spacing.md + dimensions.iconTouchSize,
     },
     cardWrapper: {
       position: "absolute",
@@ -316,20 +317,9 @@ function CardBack({ card, deck, colors }: { card: Card; deck: Deck; colors: AppC
         <DeckIcon deck={{ icon, svgIcon }} size={18} color={colors.textPrimary} />
       </View>
 
-      {card.followUp ? (
-        /* Follow-up reflection prompt */
-        <View style={styles.cardBackContent}>
-          <View style={styles.backFollowUpContainer}>
-            <Text selectable={false} style={[styles.backFollowUpText, { color: colors.textPrimary }]}>Varför då?</Text>
-            <Text selectable={false} style={[styles.backFollowUpText, { color: colors.textSecondary, marginTop: spacing.lg }]}>{card.followUp}</Text>
-          </View>
-        </View>
-      ) : (
-        /* Center icon (fallback when no followUp) */
-        <View style={styles.cardBackContent}>
-          <DeckIcon deck={{ icon, svgIcon }} size={96} color={colors.textPrimary} />
-        </View>
-      )}
+      <View style={styles.cardBackContent}>
+        <DeckIcon deck={{ icon, svgIcon }} size={120} color={colors.textPrimary} />
+      </View>
     </View>
   );
 }
@@ -359,7 +349,6 @@ export default function PlayScreen() {
   const topIndexRef = useRef(topIndex);
   topIndexRef.current = topIndex;
 
-  const dismissRef = useRef(() => {});
   const handleFlipRef = useRef(() => {});
 
   useEffect(() => {
@@ -379,17 +368,17 @@ export default function PlayScreen() {
 
   const deck = activeDeck;
 
-  dismissRef.current = () => {
-    endGame();
-    router.replace("/play/results");
-  };
-
   const goNext = () => {
     const cur = topIndexRef.current;
     const next = cur + 1;
     setSwipeDir("forward");
-    if (!deck || next >= deck.cards.length) {
-      Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => dismissRef.current());
+    if (!deck) return;
+    // Swiping left on the results card — go home
+    if (cur >= deck.cards.length) {
+      endGame();
+      Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
+        router.replace("/");
+      });
       return;
     }
     nextCardStore();
@@ -485,14 +474,15 @@ export default function PlayScreen() {
 
   if (!deck) return null;
 
-  const topCard: Card | undefined = deck.cards[topIndex];
+  const isResultsCard = topIndex === deck.cards.length;
+  const topCard: Card | undefined = isResultsCard ? undefined : deck.cards[topIndex];
   const isLast = topIndex === deck.cards.length - 1;
   const undercardIdx = frozenUndercardIndex.current ?? topIndex + 1;
-  const nextCard: Card | undefined = deck.cards[undercardIdx];
+  // The undercard for the last question card is the results card (no deck.cards entry)
+  const isUndercardResults = undercardIdx === deck.cards.length;
+  const nextCard: Card | undefined = isUndercardResults ? undefined : deck.cards[undercardIdx];
 
-  if (!topCard) return null;
-
-  const topRc = resolveCardColors(topCard, deck, colors);
+  const topRc = topCard ? resolveCardColors(topCard, deck, colors) : { bg: colors.bgCard, text: colors.textPrimary };
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -500,17 +490,26 @@ export default function PlayScreen() {
 
       <View style={styles.cardArea} {...panResponder.panHandlers}>
         {/* Next card sits underneath — peeks when swiping left or right */}
-        {nextCard && (() => {
-          const rc = resolveCardColors(nextCard, deck, colors);
+        {(nextCard || isUndercardResults) && (() => {
           const nextCardOpacity = dragX.interpolate({
             inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
             outputRange: [1, 1, 0, 1, 1],
             extrapolate: "clamp",
           });
+          if (isUndercardResults) {
+            return (
+              <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
+                <View style={[styles.cardFace, { backgroundColor: colors.bgCard, alignItems: "center", justifyContent: "center" }]}>
+                  <Text selectable={false} style={[styles.question, { textAlign: "center" }]}>Klar</Text>
+                </View>
+              </Animated.View>
+            );
+          }
+          const rc = resolveCardColors(nextCard!, deck, colors);
           return (
             <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
               <View style={[styles.cardFace, { backgroundColor: rc.bg }]}>
-                <CardFace card={nextCard} deck={deck} cardIndex={undercardIdx} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={false} canGoForward={false} />
+                <CardFace card={nextCard!} deck={deck} cardIndex={undercardIdx} totalCards={deck.cards.length} colors={colors} resolvedText={rc.text} canGoBack={false} canGoForward={false} />
               </View>
             </Animated.View>
           );
@@ -518,32 +517,23 @@ export default function PlayScreen() {
 
         {/* Top card — draggable */}
         <Animated.View style={[styles.cardWrapper, topCardAnimStyle]}>
-          <TouchableOpacity activeOpacity={1} style={styles.cardPressable} onPress={() => handleFlipRef.current()}>
-            <ReAnimated.View style={[styles.cardFace, { backgroundColor: topRc.bg }, frontFaceStyle]}>
-              <CardFace card={topCard} deck={deck} cardIndex={topIndex} totalCards={deck.cards.length} colors={colors} resolvedText={topRc.text} canGoBack={topIndex > 0} canGoForward={!isLast} />
-            </ReAnimated.View>
-            <ReAnimated.View style={[styles.cardFace, { backgroundColor: topRc.bg, padding: 0 }, backFaceStyle]}>
-              <CardBack card={topCard} deck={deck} colors={colors} />
-            </ReAnimated.View>
-          </TouchableOpacity>
+          {isResultsCard ? (
+            <View style={[styles.cardFace, { backgroundColor: colors.bgCard, alignItems: "center", justifyContent: "center" }]}>
+              <Text selectable={false} style={[styles.question, { textAlign: "center" }]}>Klar</Text>
+            </View>
+          ) : (
+            <TouchableOpacity activeOpacity={1} style={styles.cardPressable} onPress={() => handleFlipRef.current()}>
+              <ReAnimated.View style={[styles.cardFace, { backgroundColor: topRc.bg }, frontFaceStyle]}>
+                <CardFace card={topCard!} deck={deck} cardIndex={topIndex} totalCards={deck.cards.length} colors={colors} resolvedText={topRc.text} canGoBack={topIndex > 0} canGoForward={!isLast} />
+              </ReAnimated.View>
+              <ReAnimated.View style={[styles.cardFace, { backgroundColor: topRc.bg, padding: 0 }, backFaceStyle]}>
+                <CardBack card={topCard!} deck={deck} colors={colors} />
+              </ReAnimated.View>
+            </TouchableOpacity>
+          )}
         </Animated.View>
       </View>
 
-      <View style={styles.nav}>
-        {isLast && (
-          <TouchableOpacity
-            onPress={() => {
-              haptics.light();
-              dismissRef.current();
-            }}
-            style={[styles.finishBtn, { borderColor: colors.accent }]}
-          >
-            <Text style={[styles.finishBtnText, { color: colors.accent }]}>
-              klar
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
     </SafeAreaView>
   );
 }

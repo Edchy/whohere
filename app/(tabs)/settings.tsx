@@ -264,7 +264,7 @@ export default function SettingsScreen() {
             onPress={() => {
               AsyncStorage.removeItem('@whohere/hasSeenOnboarding');
               setHasSeenOnboarding(false);
-              router.replace('/onboarding');
+              router.push({ pathname: '/onboarding', params: { from: 'settings' } });
             }}
             right={<Chevron />}
           >

@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import FingerIcon from '../assets/icons/noun-finger-3414109.svg';
-import Mascot from '../src/components/Mascot';
 import {
   Animated,
   Dimensions,
@@ -165,6 +164,7 @@ function SlideCard({ slide }: { slide: Slide }) {
 
 export default function OnboardingScreen() {
   const colors = useColors();
+  const { from } = useLocalSearchParams<{ from?: string }>();
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const [topIndex, setTopIndex] = useState(0);
   const [dotIndex, setDotIndex] = useState(0);
@@ -180,7 +180,11 @@ export default function OnboardingScreen() {
   dismissRef.current = async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
     setHasSeenOnboarding(true);
-    router.replace('/');
+    if (from === 'settings') {
+      router.back();
+    } else {
+      router.replace('/');
+    }
   };
 
   const dismiss = () => dismissRef.current();

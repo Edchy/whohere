@@ -5,14 +5,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "scheme": "whohere",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000000"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.whohere.app"
@@ -20,7 +15,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#111111"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.whohere.app"
@@ -29,7 +24,20 @@
       "bundler": "metro",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [],
+    "plugins": [
+      ["expo-splash-screen", {
+        "image": "./assets/splash-icon.png",
+        "dark": {
+          "image": "./assets/splash-icon.png",
+          "backgroundColor": "#111111"
+        },
+        "light": {
+          "image": "./assets/splash-icon-light.png",
+          "backgroundColor": "#F2EEE9"
+        },
+        "resizeMode": "contain"
+      }]
+    ],
     "extra": {
       "eas": {
         "projectId": "1c6991e3-04da-44bb-9d43-5a9dc7226b86"
