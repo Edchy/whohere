@@ -21,19 +21,19 @@ const MODES = [
     id: "partner",
     label: "On a date",
     sublabel: "Lär känna varandra genom att betrakta andra.",
-    svgIcon: "noun-happy-heart-eyes-4034952",
+    svgIcon: "noun-pattern-8300354",
   },
   {
     id: "group",
     label: "With frens",
     sublabel: "Fantasi och intuition i en ohelig kombination.",
-    svgIcon: "noun-satisfied-big-grin-4034956",
+    svgIcon: "noun-shutter-8300343",
   },
   {
     id: "solo",
     label: "Riding solo",
     sublabel: "Upptäck din inre värld genom utblickar och insikter.",
-    svgIcon: "noun-sad-4034920",
+    svgIcon: "noun-ornament-8300338",
   },
 ];
 
@@ -63,10 +63,11 @@ function makeStyles(colors: AppColors) {
     },
     rowInner: {
       flexDirection: "row",
-      alignItems: "center",
+      alignItems: "flex-start",
     },
     rowIconWrap: {
-      marginRight: spacing.md,
+      marginRight: spacing.sm,
+      marginTop: 3,
     },
     rowText: {
       flex: 1,
@@ -142,7 +143,7 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
         <View style={styles.rowInner}>
           {SvgIcon && (
             <View style={styles.rowIconWrap}>
-              <SvgIcon width={40} height={40} fill={colors.textPrimary} />
+              <SvgIcon width={20} height={20} fill={colors.textPrimary} />
             </View>
           )}
           <View style={styles.rowText}>

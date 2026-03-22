@@ -25,6 +25,9 @@ import ImpossibleHeart3612693 from '../../assets/icons/noun-impossible-heart-361
 import HappyHeartEyes4034952 from '../../assets/icons/noun-happy-heart-eyes-4034952.svg';
 import Sad4034920 from '../../assets/icons/noun-sad-4034920.svg';
 import SatisfiedBigGrin4034956 from '../../assets/icons/noun-satisfied-big-grin-4034956.svg';
+import Pattern8300354 from '../../assets/icons/noun-pattern-8300354.svg';
+import Shutter8300343 from '../../assets/icons/noun-shutter-8300343.svg';
+import Ornament8300338 from '../../assets/icons/noun-ornament-8300338.svg';
 
 type SvgComponent = React.FC<SvgProps>;
 
@@ -51,6 +54,9 @@ const deckIcons: Record<string, SvgComponent> = {
   'noun-happy-heart-eyes-4034952': HappyHeartEyes4034952,
   'noun-sad-4034920': Sad4034920,
   'noun-satisfied-big-grin-4034956': SatisfiedBigGrin4034956,
+  'noun-pattern-8300354': Pattern8300354,
+  'noun-shutter-8300343': Shutter8300343,
+  'noun-ornament-8300338': Ornament8300338,
 };
 
 export default deckIcons;

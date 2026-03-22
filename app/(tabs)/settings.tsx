@@ -12,11 +12,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import MoonIcon from '../../assets/icons/noun-moons-8300397.svg';
-import SunIcon from '../../assets/icons/noun-explosion-8298220.svg';
-import ChevronIcon from '../../assets/icons/noun-arrow-8300346.svg';
-import StairsIcon from '../../assets/icons/noun-stairs-8300405.svg';
-import SpringIcon from '../../assets/icons/noun-spring-8298165.svg';
 import { animation, AppColors, radius, spacing, typography } from '../../src/constants/theme';
 import ScreenLayout from '../../src/components/ScreenLayout';
 import { useColors } from '../../src/hooks/useColors';
@@ -31,12 +26,10 @@ function makeStyles(colors: AppColors) {
     scroll: {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
-      paddingBottom: spacing.xxxl,
+      paddingBottom: 120,
       gap: spacing.md,
     },
     grid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
       gap: spacing.md,
     },
     row: {
@@ -149,11 +142,11 @@ function AnimatedRow({ onPress, backgroundColor, children }: { onPress?: () => v
   );
 
   if (!onPress) {
-    return <View style={[tileStyle, { width: '47%' }]}>{glassContent}{children(colors)}</View>;
+    return <View style={tileStyle}>{glassContent}{children(colors)}</View>;
   }
 
   return (
-    <Animated.View style={{ opacity, width: '47%' }}>
+    <Animated.View style={{ opacity }}>
       <Pressable
         onPressIn={onPressIn}
         onPressOut={onPressOut}
@@ -197,17 +190,10 @@ export default function SettingsScreen() {
             AsyncStorage.setItem(COLOR_SCHEME_KEY, next);
           }}>
             {(c) => (
-              <>
-                <View style={styles.rowText}>
-                  <Text style={styles.rowLabel}>UTSEENDE</Text>
-                  <Text style={styles.rowSublabel}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
-                </View>
-                {colorScheme === 'dark' ? (
-                  <MoonIcon width={16} height={16} fill={colors.textMuted} />
-                ) : (
-                  <SunIcon width={16} height={16} fill={colors.textMuted} />
-                )}
-              </>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>UTSEENDE</Text>
+                <Text style={styles.rowSublabel}>{colorScheme === 'dark' ? 'Mörkt läge' : 'Ljust läge'}</Text>
+              </View>
             )}
           </AnimatedRow>
 
@@ -217,25 +203,19 @@ export default function SettingsScreen() {
             AsyncStorage.setItem(HAPTICS_KEY, String(next));
           }} backgroundColor={hapticsEnabled ? colors.bgBrand : undefined}>
             {(c) => (
-              <>
-                <View style={styles.rowText}>
-                  <Text style={[styles.rowLabel, hapticsEnabled ? { color: colors.textOnBrand } : undefined]}>HAPTIK</Text>
-                  <Text style={[styles.rowSublabel, hapticsEnabled ? { color: colors.textOnBrand, opacity: 0.7 } : undefined]}>Vibrera när du byter kort</Text>
-                </View>
-                <SpringIcon width={16} height={16} fill={hapticsEnabled ? colors.textOnBrand : colors.textMuted} />
-              </>
+              <View style={styles.rowText}>
+                <Text style={[styles.rowLabel, hapticsEnabled ? { color: colors.textOnBrand } : undefined]}>HAPTIK</Text>
+                <Text style={[styles.rowSublabel, hapticsEnabled ? { color: colors.textOnBrand, opacity: 0.7 } : undefined]}>Vibrera när du byter kort</Text>
+              </View>
             )}
           </AnimatedRow>
 
           <AnimatedRow onPress={() => router.push('/settings/card-back')}>
             {(c) => (
-              <>
-                <View style={styles.rowText}>
-                  <Text style={styles.rowLabel}>KORTBAKSIDA</Text>
-                  <Text style={styles.rowSublabel}>{cardBackLabel}</Text>
-                </View>
-                <ChevronIcon width={12} height={12} fill={colors.textMuted} />
-              </>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>KORTBAKSIDA</Text>
+                <Text style={styles.rowSublabel}>{cardBackLabel}</Text>
+              </View>
             )}
           </AnimatedRow>
 
@@ -245,13 +225,10 @@ export default function SettingsScreen() {
             router.replace('/onboarding');
           }}>
             {(c) => (
-              <>
-                <View style={styles.rowText}>
-                  <Text style={styles.rowLabel}>INTRO</Text>
-                  <Text style={styles.rowSublabel}>Visa igen</Text>
-                </View>
-                <StairsIcon width={16} height={16} fill={colors.textMuted} />
-              </>
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>INTRO</Text>
+                <Text style={styles.rowSublabel}>Visa igen</Text>
+              </View>
             )}
           </AnimatedRow>
         </View>
