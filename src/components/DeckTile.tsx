@@ -93,7 +93,7 @@ export function DeckTile({ deck, isSelected = false, selectedColor, badge, showC
   const bg = isSelected ? activeBg : colors.bgSecondary;
   const onColor = isSelected ? contrastText(activeBg) : colors.textPrimary;
   const textColor = onColor;
-  const subColor = isSelected ? onColor + '99' : colors.textMuted;
+  const subColor = isSelected ? onColor + '99' : colors.textSecondary;
   const iconColor = onColor;
 
   return (

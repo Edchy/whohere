@@ -18,14 +18,9 @@ const CARD_BACK_KEY = '@whohere/cardBackStyle';
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    'MetropolisRegular': require('../assets/fonts/Metropolis-Regular.otf'),
-    'MetropolisBold': require('../assets/fonts/Metropolis-Bold.otf'),
-    'MetropolisBlack': require('../assets/fonts/Metropolis-Black.otf'),
-    'MetropolisBlackItalic': require('../assets/fonts/Metropolis-BlackItalic.otf'),
-    'MetropolisThin': require('../assets/fonts/Metropolis-ThinItalic.otf'),
-    'MetropolisExtraLight': require('../assets/fonts/Metropolis-ExtraLight.otf'),
-    'MetropolisMedium': require('../assets/fonts/Metropolis-Medium.otf'),
-    'MetropolisSemiBoldItalic': require('../assets/fonts/Metropolis-SemiBoldItalic.otf'),
+    'AuthorBold': require('../assets/fonts/Author-Bold.otf'),
+    'AuthorRegular': require('../assets/fonts/Author-Regular.otf'),
+    'AuthorExtralight': require('../assets/fonts/Author-Extralight.otf'),
   });
 
   const systemColorScheme = useColorScheme();

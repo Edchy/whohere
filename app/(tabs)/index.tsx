@@ -64,12 +64,10 @@ function makeStyles(colors: AppColors) {
     rowLabel: {
       ...typography.display,
       textTransform: 'uppercase',
-      lineHeight: 24,
-      color: colors.textPrimary,
+      color: colors.bgBrand,
     },
     rowSublabel: {
       ...typography.caption,
-      opacity: 0.8,
       color: colors.textSecondary,
     },
   });

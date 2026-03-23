@@ -52,8 +52,8 @@ function makeStyles(colors: AppColors) {
     },
     cardArea: {
       flex: 1,
-      justifyContent: "center",
-      paddingBottom: spacing.lg + spacing.md + dimensions.iconTouchSize,
+      justifyContent: "flex-start",
+      paddingTop: spacing.md,
     },
     cardWrapper: {
       position: "absolute",
@@ -72,6 +72,7 @@ function makeStyles(colors: AppColors) {
       bottom: 0,
       borderRadius: radius.xl,
       padding: spacing.xl,
+      flexDirection: "column",
       justifyContent: "space-between",
       backfaceVisibility: "hidden",
       shadowColor: colors.bgBlack,
@@ -88,7 +89,7 @@ function makeStyles(colors: AppColors) {
     },
     modeRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
     modeIndicatorText: { ...typography.badge, letterSpacing: 1.5 },
-    questionBlock: { flex: 1, justifyContent: "center", marginBottom: spacing.xxxl },
+    questionBlock: { flex: 1, justifyContent: "center" },
     cardBottom: { gap: spacing.xs },
     bottomRow: {
       flexDirection: "row",
@@ -98,7 +99,7 @@ function makeStyles(colors: AppColors) {
     bottomRowLeft: {
       flexDirection: "row",
       alignItems: "center",
-      gap: spacing.xs,
+      gap: spacing.sm,
     },
     bottomRowRight: {
       flexDirection: "row",
@@ -108,19 +109,17 @@ function makeStyles(colors: AppColors) {
     bottomRowText: {
       ...typography.badge,
       letterSpacing: 1.5,
-      includeFontPadding: false,
       textAlignVertical: "center",
     },
     whoHere: {
       ...typography.brand,
       color: colors.accent,
       marginBottom: spacing.xs,
+      textTransform: "uppercase" as const,
     },
     question: {
       ...typography.card,
       color: colors.textPrimary,
-      includeFontPadding: false,
-      flexShrink: 1,
     },
     followUpBlock: {
       borderTopWidth: 1,
@@ -180,7 +179,6 @@ function makeStyles(colors: AppColors) {
     },
     backFollowUpText: {
       ...typography.card,
-      fontSize: 22,
       fontStyle: "italic",
       textAlign: "center",
     },
@@ -198,7 +196,7 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText, can
     <View style={{ flex: 1 }}>
       <View style={styles.questionBlock}>
         <Text selectable={false} style={styles.whoHere}>Vem här…</Text>
-        <Text selectable={false} style={[styles.question, { color: resolvedText }]}>{card.question}</Text>
+        <Text selectable={false} style={[styles.question, { color: resolvedText }]} allowFontScaling={false} android_hyphenationFrequency="full">{card.question.toUpperCase()}</Text>
       </View>
       <View style={styles.cardBottom}>
         <View style={styles.bottomRow}>

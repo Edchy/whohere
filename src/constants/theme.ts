@@ -50,8 +50,8 @@ export const lightColors = {
   bgBlack:     palette.ink,
 
   textPrimary:   palette.ink,
-  textSecondary: palette.grey,
-  textMuted:     palette.silver,
+  textSecondary: palette.ink,
+  textMuted:     palette.grey,
   textOnBrand:   palette.fog,
 
   accent:  palette.brand,
@@ -88,14 +88,9 @@ export const radius = {
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
 export const fonts = {
-  thin:            'MetropolisThin',
-  extraLight:      'MetropolisExtraLight',
-  regular:         'MetropolisRegular',
-  medium:          'MetropolisMedium',
-  bold:            'MetropolisBold',
-  semiBoldItalic:  'MetropolisSemiBoldItalic',
-  black:           'MetropolisBlack',
-  blackItalic:     'MetropolisBlackItalic',
+  extraLight: 'AuthorExtralight',
+  regular:    'AuthorRegular',
+  bold:       'AuthorBold',
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
@@ -109,13 +104,13 @@ export const fonts = {
 //   card     — question card text
 
 export const typography = {
-  display: { fontFamily: fonts.black, fontSize: 24, lineHeight: 38, letterSpacing: -0.5 },
-  brand:   { fontFamily: fonts.thin, fontSize: 20, lineHeight: 28, letterSpacing: 0 },
-  heading: { fontFamily: fonts.bold,  fontSize: 14, lineHeight: 20, letterSpacing: 0 },
-  body:    { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24 },
-  caption: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18 },
-  badge:   { fontFamily: fonts.regular, fontSize: 10, lineHeight: 14, letterSpacing: 1 },
-  card:    { fontFamily: fonts.bold,  fontSize: 24, lineHeight: 32, letterSpacing: 0.1, textTransform: 'uppercase' as const },
+  display: { fontFamily: fonts.bold,       fontSize: 32, lineHeight: 28, letterSpacing: -1 },
+  brand:   { fontFamily: fonts.bold,       fontSize: 16, lineHeight: 24, letterSpacing: 0 },
+  heading: { fontFamily: fonts.bold,       fontSize: 16, lineHeight: 26, letterSpacing: 0 },
+  body:    { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 24 },
+  caption: { fontFamily: fonts.regular,    fontSize: 14, lineHeight: 18 },
+  badge:   { fontFamily: fonts.regular,    fontSize: 10, lineHeight: 14, letterSpacing: 1 },
+  card:    { fontFamily: fonts.extraLight,       fontSize: 28, lineHeight: 28, letterSpacing: 0.1 },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────
