@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import React, { useRef } from 'react';
 import {
   Animated,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -91,42 +92,98 @@ function makeStyles(colors: AppColors) {
       color: colors.textSecondary,
     },
     infoBlock: {
-      paddingVertical: spacing.md,
-      paddingHorizontal: spacing.lg,
-      borderRadius: radius.md,
-      borderWidth: 1,
-      borderColor: colors.bgSecondary,
-      backgroundColor: colors.bgSecondary,
-      gap: spacing.sm,
+      paddingTop: spacing.xl,
+      paddingBottom: spacing.xl,
+      gap: 0,
     },
-    infoBlockLight: {
-      backgroundColor: 'transparent',
+    infoBlockLight: {},
+    appHeader: {
+      gap: 2,
+      marginBottom: 0,
     },
     appName: {
-      ...typography.brand,
+      fontFamily: 'AuthorBold',
+      fontSize: 28,
+      lineHeight: 30,
+      textTransform: 'uppercase',
+      color: colors.textPrimary,
+      
+    },
+    subtitle: {
+      fontFamily: 'AuthorExtralight',
+      fontSize: 20,
+      lineHeight: 22,
+      color: colors.textSecondary,
+      textTransform: 'uppercase'
+    },
+    infoText: {
+      fontFamily: 'AuthorRegular',
+      fontSize: 14,
+      lineHeight: 22,
+      color: colors.textSecondary,
+    },
+    infoEmphasis: {
+      fontFamily: 'AuthorExtralight',
+      fontSize: 14,
+      lineHeight: 22,
       color: colors.textPrimary,
     },
-    appTagline: {
-      ...typography.caption,
-      opacity: 0.8,
-      color: colors.textSecondary,
+    infoLink: {
+      fontFamily: 'AuthorExtralight',
+      fontSize: 14,
+      lineHeight: 22,
+      color: colors.textPrimary,
+      textDecorationLine: 'underline',
+    },
+    quoteBlock: {
+      paddingVertical: spacing.md,
+      gap: spacing.xs,
+    },
+    quoteText: {
+      fontFamily: 'AuthorExtralight',
+      fontSize: 18,
+      lineHeight: 26,
       fontStyle: 'italic',
+      color: colors.textPrimary,
     },
-    divider: {
-      height: 1,
-      backgroundColor: colors.border,
-      marginVertical: spacing.sm,
+    quoteAttribution: {
+      fontFamily: 'AuthorRegular',
+      fontSize: 11,
+      lineHeight: 16,
+      letterSpacing: 1.5,
+      textTransform: 'uppercase',
+      color: colors.textMuted,
     },
-    appDesc: {
-      ...typography.caption,
+    infoItalic: {
+      fontFamily: 'AuthorExtralight',
+      fontSize: 14,
+      lineHeight: 22,
+      fontStyle: 'italic',
       color: colors.textSecondary,
-      lineHeight: 18,
+    },
+    infoMeta: {
+      gap: spacing.md,
+      marginTop: spacing.lg,
+    },
+    feedbackSection: {
+      marginTop: spacing.lg,
+      gap: 0,
+    },
+    feedbackRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: spacing.sm,
+    },
+    feedbackRowArrow: {
+      fontFamily: 'AuthorRegular',
+      fontSize: 16,
+      color: colors.accent,
     },
     version: {
-      ...typography.badge,
+      fontFamily: 'AuthorRegular',
+      fontSize: 14,
       color: colors.textMuted,
-      textTransform: 'uppercase',
-      letterSpacing: 1,
+      marginTop: spacing.xl,
     },
   });
 }
@@ -192,6 +249,17 @@ function AnimatedRow({ onPress, right, children }: { onPress?: () => void; right
         {inner}
       </Pressable>
     </Animated.View>
+  );
+}
+
+function Quote({ text, attribution }: { text: string; attribution: string }) {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+  return (
+    <View style={styles.quoteBlock}>
+      <Text style={styles.quoteText}>"{text}"</Text>
+      <Text style={styles.quoteAttribution}>{attribution}</Text>
+    </View>
   );
 }
 
@@ -277,14 +345,76 @@ export default function SettingsScreen() {
           </AnimatedRow>
         </View>
 
-        <View style={[styles.infoBlock, colorScheme === 'light' ? styles.infoBlockLight : undefined]}>
-          <Text style={styles.appName}>Vem här...?</Text>
-          <Text style={styles.appTagline}>Intuitiva mikrohistorier om människorna omkring dig.</Text>
-          <View style={styles.divider} />
-          <Text style={styles.appDesc}>
-            Tre lägen. Inget internet. Inga konton.{'\n'}
-            Bara appen och människorna runt dig.
-          </Text>
+        <View style={styles.infoBlock}>
+          <View style={styles.appHeader}>
+            <Text style={styles.appName}>Vem här ... ?</Text>
+            <Text style={styles.subtitle}>Intuitiva mikrohistorier om människorna omkring dig.</Text>
+          </View>
+
+          <View style={styles.infoMeta}>
+         
+
+          
+
+            <Quote
+              text="We don't see things as they are, we see them as we are."
+              attribution="Anaïs Nin"
+            />
+
+            <Text style={styles.infoText}>
+              Det här spelet är en resa i fem steg:{' '}
+              <Text style={styles.infoEmphasis}>observation, projektion, jämförelse, reflektion, uppenbarelse.</Text>
+              {' '}Du tittar. Du väljer. Du förklarar varför. Och i det ögonblicket händer något oväntat.
+            </Text>
+
+            <Quote
+              text="We make snap judgments in the blink of an eye — and we pay a steep price for that snap judgment when it's wrong."
+              attribution="Malcolm Gladwell, Blink"
+            />
+
+            <Text style={styles.infoText}>
+              Det börjar med <Text style={styles.infoEmphasis}>bekräftelsebias</Text>
+              {', '}vi hittar precis det vi letade efter. Sedan <Text style={styles.infoEmphasis}>haloeffekten</Text>
+              {': '}snygga skor och plötsligt verkar hen också vara rolig på fester. Lite <Text style={styles.infoEmphasis}>stereotypisering</Text>
+              {', '}en jacka, en ålder, en hel livshistoria. Och till sist, det finaste: <Text style={styles.infoEmphasis}>projektion</Text>
+              {'. '}Personen du valde säger förmodligen mer om dig än om dem.
+            </Text>
+
+            <Quote
+              text="Everything that irritates us about others can lead us to an understanding of ourselves."
+              attribution="Carl Jung"
+            />
+
+            <Text style={styles.infoItalic}>
+              Den okände sitter still. Det är du som rör på dig, inuti. Den du väljer är ett bläckplack. En tillfällig människa som råkade bära din historia en stund.
+            </Text>
+
+            <Text style={styles.infoText}>
+              Efter idé av{' '}
+              <Text style={styles.infoLink} onPress={() => Linking.openURL('https://rubenwatte.com')}>Ruben Wätte.</Text>
+              {' '}Utvecklad och designad i samarbete med{' '}
+              <Text style={styles.infoLink} onPress={() => Linking.openURL('https://nope.digital')}>Nope Digital.</Text>
+            </Text>
+          </View>
+
+          <View style={styles.feedbackSection}>
+            <Pressable
+              style={styles.feedbackRow}
+              onPress={() => Linking.openURL('mailto:hello@whohere.app?subject=Feedback')}
+            >
+              <Text style={[styles.infoText, { flex: 1 }]}>Skicka feedback</Text>
+              <Text style={styles.feedbackRowArrow}>→</Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.feedbackRow}
+              onPress={() => Linking.openURL('mailto:hello@whohere.app?subject=Bug report')}
+            >
+              <Text style={[styles.infoText, { flex: 1 }]}>Rapportera ett problem</Text>
+              <Text style={styles.feedbackRowArrow}>→</Text>
+            </Pressable>
+          </View>
+
           <Text style={styles.version}>v1.0.0</Text>
         </View>
 
