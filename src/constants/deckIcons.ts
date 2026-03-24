@@ -4,45 +4,39 @@
 import React from 'react';
 import { SvgProps } from 'react-native-svg';
 
-import Doodle7389183 from '../../assets/icons/noun-doodle-element-7389183.svg';
-import Doodle7389184 from '../../assets/icons/noun-doodle-element-7389184.svg';
-import Doodle7389188 from '../../assets/icons/noun-doodle-element-7389188.svg';
-import Doodle7389193 from '../../assets/icons/noun-doodle-element-7389193.svg';
-import Gift8020579 from '../../assets/icons/noun-gift-8020579.svg';
-import Give8020580 from '../../assets/icons/noun-give-8020580.svg';
-import Piece8020583 from '../../assets/icons/noun-piece-8020583.svg';
-import MagicCards7798217 from '../../assets/icons/noun-magic-cards-7798217.svg';
-import CatHiding7798136 from '../../assets/icons/noun-cat-hiding-7798136.svg';
-import SmokingCigarette7798098 from '../../assets/icons/noun-smoking-cigarette-7798098.svg';
-import Emoticon6043202 from '../../assets/icons/noun-emoticon-6043202.svg';
-import SpookyCharacter7678320 from '../../assets/icons/noun-spooky-character-7678320.svg';
-import Wine5575559 from '../../assets/icons/noun-wine-5575559.svg';
-import WineBottles1047714 from '../../assets/icons/noun-wine-bottles-1047714.svg';
-import Wine1064743 from '../../assets/icons/noun-wine-1064743.svg';
-import Wine3811155 from '../../assets/icons/noun-wine-3811155.svg';
-import WineGlass1047711 from '../../assets/icons/noun-wine-glass-1047711.svg';
+import Pattern8300354 from '../../assets/icons/noun-pattern-8300354.svg';
+import Shutter8300343 from '../../assets/icons/noun-shutter-8300343.svg';
+import Ornament8300338 from '../../assets/icons/noun-ornament-8300338.svg';
+import Doodle197591 from '../../assets/icons/category-icons/noun-doodle-197591.svg';
+import Doodle197592 from '../../assets/icons/category-icons/noun-doodle-197592.svg';
+import Doodle197593 from '../../assets/icons/category-icons/noun-doodle-197593.svg';
+import Doodle197598 from '../../assets/icons/category-icons/noun-doodle-197598.svg';
+import Doodle197602 from '../../assets/icons/category-icons/noun-doodle-197602.svg';
+import Doodle197605 from '../../assets/icons/category-icons/noun-doodle-197605.svg';
+import Doodle197606 from '../../assets/icons/category-icons/noun-doodle-197606.svg';
+import Doodle197608 from '../../assets/icons/category-icons/noun-doodle-197608.svg';
+import Doodle197620 from '../../assets/icons/category-icons/noun-doodle-197620.svg';
+import Doodle197626 from '../../assets/icons/category-icons/noun-doodle-197626.svg';
 
 type SvgComponent = React.FC<SvgProps>;
 
 // Keys match the `svgIcon` field in the deck JSON (filename without extension)
 const deckIcons: Record<string, SvgComponent> = {
-  'noun-doodle-element-7389183': Doodle7389183,
-  'noun-doodle-element-7389184': Doodle7389184,
-  'noun-doodle-element-7389188': Doodle7389188,
-  'noun-doodle-element-7389193': Doodle7389193,
-  'noun-gift-8020579': Gift8020579,
-  'noun-give-8020580': Give8020580,
-  'noun-piece-8020583': Piece8020583,
-  'noun-magic-cards-7798217': MagicCards7798217,
-  'noun-cat-hiding-7798136': CatHiding7798136,
-  'noun-smoking-cigarette-7798098': SmokingCigarette7798098,
-  'noun-emoticon-6043202': Emoticon6043202,
-  'noun-spooky-character-7678320': SpookyCharacter7678320,
-  'noun-wine-5575559': Wine5575559,
-  'noun-wine-bottles-1047714': WineBottles1047714,
-  'noun-wine-1064743': Wine1064743,
-  'noun-wine-3811155': Wine3811155,
-  'noun-wine-glass-1047711': WineGlass1047711,
+  // Mode tile icons
+  'noun-pattern-8300354': Pattern8300354,
+  'noun-shutter-8300343': Shutter8300343,
+  'noun-ornament-8300338': Ornament8300338,
+  // Deck category icons
+  'noun-doodle-197591': Doodle197591,
+  'noun-doodle-197592': Doodle197592,
+  'noun-doodle-197593': Doodle197593,
+  'noun-doodle-197598': Doodle197598,
+  'noun-doodle-197602': Doodle197602,
+  'noun-doodle-197605': Doodle197605,
+  'noun-doodle-197606': Doodle197606,
+  'noun-doodle-197608': Doodle197608,
+  'noun-doodle-197620': Doodle197620,
+  'noun-doodle-197626': Doodle197626,
 };
 
 export default deckIcons;

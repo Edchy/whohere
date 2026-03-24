@@ -1,8 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import RandomSvg from "../../assets/icons/noun-doodle-element-7389160.svg";
+import PlayArrowSvg from "../../assets/icons/noun-arrow-8300346.svg";
+import RandomSvg from "../../assets/icons/category-icons/noun-question-8320435.svg";
 import { DeckTile } from "../../src/components/DeckTile";
 import ScreenLayout from "../../src/components/ScreenLayout";
 import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
@@ -71,8 +72,7 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function buildDeck(selectedIds: string[], modeId: string, colors: AppColors): Deck {
-  const color = colors.accent;
+function buildDeck(selectedIds: string[], modeId: string): Deck {
 
   const deckCount = selectedIds.length;
   const basePerDeck = Math.floor(GAME_CARD_LIMIT / deckCount);
@@ -88,9 +88,6 @@ function buildDeck(selectedIds: string[], modeId: string, colors: AppColors): De
         deckIcon: source.icon,
         deckSvgIcon: source.svgIcon,
         deckTitle: source.title,
-        deckColor: source.color,
-        deckBackground: source.cardBackground,
-        deckText: source.cardText,
       }));
       const filtered = stamped.filter((card) => passesIntensityFilter(card, modeId));
       const pool = filtered.length > 0 ? filtered : stamped;
@@ -104,9 +101,6 @@ function buildDeck(selectedIds: string[], modeId: string, colors: AppColors): De
     description: "",
     mode: "any",
     category: "mixed",
-    color,
-    cardBackground: colors.card,
-    cardText: colors.textPrimary,
     icon: "",
     cards,
   };
@@ -196,7 +190,7 @@ function makeStyles(colors: AppColors) {
     scroll: {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
-      paddingBottom: spacing.xxxl,
+      paddingBottom: 160,
       gap: spacing.sm,
     },
     header: {
@@ -218,10 +212,10 @@ function makeStyles(colors: AppColors) {
     },
     surpriseTile: {
       paddingVertical: spacing.lg,
-      paddingHorizontal: spacing.lg,
+      paddingHorizontal: spacing.md,
       borderRadius: radius.md,
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: colors.bgSecondary,
       backgroundColor: colors.bgSecondary,
     },
     surpriseInner: {
@@ -239,12 +233,10 @@ function makeStyles(colors: AppColors) {
     surpriseDesc: {
       ...typography.caption,
     },
-    startWrap: {
-      marginTop: spacing.md,
-    },
     startBtn: {
-      height: 52,
-      borderRadius: radius.md,
+      width: 64,
+      height: 64,
+      borderRadius: 32,
       backgroundColor: colors.accent,
       alignItems: "center",
       justifyContent: "center",
@@ -293,7 +285,7 @@ export default function CategoriesScreen() {
     if (!canStart) return;
     const modePool = DEFAULT_SELECTIONS[mode ?? ""] ?? allDecks.map((d) => d.id);
     const ids = randomize ? randomSubset(modePool) : selected;
-    const deck = buildDeck(ids, mode ?? "partner", colors);
+    const deck = buildDeck(ids, mode ?? "partner");
     startGame(deck, "any");
     router.replace(`/play/${deck.id}`);
   };
@@ -305,7 +297,10 @@ export default function CategoriesScreen() {
     Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
   return (
-    <ScreenLayout edges={['bottom']}>
+    <ScreenLayout showHeader={false} backgroundColor={colors.bgPrimary} noTopInset>
+      <View style={{ alignItems: 'center', paddingTop: spacing.md, paddingBottom: spacing.xs }}>
+        <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: colors.accent + '60' }} />
+      </View>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -329,7 +324,9 @@ export default function CategoriesScreen() {
               style={[styles.surpriseTile, randomize && { backgroundColor: colors.accent, borderColor: 'transparent' }]}
             >
               <View style={styles.surpriseInner}>
-                <RandomSvg width={36} height={36} fill={randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary} />
+                <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+                  <RandomSvg width={32} height={32} fill={randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary} />
+                </View>
                 <View style={styles.surpriseText}>
                   <Text style={[styles.surpriseTitle, { color: randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary }]}>
                     ÖVERRASKA MIG!
@@ -354,20 +351,26 @@ export default function CategoriesScreen() {
             />
           ))}
         </View>
-
-        {/* Start button */}
-        <Animated.View style={[styles.startWrap, { opacity: startOpacity }]}>
-          <Pressable
-            onPressIn={onStartPressIn}
-            onPressOut={onStartPressOut}
-            onPress={handleStart}
-            disabled={!canStart}
-            style={[styles.startBtn, !canStart && styles.startBtnDisabled]}
-          >
-            <Ionicons name="play" size={22} color={colors.textOnBrand} />
-          </Pressable>
-        </Animated.View>
       </ScrollView>
+
+      {/* Fade gradient behind floating button */}
+      <LinearGradient
+        colors={[colors.bgPrimary + '00', colors.bgPrimary + 'EE', colors.bgPrimary]}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 240, pointerEvents: 'none' }}
+      />
+
+      {/* Floating start button */}
+      <Animated.View style={[{ position: 'absolute', bottom: spacing.xl, alignSelf: 'center' }, { opacity: startOpacity }]}>
+        <Pressable
+          onPressIn={onStartPressIn}
+          onPressOut={onStartPressOut}
+          onPress={handleStart}
+          disabled={!canStart}
+          style={[styles.startBtn, !canStart && styles.startBtnDisabled]}
+        >
+          <PlayArrowSvg width={24} height={24} fill={colors.textOnBrand} />
+        </Pressable>
+      </Animated.View>
     </ScreenLayout>
   );
 }

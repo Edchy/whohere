@@ -1,26 +1,30 @@
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { spacing } from '../constants/theme';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { appName, spacing, typography } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
-import Mascot from './Mascot';
+import GroovyEmoji from './GroovyEmoji';
 
-const SIZE = 40;
+const SIZE = 120;
 
 export default function AppHeader({ onBack }: { onBack?: () => void }) {
   const colors = useColors();
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.wordmark} onPress={() => router.replace('/')} activeOpacity={0.7}>
+        <Text style={[styles.wordmarkLine, { color: colors.textMuted }]}>{appName.toUpperCase()}</Text>
+      </TouchableOpacity>
+      {/* <MeltsMascot size={SIZE} /> */}
+      <TouchableOpacity onPress={onBack ?? (() => router.replace('/'))} activeOpacity={0.7}>
+        <GroovyEmoji size={SIZE} />
+      </TouchableOpacity>
       {onBack ? (
         <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7} hitSlop={12}>
-          <Ionicons name="chevron-back" size={26} color={colors.textMuted} />
+          <Text style={{ color: colors.textMuted, fontSize: 32, lineHeight: 36, fontWeight: '300', textAlign: 'right' }}>‹</Text>
         </TouchableOpacity>
       ) : (
         <View style={styles.spacer} />
       )}
-      <Mascot size={SIZE} />
-      <View style={styles.spacer} />
     </View>
   );
 }
@@ -30,8 +34,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
+    paddingBottom: spacing.lg,
   },
   row: {
     flexDirection: 'row',
@@ -40,6 +43,17 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flex: 1,
+  },
+  wordmark: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  wordmarkLine: {
+    ...typography.brand,
+    fontSize: 13,
+    lineHeight: 15,
+    letterSpacing: 2,
+    fontWeight: '700',
   },
   backButton: {
     flex: 1,

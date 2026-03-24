@@ -133,7 +133,7 @@ export default function CardBackPickerScreen() {
   const setCardBackStyle = useGameStore((s) => s.setCardBackStyle);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bgPrimary }}>
       <AppHeader onBack={() => router.back()} />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.grid}>

@@ -4,9 +4,6 @@
   "description": "Synliga spår av liv som levts.",
   "mode": "any",
   "category": "liv-bakgrund",
-  "color": "#dfe5f3",
-  "cardBackground": "#dfe5f3",
-  "cardText": "#FFFFFF",
   "icon": "◎",
-  "svgIcon": "noun-doodle-element-7389193"
+  "svgIcon": "noun-doodle-197593"
 }

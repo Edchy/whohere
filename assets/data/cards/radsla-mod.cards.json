@@ -1,0 +1,5 @@
+[
+  { "id": "rad-1", "question": "är rädd för något som de flesta aldrig ens tänker på?", "followUp": "Väcker det igenkänning eller nyfikenhet — och är det en rädsla du tror du förstår?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 0, "dark": 1, "funny": 1 } },
+  { "id": "rad-2", "question": "har gjort något modigt som ingen annan kände till eller uppskattade?", "followUp": "Är det ett mod du beundrar mer eller mindre för att det var osynligt — och varför?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 0, "dark": 0, "funny": 0 } },
+  { "id": "rad-3", "question": "låter en gammal rädsla styra ett val de fattar igen och igen utan att sätta ord på det?", "followUp": "Ser du mönstret utifrån med klarhet — eller är det för att du känner igen det i dig själv?", "intensity": { "bold": 3, "daring": 3, "sexual": 0, "vulnerable": 4, "controversial": 0, "dark": 2, "funny": 0 } }
+]

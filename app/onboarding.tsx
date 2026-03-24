@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import FingerIcon from '../assets/icons/noun-finger-6748636.svg';
-import Mascot from '../src/components/Mascot';
+import FingerIcon from '../assets/icons/noun-finger-3414109.svg';
 import {
   Animated,
   Dimensions,
@@ -14,6 +13,7 @@ import {
   View,
 } from 'react-native';
 import {
+  appName,
   dimensions as dim,
   radius,
   spacing,
@@ -30,11 +30,6 @@ const CARD_WIDTH = CAPPED_WIDTH - spacing.xl * 2;
 const SWIPE_DISTANCE = 60;
 const SWIPE_VELOCITY = 400;
 
-// Per-depth offsets for the stacked deck look
-const DEPTH_OFFSET_X = 10;  // each card shifts right
-const DEPTH_OFFSET_Y = 12;  // each card shifts down
-const DEPTH_SCALE = 0.05;   // each card shrinks by this per level
-
 
 type Slide = {
   id: string;
@@ -49,52 +44,64 @@ type Slide = {
 const SLIDES: Slide[] = [
   {
     id: '1',
-    topLabel: '',
-    headline: 'VEM$HÄR...?',
-    subheading: 'Intuitiva mikrohistorier om människor omkring.',
+    topLabel: '...?',
+    headline: 'VEM HÄR',
+    subheading: 'Intuitiva mikrohistorier\nom människor omkring oss',
     body: '',
     bottomLabel: '',
     isWelcome: true,
   },
   {
     id: '2',
-    topLabel: 'THE GAME',
-    headline: 'Observera, välj, avslöja.',
-    body: 'Ni får ett antal frågor. Rummet fullt av människor. Vem passar in på beskrivningen? Alla väljer tyst, var för sig. Sen berättar ni.',
+    topLabel: 'VEM HÄR ÄR',
+    headline: 'Ett helt nytt spel.',
+    body: 'Som du redan har spelat i hela ditt liv. Du är omgiven av människor du inte känner - men vad har de att berätta, utan att säga ett ord? Vi möter ständigt omvärlden med både intuition och intellekt. Genom erfarenhet och undermedvetna fördomar drar vi snabba slutsatser om andra människors inre världar.',
     bottomLabel: 'bla bla',
   },
   {
     id: '3',
-    topLabel: 'THE EXPERIMENT',
-    headline: 'Inga vinnare, inga förlorare. ',
-    body: 'Bara nya sätt att se på varandra. Det spelar ingen roll vem du väljer. Det intressanta är varför. Väjer ni samma eller olika? Varför? Det är hela grejen. Motiveringarna är det roliga, inte svaren.',
+    topLabel: 'VEM HÄR ÄR',
+    headline: 'Självreflektion',
+    body: 'Vi tror oss veta något om främlingars bakgrunder, personligheter och liv. Men det vi tror oss kunna se säger minst lika mycket om oss själva som om de människor vi betraktar. Vad som är sant är inte det intressanta här, det är våra egna mikrohistorier som är det.',
     bottomLabel: 'lugnt och nyfiket',
   },
 
   {
     id: '4',
-    topLabel: 'THE INSIGHT',
-    headline: 'Thin-slice judgment.',
-    body: 'Vi bedömer alla främlingar hela tiden, omedvetet, automatiskt, på en bråkdel av en sekund. Hot, status, karaktär. Det sker alltid. Men vi säger det aldrig högt. ',
+    topLabel: 'VEM HÄR ÄR',
+    headline: 'Inte en tävling',
+    body: 'Det finns inga rätt eller fel svar, inga vinnare eller förlorare, bara skratt, gemensam reflektion och nya perspektiv.',
     bottomLabel: 'thin-slice judgment',
   },
   {
     id: '5',
-    topLabel: 'THE INSIGHT',
-    headline: 'Valen speglar dig.',
-    body: 'Dina val avslöjar mer om dig än om dem. De blir små fönster in i hur du ser på världen, på andra människor, och kanske mest intressant av allt: hur du ser på dig själv.',
+    topLabel: 'SÅ HÄR GÅR DET TILL',
+    headline: 'Observera',
+    body: '...människorna omkring dig. Spela med din dejt, med dina vänner eller på egen hand. Befinn er på en plats med människor omkring er. I en restaurang, tunnelbanan eller en park.',
     bottomLabel: 'svep för att börja spela',
   },
     {
     id: '6',
-    topLabel: 'THE RESPECT',
-    headline: 'Spela osynligt.',
-    body: 'Ni är spöken i rummet. Osynliga, tysta, närvarande. Främlingarna är aldrig inblandade. De pekas aldrig ut, talas aldrig till. De vet ingenting. Det här är inte övervakning eller hån. Det är empatiträning i förklädnad. Varje val leder tillbaka till dig: varför valde du just den personen?',
+    topLabel: 'SÅ HÄR GÅR DET TILL',
+    headline: 'Välj',
+    body: '...en kategori eller blanda helt fritt. Läs frågan tillsammans, besvara den var och en.',
+    bottomLabel: 'lugnt och nyfiket',
+  },
+    {
+    id: '7',
+    topLabel: 'SÅ HÄR GÅR DET TILL',
+    headline: 'Motivera',
+    body: '...vem som passar in och varför? Väljer ni samma person eller helt olika? Övertänk inte, men motivera gärna.',
+    bottomLabel: 'lugnt och nyfiket',
+  },
+    {
+    id: '8',
+    topLabel: 'KOM IHÅG',
+    headline: 'Du är en fluga på väggen.',
+    body: '...den som betraktar utan att synas. Syftet är inte att göra andra obekväma, utan att sätta ord på era egna tankar. Se utan att stirra - välj utan att peka. Människorna omkring er är inte med i spelet. de är bara era livs levande projektionsytor. Det ni tror er veta om dem är mikrohistorier som ni själva vanemässigt skapar. Skillnaden mot vardagen är enkel: Här får ni syn på era sätt att se.',
     bottomLabel: 'lugnt och nyfiket',
   },
 ];
-
-
 
 function SwipeHint() {
   const colors = useColors();
@@ -133,19 +140,7 @@ function SlideCard({ slide }: { slide: Slide }) {
   if (slide.isWelcome) {
     return (
       <View style={[styles.card, styles.cardWelcome, { backgroundColor: colors.bgPrimary, borderColor: colors.textPrimary }]}>
-        <View style={styles.welcomeHeadingGroup}>
-          <View style={styles.headlineRow}>
-            {slide.headline.split('$').map((part, i, arr) => (
-              <React.Fragment key={i}>
-                <Text selectable={false} style={[styles.headlineWelcome, { color: colors.textPrimary }]}>{part}</Text>
-                {i < arr.length - 1 && <Mascot size={32} style={{ marginHorizontal: spacing.sm }} />}
-              </React.Fragment>
-            ))}
-          </View>
-          {!!slide.subheading && (
-            <Text selectable={false} style={[styles.subheading, { color: colors.textMuted }]}>{slide.subheading}</Text>
-          )}
-        </View>
+        <Text selectable={false} style={{ color: colors.textPrimary, fontSize: 48, lineHeight: 56, textAlign: 'center' }}>{appName}</Text>
         <View style={styles.swipeHintRow}>
           <SwipeHint />
           <Text selectable={false} style={[styles.swipeHintLabel, { color: colors.textMuted }]}>svep för att börja</Text>
@@ -163,59 +158,71 @@ function SlideCard({ slide }: { slide: Slide }) {
         <Text selectable={false} style={[styles.body, { color: colors.textMuted }]}>{slide.body}</Text>
       </View>
 
-      <View style={styles.cardBottom}>
-        <Mascot size={20} style={styles.mascotBottomRight} />
-      </View>
+      <View style={styles.cardBottom} />
     </View>
   );
 }
 
 export default function OnboardingScreen() {
   const colors = useColors();
+  const { from } = useLocalSearchParams<{ from?: string }>();
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const [topIndex, setTopIndex] = useState(0);
   const [dotIndex, setDotIndex] = useState(0);
+  const [swipeDir, setSwipeDir] = useState<'forward' | 'back'>('forward');
+  const frozenUndercardIndex = useRef<number | null>(null);
 
   const dragX = useRef(new Animated.Value(0)).current;
-  const nextProgress = useRef(new Animated.Value(0)).current;
-  // When swiping right: prevDragX starts at -SCREEN_WIDTH and follows finger
-  const prevDragX = useRef(new Animated.Value(-SCREEN_WIDTH * 1.5)).current;
-  const [showPrev, setShowPrev] = useState(false);
 
   const topIndexRef = useRef(topIndex);
   topIndexRef.current = topIndex;
 
   const dismissRef = useRef(async () => {});
-  const commitNextRef = useRef(() => {});
-  const commitPrevRef = useRef(() => {});
-
   dismissRef.current = async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
     setHasSeenOnboarding(true);
-    router.replace('/');
-  };
-
-  commitNextRef.current = () => {
-    const next = topIndexRef.current + 1;
-    if (next >= SLIDES.length) { dismissRef.current(); return; }
-    dragX.setValue(0);
-    nextProgress.setValue(0);
-    prevDragX.setValue(-SCREEN_WIDTH * 1.5);
-    setShowPrev(false);
-    setTopIndex(next);
-  };
-
-  commitPrevRef.current = () => {
-    const prev = topIndexRef.current - 1;
-    if (prev < 0) return;
-    dragX.setValue(0);
-    nextProgress.setValue(0);
-    prevDragX.setValue(-SCREEN_WIDTH * 1.5);
-    setShowPrev(false);
-    setTopIndex(prev);
+    if (from === 'settings') {
+      router.back();
+    } else {
+      router.replace('/');
+    }
   };
 
   const dismiss = () => dismissRef.current();
+
+  const goNext = () => {
+    const cur = topIndexRef.current;
+    const next = cur + 1;
+    setSwipeDir('forward');
+    setDotIndex(Math.min(next, SLIDES.length - 1));
+    if (next >= SLIDES.length) {
+      Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => dismissRef.current());
+      return;
+    }
+    Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
+      setTopIndex(next);
+      requestAnimationFrame(() => dragX.setValue(0));
+    });
+  };
+
+  const goPrev = () => {
+    const cur = topIndexRef.current;
+    const prev = cur - 1;
+    if (prev < 0) return;
+    setSwipeDir('back');
+    setDotIndex(prev);
+    frozenUndercardIndex.current = cur + 1;
+    Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 150, useNativeDriver: true }).start(() => {
+      dragX.setValue(-SCREEN_WIDTH * 1.5);
+      setTopIndex(prev);
+      requestAnimationFrame(() => {
+        Animated.spring(dragX, { toValue: 0, useNativeDriver: true, damping: 22, stiffness: 400, mass: 0.8 }).start(() => {
+          frozenUndercardIndex.current = null;
+          setSwipeDir('forward');
+        });
+      });
+    });
+  };
 
   const panResponder = useRef(
     PanResponder.create({
@@ -224,62 +231,21 @@ export default function OnboardingScreen() {
         Math.abs(g.dx) > 8 && Math.abs(g.dx) > Math.abs(g.dy),
       onPanResponderGrant: () => {
         dragX.stopAnimation();
-        nextProgress.stopAnimation();
-        prevDragX.stopAnimation();
       },
       onPanResponderMove: (_, g) => {
-        const cur = topIndexRef.current;
-        const isFirst = cur === 0;
-        const isLast = cur === SLIDES.length - 1;
-        if (g.dx < 0) {
-          setShowPrev(false);
-          if (isLast) {
-            dragX.setValue(g.dx);
-            nextProgress.setValue(Math.min(1, -g.dx / (SCREEN_WIDTH * 0.55)));
-          } else {
-            dragX.setValue(g.dx);
-            nextProgress.setValue(Math.min(1, -g.dx / (SCREEN_WIDTH * 0.55)));
-          }
-        } else {
-          if (isFirst) {
-            dragX.setValue(g.dx * 0.08);
-          } else {
-            setShowPrev(true);
-            dragX.setValue(g.dx);
-            prevDragX.setValue(-SCREEN_WIDTH + g.dx);
-          }
-        }
+        if (g.dx > 0 && topIndexRef.current === 0) return;
+        dragX.setValue(g.dx);
       },
       onPanResponderRelease: (_, g) => {
         const cur = topIndexRef.current;
-        const isFirst = cur === 0;
-        const isLast = cur === SLIDES.length - 1;
         const goLeft = g.dx < -SWIPE_DISTANCE || g.vx < -(SWIPE_VELOCITY / 1000);
-        const goRight = !isFirst && (g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000));
-
+        const goRight = g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000);
         if (goLeft) {
-          if (isLast) {
-            dismissRef.current();
-            Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }).start();
-          } else {
-            setDotIndex(cur + 1);
-            Animated.parallel([
-              Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
-              Animated.spring(nextProgress, { toValue: 1, damping: 18, stiffness: 220, useNativeDriver: true }),
-            ]).start(() => commitNextRef.current());
-          }
-        } else if (goRight) {
-          setDotIndex(cur - 1);
-          Animated.parallel([
-            Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 240, useNativeDriver: true }),
-            Animated.timing(prevDragX, { toValue: 0, duration: 240, useNativeDriver: true }),
-          ]).start(() => commitPrevRef.current());
+          goNext();
+        } else if (goRight && cur > 0) {
+          goPrev();
         } else {
-          Animated.parallel([
-            Animated.spring(dragX, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }),
-            Animated.spring(nextProgress, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }),
-            Animated.spring(prevDragX, { toValue: -SCREEN_WIDTH * 1.5, damping: 20, stiffness: 300, useNativeDriver: true }),
-          ]).start(() => setShowPrev(false));
+          Animated.spring(dragX, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }).start();
         }
       },
     })
@@ -297,50 +263,25 @@ export default function OnboardingScreen() {
     ],
   };
 
-  const prevCardAnimStyle = {
-    transform: [{ translateX: prevDragX }],
-  };
-
-  const prevSlide = SLIDES[topIndex - 1];
-  // Cards behind the top card — render from deepest to shallowest
-  const behindSlides = SLIDES.slice(topIndex + 1, topIndex + 4);
+  const undercardIdx = frozenUndercardIndex.current ?? topIndex + 1;
+  const nextSlide: Slide | undefined = SLIDES[undercardIdx];
+  const nextCardOpacity = dragX.interpolate({
+    inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
+    outputRange: [1, 1, 0, 1, 1],
+    extrapolate: 'clamp',
+  });
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
       <View style={styles.cardArea} {...panResponder.panHandlers}>
-        {/* Stack of cards behind — deepest first so they render under */}
-        {[...behindSlides].reverse().map((slide, reversedDepth) => {
-          const depth = behindSlides.length - reversedDepth; // 1 = closest behind
-          // As top card is dragged left, the next card (depth=1) animates toward depth=0
-          const isNext = depth === 1;
-          const translateX = isNext
-            ? nextProgress.interpolate({ inputRange: [0, 1], outputRange: [DEPTH_OFFSET_X * depth, 0] })
-            : DEPTH_OFFSET_X * depth;
-          const translateY = isNext
-            ? nextProgress.interpolate({ inputRange: [0, 1], outputRange: [DEPTH_OFFSET_Y * depth, 0] })
-            : DEPTH_OFFSET_Y * depth;
-          const scale = isNext
-            ? nextProgress.interpolate({ inputRange: [0, 1], outputRange: [1 - DEPTH_SCALE * depth, 1] })
-            : 1 - DEPTH_SCALE * depth;
-
-          return (
-            <Animated.View
-              key={slide.id}
-              style={[styles.cardWrapper, { transform: [{ translateX }, { translateY }, { scale }] }]}
-            >
-              <SlideCard slide={slide} />
-            </Animated.View>
-          );
-        })}
-
-        {/* Prev card — slides in from left when swiping right */}
-        {showPrev && prevSlide && (
-          <Animated.View style={[styles.cardWrapper, prevCardAnimStyle]}>
-            <SlideCard slide={prevSlide} />
+        {/* Next slide sits underneath — peeks when swiping left or right (not on welcome slide) */}
+        {nextSlide && (
+          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
+            <SlideCard slide={nextSlide} />
           </Animated.View>
         )}
 
-        {/* Top card */}
+        {/* Top card — draggable */}
         <Animated.View style={[styles.cardWrapper, topCardStyle]}>
           <SlideCard slide={SLIDES[topIndex]} />
         </Animated.View>
@@ -351,7 +292,6 @@ export default function OnboardingScreen() {
           <Text selectable={false} style={[styles.skipText, { color: colors.textMuted }]}>hoppa över</Text>
         </Pressable>
       )}
-
 
       <View style={styles.dots} pointerEvents="none">
         {SLIDES.map((_, i) => (
@@ -411,7 +351,8 @@ const styles = StyleSheet.create({
   },
   cardMiddle: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: spacing.xl,
     gap: spacing.lg,
   },
   headline: {
@@ -431,12 +372,22 @@ const styles = StyleSheet.create({
   },
   cardWelcome: {
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    gap: spacing.xl,
+  },
+  rotatedContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   welcomeHeadingGroup: {
     alignItems: 'center',
     gap: spacing.sm,
-    marginTop: spacing.lg,
+  },
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   headlineRow: {
     flexDirection: 'row',
