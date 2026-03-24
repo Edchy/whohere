@@ -13,7 +13,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { animation, AppColors, radius, spacing, typography } from '../../src/constants/theme';
+import { animation, appName, AppColors, radius, spacing, typography } from '../../src/constants/theme';
 import ScreenLayout from '../../src/components/ScreenLayout';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
@@ -116,6 +116,19 @@ function makeStyles(colors: AppColors) {
       color: colors.textSecondary,
       textTransform: 'uppercase'
     },
+    pronunciation: {
+      fontFamily: 'AuthorRegular',
+      fontSize: 12,
+      lineHeight: 18,
+      color: colors.textMuted,
+      marginTop: 4,
+    },
+    pronunciationItalic: {
+      fontFamily: 'AuthorExtralight',
+      fontStyle: 'italic',
+      fontSize: 12,
+      color: colors.textMuted,
+    },
     infoText: {
       fontFamily: 'AuthorRegular',
       fontSize: 14,
@@ -137,6 +150,7 @@ function makeStyles(colors: AppColors) {
     },
     quoteBlock: {
       paddingVertical: spacing.md,
+      paddingHorizontal: spacing.xxl,
       gap: spacing.xs,
     },
     quoteText: {
@@ -347,8 +361,18 @@ export default function SettingsScreen() {
 
         <View style={styles.infoBlock}>
           <View style={styles.appHeader}>
-            <Text style={styles.appName}>Vem här ... ?</Text>
+            <Text style={styles.appName}>{appName}</Text>
             <Text style={styles.subtitle}>Intuitiva mikrohistorier om människorna omkring dig.</Text>
+            <Text style={styles.pronunciation}>ˈsterēəˌtīp  ·  grek. <Text style={styles.pronunciationItalic}>stereos</Text> (fast) + <Text style={styles.pronunciationItalic}>typos</Text> (intryck)</Text>
+          </View>
+
+          <View style={styles.infoMeta}>
+            <Text style={styles.infoText}>
+              Ordet kommer från tryckerivärlden — en stereotype var en gjuten metallplatta som alltid tryckte exakt samma bild, om och om igen, utan variation. Sedan blev det ett begrepp för något annat: de fasta bilder vi bär av folk vi aldrig riktigt träffat.
+            </Text>
+            <Text style={styles.infoText}>
+              Hjärnan är lat på ett smart sätt. Den kategoriserar folk snabbt — kläder, ålder, accent, kroppsspråk — för att slippa börja om från noll varje gång. Det är egentligen ganska effektivt. Problemet är att mallen aldrig stämmer helt. Den person du tror dig se är alltid en förenkling av den som faktiskt sitter där.
+            </Text>
           </View>
 
           <View style={styles.infoMeta}>
@@ -385,9 +409,9 @@ export default function SettingsScreen() {
               attribution="Carl Jung"
             />
 
-            <Text style={styles.infoItalic}>
+            {/* <Text style={styles.infoItalic}>
               Den okände sitter still. Det är du som rör på dig, inuti. Den du väljer är ett bläckplack. En tillfällig människa som råkade bära din historia en stund.
-            </Text>
+            </Text> */}
 
             <Text style={styles.infoText}>
               Efter idé av{' '}
@@ -398,21 +422,14 @@ export default function SettingsScreen() {
           </View>
 
           <View style={styles.feedbackSection}>
-            <Pressable
-              style={styles.feedbackRow}
-              onPress={() => Linking.openURL('mailto:hello@whohere.app?subject=Feedback')}
-            >
-              <Text style={[styles.infoText, { flex: 1 }]}>Skicka feedback</Text>
-              <Text style={styles.feedbackRowArrow}>→</Text>
-            </Pressable>
-
-            <Pressable
-              style={styles.feedbackRow}
-              onPress={() => Linking.openURL('mailto:hello@whohere.app?subject=Bug report')}
-            >
-              <Text style={[styles.infoText, { flex: 1 }]}>Rapportera ett problem</Text>
-              <Text style={styles.feedbackRowArrow}>→</Text>
-            </Pressable>
+            <Text style={styles.infoText}>
+              Tankar, idéer eller något som inte fungerar?{'\n'}
+              <Text style={styles.infoLink} onPress={() => Linking.openURL('mailto:hello@whohere.app?subject=Feedback')}>hello@whohere.app</Text>
+            </Text>
+            <Text style={styles.infoText}>
+              Buggar och tekniska problem:{'\n'}
+              <Text style={styles.infoLink} onPress={() => Linking.openURL('mailto:bugs@whohere.app?subject=Bug report')}>bugs@whohere.app</Text>
+            </Text>
           </View>
 
           <Text style={styles.version}>v1.0.0</Text>

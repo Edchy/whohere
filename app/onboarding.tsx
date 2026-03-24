@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native';
 import {
+  appName,
   dimensions as dim,
   radius,
   spacing,
@@ -139,7 +140,7 @@ function SlideCard({ slide }: { slide: Slide }) {
   if (slide.isWelcome) {
     return (
       <View style={[styles.card, styles.cardWelcome, { backgroundColor: colors.bgPrimary, borderColor: colors.textPrimary }]}>
-        <Text selectable={false} style={{ color: colors.textPrimary, fontSize: 48, lineHeight: 56, textAlign: 'center' }}>HELLO</Text>
+        <Text selectable={false} style={{ color: colors.textPrimary, fontSize: 48, lineHeight: 56, textAlign: 'center' }}>{appName}</Text>
         <View style={styles.swipeHintRow}>
           <SwipeHint />
           <Text selectable={false} style={[styles.swipeHintLabel, { color: colors.textMuted }]}>svep för att börja</Text>

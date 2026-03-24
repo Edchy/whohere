@@ -127,6 +127,9 @@ export const dimensions = {
 
 // ─── Animation ────────────────────────────────────────────────────────────────
 
+export const appName = 'Vem här / STEREOTYPE';
+export const cardPrefix = 'Vem här…';
+
 export const animation = {
   press:  60,
   quick: 160,

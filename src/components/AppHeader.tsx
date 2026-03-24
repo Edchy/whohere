@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { spacing } from '../constants/theme';
+import { appName, spacing, typography } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
 import GroovyEmoji from './GroovyEmoji';
 
@@ -11,18 +11,20 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
   const colors = useColors();
   return (
     <View style={styles.container}>
-      {onBack ? (
-        <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7} hitSlop={12}>
-          <Text style={{ color: colors.textMuted, fontSize: 32, lineHeight: 36, fontWeight: '300' }}>‹</Text>
-        </TouchableOpacity>
-      ) : (
-        <View style={styles.spacer} />
-      )}
+      <TouchableOpacity style={styles.wordmark} onPress={() => router.replace('/')} activeOpacity={0.7}>
+        <Text style={[styles.wordmarkLine, { color: colors.textMuted }]}>{appName.toUpperCase()}</Text>
+      </TouchableOpacity>
       {/* <MeltsMascot size={SIZE} /> */}
       <TouchableOpacity onPress={onBack ?? (() => router.replace('/'))} activeOpacity={0.7}>
         <GroovyEmoji size={SIZE} />
       </TouchableOpacity>
-      <View style={styles.spacer} />
+      {onBack ? (
+        <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7} hitSlop={12}>
+          <Text style={{ color: colors.textMuted, fontSize: 32, lineHeight: 36, fontWeight: '300', textAlign: 'right' }}>‹</Text>
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.spacer} />
+      )}
     </View>
   );
 }
@@ -41,6 +43,17 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flex: 1,
+  },
+  wordmark: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  wordmarkLine: {
+    ...typography.brand,
+    fontSize: 13,
+    lineHeight: 15,
+    letterSpacing: 2,
+    fontWeight: '700',
   },
   backButton: {
     flex: 1,

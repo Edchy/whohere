@@ -55,6 +55,10 @@ function makeStyles(colors: AppColors) {
       justifyContent: "flex-start",
       paddingTop: spacing.md,
     },
+    backBtn: {
+      alignSelf: 'flex-start',
+      marginBottom: spacing.sm,
+    },
     cardWrapper: {
       position: "absolute",
       width: "100%",
@@ -480,7 +484,11 @@ export default function PlayScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <AppHeader onBack={handleClose} />
+      <AppHeader />
+
+      <TouchableOpacity onPress={handleClose} activeOpacity={0.7} hitSlop={12} style={styles.backBtn}>
+        <Text style={{ color: colors.textMuted, fontSize: 32, lineHeight: 36, fontWeight: '300', marginLeft: spacing.xl }}>‹</Text>
+      </TouchableOpacity>
 
       <View style={styles.cardArea} {...panResponder.panHandlers}>
         {/* Next card sits underneath — peeks when swiping left or right */}
