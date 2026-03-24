@@ -360,7 +360,7 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.infoBlock}>
-          <View style={styles.appHeader}>
+          {/* <View style={styles.appHeader}>
             <Text style={styles.appName}>{appName}</Text>
             <Text style={styles.subtitle}>Intuitiva mikrohistorier om människorna omkring dig.</Text>
             <Text style={styles.pronunciation}>ˈsterēəˌtīp  ·  grek. <Text style={styles.pronunciationItalic}>stereos</Text> (fast) + <Text style={styles.pronunciationItalic}>typos</Text> (intryck)</Text>
@@ -373,9 +373,9 @@ export default function SettingsScreen() {
             <Text style={styles.infoText}>
               Hjärnan är lat på ett smart sätt. Den kategoriserar folk snabbt — kläder, ålder, accent, kroppsspråk — för att slippa börja om från noll varje gång. Det är egentligen ganska effektivt. Problemet är att mallen aldrig stämmer helt. Den person du tror dig se är alltid en förenkling av den som faktiskt sitter där.
             </Text>
-          </View>
+          </View> */}
 
-          <View style={styles.infoMeta}>
+          {/* <View style={styles.infoMeta}>
          
 
           
@@ -409,9 +409,7 @@ export default function SettingsScreen() {
               attribution="Carl Jung"
             />
 
-            {/* <Text style={styles.infoItalic}>
-              Den okände sitter still. Det är du som rör på dig, inuti. Den du väljer är ett bläckplack. En tillfällig människa som råkade bära din historia en stund.
-            </Text> */}
+       
 
             <Text style={styles.infoText}>
               Efter idé av{' '}
@@ -419,7 +417,7 @@ export default function SettingsScreen() {
               {' '}Utvecklad och designad i samarbete med{' '}
               <Text style={styles.infoLink} onPress={() => Linking.openURL('https://nope.digital')}>Nope Digital.</Text>
             </Text>
-          </View>
+          </View> */}
 
           <View style={styles.feedbackSection}>
             <Text style={styles.infoText}>

@@ -55,9 +55,20 @@ function makeStyles(colors: AppColors) {
       justifyContent: "flex-start",
       paddingTop: spacing.md,
     },
-    backBtn: {
-      alignSelf: 'flex-start',
-      marginBottom: spacing.sm,
+    closeRow: {
+      alignItems: 'center',
+      paddingBottom: spacing.lg,
+      paddingTop: spacing.sm,
+    },
+    closeBtn: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: colors.bgSecondary,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     cardWrapper: {
       position: "absolute",
@@ -486,10 +497,6 @@ export default function PlayScreen() {
     <SafeAreaView style={styles.safe}>
       <AppHeader />
 
-      <TouchableOpacity onPress={handleClose} activeOpacity={0.7} hitSlop={12} style={styles.backBtn}>
-        <Text style={{ color: colors.textMuted, fontSize: 32, lineHeight: 36, fontWeight: '300', marginLeft: spacing.xl }}>‹</Text>
-      </TouchableOpacity>
-
       <View style={styles.cardArea} {...panResponder.panHandlers}>
         {/* Next card sits underneath — peeks when swiping left or right */}
         {(nextCard || isUndercardResults) && (() => {
@@ -534,6 +541,12 @@ export default function PlayScreen() {
             </TouchableOpacity>
           )}
         </Animated.View>
+      </View>
+
+      <View style={styles.closeRow}>
+        <TouchableOpacity onPress={handleClose} activeOpacity={0.7} hitSlop={12} style={styles.closeBtn}>
+          <Text style={{ color: colors.textMuted, fontSize: 18, lineHeight: 20, fontWeight: '300' }}>✕</Text>
+        </TouchableOpacity>
       </View>
 
     </SafeAreaView>
