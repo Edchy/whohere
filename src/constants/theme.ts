@@ -11,7 +11,6 @@ const palette = {
   fog:      '#F2EEE9',   // off-white (never pure white)
   mist:     '#E8E3DD',   // light secondary surface
   stone:    '#D6D0CA',   // light border / tertiary surface
-  
 } as const;
 
 export const warmTones = {
@@ -22,6 +21,27 @@ export const warmTones = {
   amber:      '#ba6a36',  // burnt orange
   espresso:   '#261311',  // very dark brown
 } as const;
+
+// ─── Omnipollo palette (experimental) ────────────────────────────────────────
+// const omnipolloBase = {
+//   brand:    '#E8442A',   // red-orange accent — loud, primary
+//   ink:      '#1A0818',   // near-black with purple tint
+//   dim:      '#2A1040',   // dark surface — deep purple
+//   smoke:    '#3D1A5A',   // dark secondary surface
+//   grey:     '#7A5A90',   // mid purple-grey
+//   silver:   '#B090C8',   // muted lavender text
+//   fog:      '#FFF0FA',   // off-white with pink tint
+//   mist:     '#F0E0FF',   // light secondary surface — lavender
+//   stone:    '#D8B0F0',   // light border
+// };
+// const omnipolloTones = {
+//   periwinkle: '#5B2DB0',  // deep purple
+//   blush:      '#FFD0EE',  // very light pink
+//   champagne:  '#E87AC5',  // omnipollo pink
+//   cognac:     '#D43080',  // deep magenta
+//   amber:      '#4BC8E8',  // cyan — secondary highlight
+//   espresso:   '#1A0818',  // near-black
+// };
 
 
 // ─── Semantic tokens ──────────────────────────────────────────────────────────

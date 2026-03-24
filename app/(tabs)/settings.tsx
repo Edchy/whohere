@@ -17,6 +17,7 @@ import { animation, appName, AppColors, radius, spacing, typography } from '../.
 import ScreenLayout from '../../src/components/ScreenLayout';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
+import { usePurchase } from '../../src/hooks/usePurchase';
 
 // ─── Shared indicator components ──────────────────────────────────────────────
 
@@ -288,6 +289,8 @@ export default function SettingsScreen() {
   const cardBackStyle = useGameStore((s) => s.cardBackStyle);
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
 
+  const { isPremium, purchasePremium, restorePurchases, resetPremium } = usePurchase();
+
   const cardBackLabel =
     cardBackStyle === 'plain' ? 'Enfärgad' :
     cardBackStyle === 'chevron' ? 'Curtain' :
@@ -301,6 +304,44 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         <View style={styles.grid}>
+          {isPremium ? (
+            <>
+              <View style={[styles.row, { borderColor: colors.accent + '30' }]}>
+                <View style={styles.rowText}>
+                  <Text style={[styles.rowLabel, { color: colors.accent }]}>PREMIUM</Text>
+                  <Text style={[styles.rowSublabel, { color: colors.textMuted }]}>Alla kort på hand</Text>
+                </View>
+                <Text style={{ color: colors.accent + '80', fontSize: 12 }}>✦</Text>
+              </View>
+              <AnimatedRow onPress={resetPremium}>
+                {() => (
+                  <View style={styles.rowText}>
+                    <Text style={styles.rowLabel}>DEV: RESET PREMIUM</Text>
+                    <Text style={styles.rowSublabel}>Lås premium igen</Text>
+                  </View>
+                )}
+              </AnimatedRow>
+            </>
+          ) : (
+            <AnimatedRow onPress={purchasePremium}>
+              {() => (
+                <View style={styles.rowText}>
+                  <Text style={styles.rowLabel}>LÅS UPP ALLT</Text>
+                  <Text style={styles.rowSublabel}>Engångskostnad — 69 kr</Text>
+                </View>
+              )}
+            </AnimatedRow>
+          )}
+
+          <AnimatedRow onPress={restorePurchases}>
+            {() => (
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>ÅTERSTÄLL KÖP</Text>
+                <Text style={styles.rowSublabel}>Återställ ett tidigare köp</Text>
+              </View>
+            )}
+          </AnimatedRow>
+
           <AnimatedRow
             onPress={() => {
               const next = colorScheme === 'dark' ? 'light' : 'dark';

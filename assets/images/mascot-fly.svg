@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <style>
+      @keyframes look {
+        0%,  20% { transform: translateX(0);    }
+        30%, 48% { transform: translateX(-8px); }
+        58%, 76% { transform: translateX(8px);  }
+        86%, 100%{ transform: translateX(0);    }
+      }
+      .pl { animation: look 3.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .pr { animation: look 3.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+    </style>
+  </defs>
+
+  <!-- ── WINGS ── -->
+  <!-- Left wing outer shape -->
+  <path d="M 178 168  C 155 148, 90 118, 30 130  C 8 136, 6 158, 28 166  C 60 177, 140 172, 175 178"
+        fill="white" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Left wing veins -->
+  <line x1="178" y1="168" x2="48" y2="138" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="176" y1="172" x2="72" y2="152" stroke="black" stroke-width="2" stroke-linecap="round"/>
+  <line x1="175" y1="176" x2="100" y2="168" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+
+  <!-- Right wing outer shape -->
+  <path d="M 222 168  C 245 148, 310 118, 370 130  C 392 136, 394 158, 372 166  C 340 177, 260 172, 225 178"
+        fill="white" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right wing veins -->
+  <line x1="222" y1="168" x2="352" y2="138" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="224" y1="172" x2="328" y2="152" stroke="black" stroke-width="2" stroke-linecap="round"/>
+  <line x1="225" y1="176" x2="300" y2="168" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+
+  <!-- ── THORAX (solid black) ── -->
+  <ellipse cx="200" cy="175" rx="34" ry="30" fill="black"/>
+
+  <!-- ── LEGS — 3 per side ── -->
+  <!-- Left front -->
+  <path d="M 172 160  L 128 138  L 100 148" fill="none" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Left mid -->
+  <path d="M 168 178  L 118 178  L 88 196"  fill="none" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Left back -->
+  <path d="M 170 194  L 124 214  L 100 232" fill="none" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right front -->
+  <path d="M 228 160  L 272 138  L 300 148" fill="none" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right mid -->
+  <path d="M 232 178  L 282 178  L 312 196" fill="none" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right back -->
+  <path d="M 230 194  L 276 214  L 300 232" fill="none" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- ── HEAD ── -->
+  <circle cx="200" cy="136" r="32" fill="black"/>
+
+  <!-- ── ANTENNAE ── -->
+  <!-- Left antenna: curves up-left with small ball tip -->
+  <path d="M 186 108  Q 170 84  158 68" fill="none" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="156" cy="65" r="5" fill="black"/>
+  <!-- Right antenna -->
+  <path d="M 214 108  Q 230 84  242 68" fill="none" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="244" cy="65" r="5" fill="black"/>
+
+  <!-- ── BIG COMPOUND EYES (white cutouts on black head) ── -->
+  <!-- Left eye white -->
+  <circle cx="181" cy="132" r="20" fill="white"/>
+  <!-- Left pupil animated -->
+  <circle class="pl" cx="181" cy="132" r="10" fill="black"/>
+  <!-- Left shine -->
+  <circle cx="187" cy="125" r="4" fill="white"/>
+
+  <!-- Right eye white -->
+  <circle cx="219" cy="132" r="20" fill="white"/>
+  <!-- Right pupil animated -->
+  <circle class="pr" cx="219" cy="132" r="10" fill="black"/>
+  <!-- Right shine -->
+  <circle cx="225" cy="125" r="4" fill="white"/>
+
+  <!-- ── ABDOMEN (striped, below thorax) ── -->
+  <!-- Abdomen shape -->
+  <ellipse cx="200" cy="260" rx="36" ry="50" fill="black"/>
+  <!-- White stripes cut through -->
+  <rect x="164" y="238" width="72" height="10" rx="5" fill="white"/>
+  <rect x="164" y="257" width="72" height="10" rx="5" fill="white"/>
+  <rect x="164" y="276" width="72" height="10" rx="5" fill="white"/>
+
+</svg>

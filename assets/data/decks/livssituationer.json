@@ -2,8 +2,12 @@
   "id": "livssituationer",
   "title": "Livssituationer",
   "description": "Lager på lager av fakta och fantasi.",
-  "mode": "any",
+  "mode": [
+    "partner",
+    "group"
+  ],
   "category": "livssituationer",
   "icon": "◈",
-  "svgIcon": "noun-doodle-197591"
+  "svgIcon": "noun-doodle-197591",
+  "free": true
 }

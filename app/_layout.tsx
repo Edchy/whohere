@@ -15,6 +15,7 @@ const ONBOARDING_KEY = '@whohere/hasSeenOnboarding';
 const COLOR_SCHEME_KEY = '@whohere/colorScheme';
 const HAPTICS_KEY = '@whohere/hapticsEnabled';
 const CARD_BACK_KEY = '@whohere/cardBackStyle';
+const PREMIUM_KEY = '@whohere/isPremium';
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -30,6 +31,7 @@ export default function RootLayout() {
   const setColorScheme = useGameStore((s) => s.setColorScheme);
   const setHapticsEnabled = useGameStore((s) => s.setHapticsEnabled);
   const setCardBackStyle = useGameStore((s) => s.setCardBackStyle);
+  const setIsPremium = useGameStore((s) => s.setIsPremium);
   const hydrated = useRef(false);
 
   useEffect(() => {
@@ -47,7 +49,8 @@ export default function RootLayout() {
       AsyncStorage.getItem(COLOR_SCHEME_KEY),
       AsyncStorage.getItem(HAPTICS_KEY),
       AsyncStorage.getItem(CARD_BACK_KEY),
-    ]).then(([onboardingValue, colorSchemeValue, hapticsValue, cardBackValue]) => {
+      AsyncStorage.getItem(PREMIUM_KEY),
+    ]).then(([onboardingValue, colorSchemeValue, hapticsValue, cardBackValue, premiumValue]) => {
       if (colorSchemeValue === 'dark' || colorSchemeValue === 'light') {
         setColorScheme(colorSchemeValue);
       } else {
@@ -58,6 +61,9 @@ export default function RootLayout() {
       }
       if (cardBackValue) {
         setCardBackStyle(cardBackValue as Parameters<typeof setCardBackStyle>[0]);
+      }
+      if (premiumValue === 'true') {
+        setIsPremium(true);
       }
       if (onboardingValue === 'true') {
         setHasSeenOnboarding(true);
@@ -95,6 +101,7 @@ export default function RootLayout() {
             <Stack.Screen name="onboarding" options={{ presentation: Platform.OS === 'web' ? 'card' : 'fullScreenModal', gestureEnabled: false, headerShown: false }} />
             <Stack.Screen name="play/categories" options={{ presentation: "modal" }} />
             <Stack.Screen name="play/[deckId]" options={{ presentation: "card" }} />
+            <Stack.Screen name="decks/[deckId]" options={{ presentation: "modal" }} />
             <Stack.Screen name="settings/card-back" options={{ presentation: "card" }} />
           </Stack>
         </View>

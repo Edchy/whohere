@@ -23,7 +23,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { animation, AppColors, dimensions, radius, spacing, typography } from "../../src/constants/theme";
 import { useColors } from "../../src/hooks/useColors";
 import AppHeader from "../../src/components/AppHeader";
+import { EndCard } from "../../src/components/EndCard";
 import { useHaptics } from "../../src/hooks/useHaptics";
+import { usePurchase } from "../../src/hooks/usePurchase";
 import { useGameStore } from "../../src/store/gameStore";
 import { Card, Deck } from "../../src/types";
 import allDecks from "../../assets/data/decks/index";
@@ -339,6 +341,7 @@ export default function PlayScreen() {
   const router = useRouter();
   const { deckId } = useLocalSearchParams<{ deckId: string }>();
   const haptics = useHaptics();
+  const { isPremium, purchasePremium } = usePurchase();
 
   const activeDeck = useGameStore((s) => s.activeDeck);
   const startGame = useGameStore((s) => s.startGame);
@@ -364,7 +367,7 @@ export default function PlayScreen() {
     if (!activeDeck && deckId) {
       const deck = allDecks.find((d) => d.id === deckId);
       if (deck) {
-        startGame(deck, deck.mode);
+        startGame(deck, deck.mode[0]);
         setTopIndex(0);
       }
     }
@@ -507,9 +510,15 @@ export default function PlayScreen() {
           });
           if (isUndercardResults) {
             return (
-              <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
-                <View style={[styles.cardFace, { backgroundColor: colors.bgCard, alignItems: "center", justifyContent: "center" }]}>
-                  <Text selectable={false} style={[styles.question, { textAlign: "center" }]}>Klar</Text>
+              <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]} pointerEvents="none">
+                <View style={[styles.cardFace, { backgroundColor: colors.bgCard, opacity: 0.5 }]}>
+                  <EndCard
+                    variant={isPremium ? 'completion' : 'paywall'}
+                    onUnlock={() => {}}
+                    onReplay={() => {}}
+                    onHome={() => {}}
+                    colors={colors}
+                  />
                 </View>
               </Animated.View>
             );
@@ -527,8 +536,20 @@ export default function PlayScreen() {
         {/* Top card — draggable */}
         <Animated.View style={[styles.cardWrapper, topCardAnimStyle]}>
           {isResultsCard ? (
-            <View style={[styles.cardFace, { backgroundColor: colors.bgCard, alignItems: "center", justifyContent: "center" }]}>
-              <Text selectable={false} style={[styles.question, { textAlign: "center" }]}>Klar</Text>
+            <View style={[styles.cardFace, { backgroundColor: colors.bgCard }]}>
+              <EndCard
+                variant={isPremium ? 'completion' : 'paywall'}
+                onUnlock={purchasePremium}
+                onReplay={() => {
+                  endGame();
+                  router.back();
+                }}
+                onHome={() => {
+                  endGame();
+                  router.replace('/');
+                }}
+                colors={colors}
+              />
             </View>
           ) : (
             <TouchableOpacity activeOpacity={1} style={styles.cardPressable} onPress={() => handleFlipRef.current()}>

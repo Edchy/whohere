@@ -8,6 +8,10 @@ type GameState = {
   mode: DeckMode;
   isFlipped: boolean;
 
+  // Purchase
+  isPremium: boolean;
+  setIsPremium: (value: boolean) => void;
+
   // Settings
   hapticsEnabled: boolean;
   setHapticsEnabled: (enabled: boolean) => void;
@@ -34,8 +38,11 @@ type GameState = {
 export const useGameStore = create<GameState>((set, get) => ({
   activeDeck: null,
   currentCardIndex: 0,
-  mode: 'any',
+  mode: 'partner',
   isFlipped: false,
+
+  isPremium: false,
+  setIsPremium: (value) => set({ isPremium: value }),
 
   hapticsEnabled: true,
   setHapticsEnabled: (enabled) => set({ hapticsEnabled: enabled }),

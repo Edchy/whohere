@@ -1,5 +1,14 @@
 [
-  { "id": "abs-1", "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit?", "followUp": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 0, "controversial": 1, "dark": 1, "funny": 4 } },
-  { "id": "abs-2", "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod?", "followUp": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt?", "intensity": { "bold": 3, "daring": 3, "sexual": 0, "vulnerable": 1, "controversial": 1, "dark": 0, "funny": 4 } },
-  { "id": "abs-3", "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor?", "followUp": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt?", "intensity": { "bold": 4, "daring": 3, "sexual": 0, "vulnerable": 0, "controversial": 2, "dark": 1, "funny": 5 } }
+  {
+    "id": "abs-1",
+    "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit?"
+  },
+  {
+    "id": "abs-2",
+    "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod?"
+  },
+  {
+    "id": "abs-3",
+    "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor?"
+  }
 ]

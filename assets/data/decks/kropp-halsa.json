@@ -2,7 +2,10 @@
   "id": "kropp-halsa",
   "title": "Kropp & Hälsa",
   "description": "Hur vi förhåller oss till kroppen vi bor i.",
-  "mode": "any",
+  "mode": [
+    "solo",
+    "partner"
+  ],
   "category": "kropp-halsa",
   "icon": "◉",
   "svgIcon": "noun-doodle-197608"

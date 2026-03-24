@@ -1,5 +1,14 @@
 [
-  { "id": "kro-1", "question": "har ett komplicerat förhållande till sin kropp som sitter djupare än de flesta anar?", "followUp": "Är det igenkänning som styr ditt val — eller empatins riktning mot någon du sett kämpa med det?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 4, "controversial": 0, "dark": 1, "funny": 0 } },
-  { "id": "kro-2", "question": "sover konsekvent för lite och rättfärdigar det med att de inte behöver mer?", "followUp": "Är det en sanning du respekterar, eller ett självbedrägeri du känner igen lite väl bra?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 1, "controversial": 0, "dark": 0, "funny": 2 } },
-  { "id": "kro-3", "question": "har börjat träna med religiös hängivenhet efter ett möte med sin egen dödlighet?", "followUp": "Väcker det beundran eller en liten känsla av sorgsenhet — och vad tror du drev dem dit?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 0, "dark": 2, "funny": 1 } }
+  {
+    "id": "kro-1",
+    "question": "har ett komplicerat förhållande till sin kropp som sitter djupare än de flesta anar?"
+  },
+  {
+    "id": "kro-2",
+    "question": "sover konsekvent för lite och rättfärdigar det med att de inte behöver mer?"
+  },
+  {
+    "id": "kro-3",
+    "question": "har börjat träna med religiös hängivenhet efter ett möte med sin egen dödlighet?"
+  }
 ]

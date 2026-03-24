@@ -2,8 +2,13 @@
   "id": "personlighet",
   "title": "Personlighet",
   "description": "Talande ledtrådar om de människor vi möter",
-  "mode": "any",
+  "mode": [
+    "solo",
+    "partner",
+    "group"
+  ],
   "category": "personlighet",
   "icon": "✦",
-  "svgIcon": "noun-doodle-197592"
+  "svgIcon": "noun-doodle-197592",
+  "free": true
 }

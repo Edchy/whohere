@@ -5,55 +5,15 @@ import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-n
 import PlayArrowSvg from "../../assets/icons/noun-arrow-8300346.svg";
 import RandomSvg from "../../assets/icons/category-icons/noun-question-8320435.svg";
 import { DeckTile } from "../../src/components/DeckTile";
-import ScreenLayout from "../../src/components/ScreenLayout";
+import ModalLayout from "../../src/components/ModalLayout";
 import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
 import { useColors } from "../../src/hooks/useColors";
 
 import { useGameStore } from "../../src/store/gameStore";
-import { Card, Deck, IntensityAxis } from "../../src/types";
+import { usePurchase } from "../../src/hooks/usePurchase";
+import { Card, Deck } from "../../src/types";
 import allDecks from "../../assets/data/decks/index";
 
-// Which decks are pre-selected per mode
-const DEFAULT_SELECTIONS: Record<string, string[]> = {
-  partner: ["relationer-kanslor", "personlighet"],
-  group: ["livssituationer", "personlighet"],
-  solo: ["liv-bakgrund", "relationer-kanslor"],
-};
-
-// Intensity range [min, max] per axis per mode.
-// Cards with a non-zero value outside the range are excluded.
-// Cards with value 0 on an axis always pass (0 = "not applicable").
-type AxisRange = [min: number, max: number];
-type ModeRanges = Partial<Record<IntensityAxis, AxisRange>>;
-
-const MODE_INTENSITY_RANGES: Record<string, ModeRanges> = {
-  partner: {
-    bold: [1, 4], daring: [1, 4], sexual: [0, 3],
-    vulnerable: [1, 4], controversial: [0, 2], dark: [0, 2], funny: [0, 4],
-  },
-  group: {
-    bold: [1, 5], daring: [1, 5], sexual: [0, 1],
-    vulnerable: [0, 2], controversial: [0, 3], dark: [0, 2], funny: [1, 5],
-  },
-  solo: {
-    bold: [0, 3], daring: [0, 3], sexual: [0, 0],
-    vulnerable: [2, 5], controversial: [1, 4], dark: [1, 4], funny: [0, 2],
-  },
-};
-
-function passesIntensityFilter(card: Card, modeId: string): boolean {
-  const ranges = MODE_INTENSITY_RANGES[modeId];
-  if (!ranges) return true;
-  for (const axis of Object.keys(ranges) as IntensityAxis[]) {
-    const range = ranges[axis];
-    if (!range) continue;
-    const val = card.intensity?.[axis] ?? 0;
-    if (val === 0) continue;
-    const [min, max] = range;
-    if (val < min || val > max) return false;
-  }
-  return true;
-}
 
 const MODE_LABELS: Record<string, string> = {
   partner: "På date",
@@ -62,6 +22,7 @@ const MODE_LABELS: Record<string, string> = {
 };
 
 const GAME_CARD_LIMIT = 15;
+const FREE_CARD_LIMIT = 10;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -72,11 +33,12 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function buildDeck(selectedIds: string[], modeId: string): Deck {
+function buildDeck(selectedIds: string[], modeId: string, isPremium: boolean): Deck {
 
+  const cardLimit = isPremium ? GAME_CARD_LIMIT : FREE_CARD_LIMIT;
   const deckCount = selectedIds.length;
-  const basePerDeck = Math.floor(GAME_CARD_LIMIT / deckCount);
-  const remainder = GAME_CARD_LIMIT % deckCount;
+  const basePerDeck = Math.floor(cardLimit / deckCount);
+  const remainder = cardLimit % deckCount;
 
   const cards: Card[] = shuffle(
     selectedIds.flatMap((deckId, i) => {
@@ -89,9 +51,7 @@ function buildDeck(selectedIds: string[], modeId: string): Deck {
         deckSvgIcon: source.svgIcon,
         deckTitle: source.title,
       }));
-      const filtered = stamped.filter((card) => passesIntensityFilter(card, modeId));
-      const pool = filtered.length > 0 ? filtered : stamped;
-      return shuffle(pool).slice(0, quota);
+      return shuffle(stamped).slice(0, quota);
     })
   );
 
@@ -99,17 +59,11 @@ function buildDeck(selectedIds: string[], modeId: string): Deck {
     id: `curated-${modeId}`,
     title: MODE_LABELS[modeId] ?? "Spela",
     description: "",
-    mode: "any",
+    mode: [modeId as any],
     category: "mixed",
     icon: "",
     cards,
   };
-}
-
-function randomSubset(ids: string[]): string[] {
-  const count = 1 + Math.floor(Math.random() * ids.length);
-  const shuffled = [...ids].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
 }
 
 // ─── Header copy ──────────────────────────────────────────────────────────────
@@ -257,17 +211,23 @@ export default function CategoriesScreen() {
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode: string }>();
   const startGame = useGameStore((s) => s.startGame);
+  const { isPremium, purchasePremium } = usePurchase();
   const surpriseDesc = useRef(pickSurpriseDesc(mode ?? "partner")).current;
   const headerTitle = useRef(pickHeaderTitle(mode ?? "partner")).current;
   const headerSubtitle = useRef(pickHeaderSubtitle(mode ?? "partner")).current;
 
-  const defaults = DEFAULT_SELECTIONS[mode ?? ""] ?? [];
+  const modeDecks = allDecks.filter((d) => d.mode.includes(mode as any)); // used for surprise only
+  const visibleDecks = allDecks; // all decks shown for manual selection
   const [selected, setSelected] = useState<string[]>([]);
   const [randomize, setRandomize] = useState(true);
 
   const surpriseOpacity = useRef(new Animated.Value(1)).current;
 
   const toggle = (id: string) => {
+    if (!isPremium && !allDecks.find((d) => d.id === id)?.free) {
+      purchasePremium();
+      return;
+    }
     setRandomize(false);
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
@@ -283,10 +243,10 @@ export default function CategoriesScreen() {
 
   const handleStart = () => {
     if (!canStart) return;
-    const modePool = DEFAULT_SELECTIONS[mode ?? ""] ?? allDecks.map((d) => d.id);
-    const ids = randomize ? randomSubset(modePool) : selected;
-    const deck = buildDeck(ids, mode ?? "partner");
-    startGame(deck, "any");
+    const eligibleDecks = isPremium ? modeDecks : modeDecks.filter((d) => d.free);
+    const ids = randomize ? eligibleDecks.map((d) => d.id) : selected;
+    const deck = buildDeck(ids, mode ?? "partner", isPremium);
+    startGame(deck, (mode ?? "partner") as any);
     router.replace(`/play/${deck.id}`);
   };
 
@@ -297,10 +257,7 @@ export default function CategoriesScreen() {
     Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
 
   return (
-    <ScreenLayout showHeader={false} backgroundColor={colors.bgPrimary} noTopInset>
-      <View style={{ alignItems: 'center', paddingTop: spacing.md, paddingBottom: spacing.xs }}>
-        <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: colors.accent + '60' }} />
-      </View>
+    <ModalLayout>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -340,13 +297,13 @@ export default function CategoriesScreen() {
           </Animated.View>
 
           {/* Deck tiles */}
-          {allDecks.map((deck) => (
+          {visibleDecks.map((deck) => (
             <DeckTile
               key={deck.id}
               deck={deck}
               isSelected={selected.includes(deck.id)}
-              badge={defaults.includes(deck.id) ? 'förslag' : undefined}
               showCount={false}
+              locked={!isPremium && !deck.free}
               onPress={() => toggle(deck.id)}
             />
           ))}
@@ -371,6 +328,6 @@ export default function CategoriesScreen() {
           <PlayArrowSvg width={24} height={24} fill={colors.textOnBrand} />
         </Pressable>
       </Animated.View>
-    </ScreenLayout>
+    </ModalLayout>
   );
 }

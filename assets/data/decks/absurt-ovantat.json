@@ -2,7 +2,9 @@
   "id": "absurt-ovantat",
   "title": "Absurt & oväntat",
   "description": "När föreställningarna övermannar verkligheten",
-  "mode": "any",
+  "mode": [
+    "group"
+  ],
   "category": "absurt-ovantat",
   "icon": "✦",
   "svgIcon": "noun-doodle-197605"

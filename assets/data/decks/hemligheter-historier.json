@@ -2,7 +2,10 @@
   "id": "hemligheter-historier",
   "title": "Hemligheter & historier",
   "description": "Små historier som aldrig förr formulerats",
-  "mode": "any",
+  "mode": [
+    "solo",
+    "partner"
+  ],
   "category": "hemligheter-historier",
   "icon": "✦",
   "svgIcon": "noun-doodle-197602"

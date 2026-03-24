@@ -1,33 +1,126 @@
 [
-  { "id": "per-1", "question": "känns mest som en person som övertänker och grubblar över minsta detalj?", "followUp": "Känner du igen dig i den personens sätt att tänka — eller är det precis tvärtom och det stör dig?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 2, "controversial": 0, "dark": 0, "funny": 2 } },
-  { "id": "per-2", "question": "har gått ut flest gånger från tandläkaren med de blå skoskydden kvar på fötterna?", "followUp": "Är det en gullig tankspridhet du ser, eller ett mönster av ouppmärksamhet du känner igen?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 0, "funny": 4 } },
-  { "id": "per-3", "question": "har sagt upp sig från sitt jobb för att personens horoskop utlovat \"oväntad rikedom\"?", "followUp": "Ser du det som befriande impulsivitet eller naivitet — och vad säger det om hur du hanterar risk?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 1, "controversial": 0, "dark": 0, "funny": 4 } },
-  { "id": "per-4", "question": "har lite väl många välgörenhetsorganisationer på sitt autogiro i förhållande till sin inkomst?", "followUp": "Väcker ditt val beundran eller ett uns av obehag — och vad säger det om hur du ser på generositet?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 1, "controversial": 1, "dark": 0, "funny": 2 } },
-  { "id": "per-5", "question": "kan lätt bli rörd till tårar av att se en maskros som kämpat sig upp genom asfalten?", "followUp": "Är det den personens känslighet du avundas, skyr, eller hemligt delar med dem?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 0, "dark": 0, "funny": 2 } },
-  { "id": "per-6", "question": "längtar mest hem till soffan, chipsen och mjukisbyxorna just nu?", "followUp": "Känner du igen den längtan — och är det en stund du föreställer dig att dela med dem?", "intensity": { "bold": 1, "daring": 1, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 0, "funny": 3 } },
-  { "id": "per-7", "question": "hade kunnat få en rejäl utskällning utan att ens påverkas särskilt mycket?", "followUp": "Beundrar du den distansen, eller väcker den något i dig som du inte riktigt sätter ord på?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 0, "funny": 2 } },
-  { "id": "per-8", "question": "skulle självklart säga ifrån om någon sa något rasistiskt eller sexistiskt?", "followUp": "Är det beundran som styr ditt val, eller en önskan om att du själv hade gjort detsamma?", "intensity": { "bold": 3, "daring": 3, "sexual": 0, "vulnerable": 1, "controversial": 3, "dark": 0, "funny": 0 } },
-  { "id": "per-9", "question": "skriver långa dikter om kärlek och flaskpostar dessa i hopp om att en dag få svar?", "followUp": "Lockar det dig med en romantisk outtröttlighet — eller ser du dig lite i den personen?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 0, "dark": 1, "funny": 3 } },
-  { "id": "per-10", "question": "driver en \"bibelstudiegrupp\" där \"klädval på kristen värdegrund\" är ett medlemskrav?", "followUp": "Vad kände du när du valde — förundran, obehag, eller en slags igenkänning du kanske inte förväntade dig?", "intensity": { "bold": 4, "daring": 3, "sexual": 0, "vulnerable": 0, "controversial": 4, "dark": 0, "funny": 3 } },
-  { "id": "per-11", "question": "känns mest som en person som alltid märker ord och rättar andras språkliga misstag?", "followUp": "Störs du av det, beundrar du det, eller är det för att du känner igen det i dig själv?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 0, "funny": 2 } },
-  { "id": "per-12", "question": "kollar alltid brandvarningssystem och nödutgångar i varje lokal personen besöker?", "followUp": "Är det något du föraktar, respekterar i smyg, eller hemligt delar med dem?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 1, "controversial": 0, "dark": 1, "funny": 3 } },
-  { "id": "per-13", "question": "litar konsekvent på sin egen magkänsla även när det gäller livsavgörande beslut?", "followUp": "Avundas du den självtilliten, eller ser du den som ett riskbeteende du aldrig själv skulle unna dig?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 1, "controversial": 0, "dark": 0, "funny": 1 } },
-  { "id": "per-14", "question": "skulle kunna överklaga en felaktig parkeringsbot hela vägen upp till högsta instans?", "followUp": "Är det deras envisa rättvisepatos du beundrar — eller en karaktärsdrag du helst vill undvika?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 0, "funny": 3 } },
-  { "id": "per-15", "question": "behöver mycket egentid för att \"ladda sina sociala batterier\" och må bra?", "followUp": "Känner du igen det behovet — och är det något du respekterar eller något du har svårt att förstå?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 2, "controversial": 0, "dark": 0, "funny": 1 } },
-  { "id": "per-16", "question": "kommer hela tiden på nya planer för att bli rik men har hittills aldrig lyckats?", "followUp": "Är det hoppfullheten du känner igen, ironin du ser, eller en version av dig själv du inte vill titta på?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 1, "controversial": 0, "dark": 0, "funny": 3 } },
-  { "id": "per-17", "question": "golade ner sina klasskamrater som tjuvrökte inne på gympasalens toalett?", "followUp": "Vad säger valet om hur du ser på lydnad, lojalitet, och att göra rätt för sig?", "intensity": { "bold": 3, "daring": 3, "sexual": 0, "vulnerable": 0, "controversial": 1, "dark": 0, "funny": 3 } },
-  { "id": "per-18", "question": "är principfast på ett sätt som kan bli lite högtravande och störigt för alla runtomkring?", "followUp": "Är det en egenskap du beundrar eller en du skyr — och har du sett den i dig själv?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 0, "controversial": 1, "dark": 0, "funny": 2 } },
-  { "id": "per-19", "question": "behövde ha cykelhjälm på sig för att få gunga på en helt vanlig gunga?", "followUp": "Är det en försiktighet du ser med värme eller med lätt överseende — och vad säger det om hur du ser på trygghet?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 0, "funny": 4 } },
-  { "id": "per-20", "question": "dröjde en bra bit upp i högstadiet med att lära sig att knyta sina egna skor?", "followUp": "Väcker det ömhet, igenkänning, eller en känsla av att du vet något om den personen som de kanske inte vet om sig själva?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 1, "controversial": 0, "dark": 0, "funny": 3 } },
-  { "id": "per-21", "question": "har starkast \"chihuahua som tror sig vara en kamphund\"-aura?", "followUp": "Är det med värme eller lätt irritation du ser det — och finns det lite av det i dig själv?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 0, "funny": 4 } },
-  { "id": "per-22", "question": "har lättast att säga \"skitsamma\" med en axelryckning när saker inte går som planerat?", "followUp": "Beundrar du den lättheten, eller väcker den ett uns av avundsjuka — och är det något du önskar dig mer av?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 0, "funny": 2 } },
-  { "id": "per-23", "question": "använder felaktigt skrattgråt-emojin vid sorgliga och allvarsamma tillfällen?", "followUp": "Är det en omedvetenhet du tolkar med välvilja, eller ett slags flykt från svåra känslor du känner igen?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 1, "funny": 4 } },
-  { "id": "per-24", "question": "kollar alltid 7, 14 eller 21 gånger om ytterdörren verkligen är låst?", "followUp": "Ser du det med ömhet, igenkänning, eller ett uns av oro för den personens inre liv?", "intensity": { "bold": 2, "daring": 1, "sexual": 0, "vulnerable": 2, "controversial": 0, "dark": 0, "funny": 3 } },
-  { "id": "per-25", "question": "är omtänksam på ett sätt som gränsar till självutplåning?", "followUp": "Beundrar du det, eller ser du ett mönster du önskar att någon hade brutit i tid?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 0, "dark": 1, "funny": 0 } },
-  { "id": "per-26", "question": "bär på en social \"mask\" som inte alls avspeglar den egentliga personligheten?", "followUp": "Vad fick dig att se masken — och vad tror du döljer sig bakom den?", "intensity": { "bold": 4, "daring": 3, "sexual": 0, "vulnerable": 4, "controversial": 0, "dark": 1, "funny": 0 } },
-  { "id": "per-27", "question": "ställer helt orimligt höga krav på sig själv men är förlåtande mot alla andra?", "followUp": "Känner du igen det mönstret — och är det med värme eller med en viss sorg du ser det?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 0, "dark": 1, "funny": 0 } },
-  { "id": "per-28", "question": "läser instruktionerna på förpackningen när den ska tillreda varm choklad?", "followUp": "Är det ett drag du tycker om eller ogillar — och säger det något om hur du ser på ordning?", "intensity": { "bold": 1, "daring": 1, "sexual": 0, "vulnerable": 0, "controversial": 0, "dark": 0, "funny": 4 } },
-  { "id": "per-29", "question": "är så konflikträdd att den tycker det är obehagligt så fort någon har en annan åsikt?", "followUp": "Är det med förståelse, frustration, eller igenkänning du valde — och hur hanterar du själv oenighet?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 1, "dark": 0, "funny": 1 } },
-  { "id": "per-30", "question": "hade varit byns \"bödel\" om vi hade levt på medeltiden?", "followUp": "Vad sa ditt val om vad du tolkar som kallsinne — och är du säker på att du har rätt?", "intensity": { "bold": 4, "daring": 3, "sexual": 0, "vulnerable": 0, "controversial": 1, "dark": 3, "funny": 2 } },
-  { "id": "per-31", "question": "hade kunnat säga \"Om det fanns ett land som inte tog emot invandrare hade jag flyttat dit\"?", "followUp": "Vad fick dig att välja just den personen — och vad sa det om din bild av dem?", "intensity": { "bold": 5, "daring": 4, "sexual": 0, "vulnerable": 0, "controversial": 5, "dark": 0, "funny": 0 } }
+  {
+    "id": "per-1",
+    "question": "känns mest som en person som övertänker och grubblar över minsta detalj?"
+  },
+  {
+    "id": "per-2",
+    "question": "har gått ut flest gånger från tandläkaren med de blå skoskydden kvar på fötterna?"
+  },
+  {
+    "id": "per-3",
+    "question": "har sagt upp sig från sitt jobb för att personens horoskop utlovat \"oväntad rikedom\"?"
+  },
+  {
+    "id": "per-4",
+    "question": "har lite väl många välgörenhetsorganisationer på sitt autogiro i förhållande till sin inkomst?"
+  },
+  {
+    "id": "per-5",
+    "question": "kan lätt bli rörd till tårar av att se en maskros som kämpat sig upp genom asfalten?"
+  },
+  {
+    "id": "per-6",
+    "question": "längtar mest hem till soffan, chipsen och mjukisbyxorna just nu?"
+  },
+  {
+    "id": "per-7",
+    "question": "hade kunnat få en rejäl utskällning utan att ens påverkas särskilt mycket?"
+  },
+  {
+    "id": "per-8",
+    "question": "skulle självklart säga ifrån om någon sa något rasistiskt eller sexistiskt?"
+  },
+  {
+    "id": "per-9",
+    "question": "skriver långa dikter om kärlek och flaskpostar dessa i hopp om att en dag få svar?"
+  },
+  {
+    "id": "per-10",
+    "question": "driver en \"bibelstudiegrupp\" där \"klädval på kristen värdegrund\" är ett medlemskrav?"
+  },
+  {
+    "id": "per-11",
+    "question": "känns mest som en person som alltid märker ord och rättar andras språkliga misstag?"
+  },
+  {
+    "id": "per-12",
+    "question": "kollar alltid brandvarningssystem och nödutgångar i varje lokal personen besöker?"
+  },
+  {
+    "id": "per-13",
+    "question": "litar konsekvent på sin egen magkänsla även när det gäller livsavgörande beslut?"
+  },
+  {
+    "id": "per-14",
+    "question": "skulle kunna överklaga en felaktig parkeringsbot hela vägen upp till högsta instans?"
+  },
+  {
+    "id": "per-15",
+    "question": "behöver mycket egentid för att \"ladda sina sociala batterier\" och må bra?"
+  },
+  {
+    "id": "per-16",
+    "question": "kommer hela tiden på nya planer för att bli rik men har hittills aldrig lyckats?"
+  },
+  {
+    "id": "per-17",
+    "question": "golade ner sina klasskamrater som tjuvrökte inne på gympasalens toalett?"
+  },
+  {
+    "id": "per-18",
+    "question": "är principfast på ett sätt som kan bli lite högtravande och störigt för alla runtomkring?"
+  },
+  {
+    "id": "per-19",
+    "question": "behövde ha cykelhjälm på sig för att få gunga på en helt vanlig gunga?"
+  },
+  {
+    "id": "per-20",
+    "question": "dröjde en bra bit upp i högstadiet med att lära sig att knyta sina egna skor?"
+  },
+  {
+    "id": "per-21",
+    "question": "har starkast \"chihuahua som tror sig vara en kamphund\"-aura?"
+  },
+  {
+    "id": "per-22",
+    "question": "har lättast att säga \"skitsamma\" med en axelryckning när saker inte går som planerat?"
+  },
+  {
+    "id": "per-23",
+    "question": "använder felaktigt skrattgråt-emojin vid sorgliga och allvarsamma tillfällen?"
+  },
+  {
+    "id": "per-24",
+    "question": "kollar alltid 7, 14 eller 21 gånger om ytterdörren verkligen är låst?"
+  },
+  {
+    "id": "per-25",
+    "question": "är omtänksam på ett sätt som gränsar till självutplåning?"
+  },
+  {
+    "id": "per-26",
+    "question": "bär på en social \"mask\" som inte alls avspeglar den egentliga personligheten?"
+  },
+  {
+    "id": "per-27",
+    "question": "ställer helt orimligt höga krav på sig själv men är förlåtande mot alla andra?"
+  },
+  {
+    "id": "per-28",
+    "question": "läser instruktionerna på förpackningen när den ska tillreda varm choklad?"
+  },
+  {
+    "id": "per-29",
+    "question": "är så konflikträdd att den tycker det är obehagligt så fort någon har en annan åsikt?"
+  },
+  {
+    "id": "per-30",
+    "question": "hade varit byns \"bödel\" om vi hade levt på medeltiden?"
+  },
+  {
+    "id": "per-31",
+    "question": "hade kunnat säga \"Om det fanns ett land som inte tog emot invandrare hade jag flyttat dit\"?"
+  }
 ]

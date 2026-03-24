@@ -2,8 +2,12 @@
   "id": "liv-bakgrund",
   "title": "Liv & Bakgrund",
   "description": "Synliga spår av liv som levts.",
-  "mode": "any",
+  "mode": [
+    "solo",
+    "partner"
+  ],
   "category": "liv-bakgrund",
   "icon": "◎",
-  "svgIcon": "noun-doodle-197593"
+  "svgIcon": "noun-doodle-197593",
+  "free": true
 }

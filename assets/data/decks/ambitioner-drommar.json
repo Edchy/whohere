@@ -2,7 +2,10 @@
   "id": "ambitioner-drommar",
   "title": "Ambitioner & Drömmar",
   "description": "Vart vi hoppas att livet ska ta oss.",
-  "mode": "any",
+  "mode": [
+    "solo",
+    "partner"
+  ],
   "category": "ambitioner-drommar",
   "icon": "◇",
   "svgIcon": "noun-doodle-197606"

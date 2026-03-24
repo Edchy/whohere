@@ -1,5 +1,14 @@
 [
-  { "id": "amb-1", "question": "har en halvskriven affärsplan sparad i en mapp hen aldrig öppnar längre?", "followUp": "Är det en dröm du beundrar att de haft, eller påminner det om något du själv skjutit upp?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 2, "controversial": 0, "dark": 0, "funny": 2 } },
-  { "id": "amb-2", "question": "har gett upp en stor dröm och faktiskt mår bättre av det?", "followUp": "Ser du det som visdom eller resignation — och hur skiljer du de två åt?", "intensity": { "bold": 3, "daring": 2, "sexual": 0, "vulnerable": 3, "controversial": 0, "dark": 1, "funny": 0 } },
-  { "id": "amb-3", "question": "vet precis vad de vill ha ut av livet men gör ingenting åt det just nu?", "followUp": "Känner du igen den klyvnaden — och vad tror du håller dem tillbaka?", "intensity": { "bold": 2, "daring": 2, "sexual": 0, "vulnerable": 2, "controversial": 0, "dark": 0, "funny": 1 } }
+  {
+    "id": "amb-1",
+    "question": "har en halvskriven affärsplan sparad i en mapp hen aldrig öppnar längre?"
+  },
+  {
+    "id": "amb-2",
+    "question": "har gett upp en stor dröm och faktiskt mår bättre av det?"
+  },
+  {
+    "id": "amb-3",
+    "question": "vet precis vad de vill ha ut av livet men gör ingenting åt det just nu?"
+  }
 ]

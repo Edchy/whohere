@@ -6,13 +6,13 @@ import ScreenLayout from '../../src/components/ScreenLayout';
 import { DeckTile } from '../../src/components/DeckTile';
 import { spacing } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
-import { useGameStore } from '../../src/store/gameStore';
+import { usePurchase } from '../../src/hooks/usePurchase';
 import allDecks from '../../assets/data/decks/index';
 
 export default function DecksScreen() {
   const router = useRouter();
-  const startGame = useGameStore((s) => s.startGame);
   const colors = useColors();
+  const { isPremium } = usePurchase();
 
   return (
     <ScreenLayout>
@@ -24,10 +24,9 @@ export default function DecksScreen() {
           <DeckTile
             key={deck.id}
             deck={deck}
-            onPress={() => {
-              startGame(deck, deck.mode);
-              router.push(`/play/${deck.id}`);
-            }}
+            locked={!isPremium && !deck.free}
+            showCount={false}
+            onPress={() => router.push(`/decks/${deck.id}`)}
           />
         ))}
       </ScrollView>

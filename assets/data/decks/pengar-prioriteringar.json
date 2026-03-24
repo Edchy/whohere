@@ -2,7 +2,10 @@
   "id": "pengar-prioriteringar",
   "title": "Pengar & Prioriteringar",
   "description": "Vad vi värderar när det kostar något.",
-  "mode": "any",
+  "mode": [
+    "partner",
+    "group"
+  ],
   "category": "pengar-prioriteringar",
   "icon": "◆",
   "svgIcon": "noun-doodle-197620"

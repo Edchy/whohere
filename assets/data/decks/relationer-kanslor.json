@@ -2,7 +2,10 @@
   "id": "relationer-kanslor",
   "title": "Relationer & Känslor",
   "description": "Hur vi älskar, sårar, knyter an och släpper tag.",
-  "mode": "any",
+  "mode": [
+    "solo",
+    "partner"
+  ],
   "category": "relationer-kanslor",
   "icon": "❋",
   "svgIcon": "noun-doodle-197598"
