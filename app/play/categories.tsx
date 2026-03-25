@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import PlayArrowSvg from "../../assets/icons/noun-arrow-8300346.svg";
-import RandomSvg from "../../assets/icons/category-icons/noun-question-8320435.svg";
+import RandomSvg from "../../assets/icons/category-icons/noun-doodle-197625.svg";
 import { DeckTile } from "../../src/components/DeckTile";
 import ModalLayout from "../../src/components/ModalLayout";
 import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
@@ -83,7 +83,7 @@ const HEADER_TITLES: Record<string, string[]> = {
 
 const HEADER_SUBTITLES: Record<string, string[]> = {
   partner: [
-    "Låt nyfikenhete visa vägen in i ert undermedvetna"
+    "Låt nyfikenheten visa vägen in i ert undermedvetna"
   ],
   group: [
     "Svara ärligt och spontant på frågorna som dyker upp"
