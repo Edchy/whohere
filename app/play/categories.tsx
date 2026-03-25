@@ -21,8 +21,8 @@ const MODE_LABELS: Record<string, string> = {
   solo: "På egen hand",
 };
 
-const GAME_CARD_LIMIT = 15;
-const FREE_CARD_LIMIT = 10;
+const GAME_CARD_LIMIT = 30;
+const FREE_CARD_LIMIT = 30;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -70,37 +70,26 @@ function buildDeck(selectedIds: string[], modeId: string, isPremium: boolean): D
 
 const HEADER_TITLES: Record<string, string[]> = {
   partner: [
-    "Vad vill ni lära er om varandra?",
-    "Vart vill ni ta samtalet ikväll?",
-    "Vad är ni redo att utforska?",
+    "Vilka lager av liv vill ni utforska tillsammans?",
   ],
   group: [
-    "Vad ska ni blanda er i ikväll?",
-    "Vart tar ni gruppen?",
-    "Vad väljer ni att gå in i?",
+    "Välj kategorier själva, eller låt slumpen avgöra?",
   ],
   solo: [
-    "Vad vill du möta idag?",
-    "Vart tar du dig själv?",
-    "Vad är du redo att titta på?",
+   "Vad säger din magkänsla om andra, egentligen?",
+
   ],
 };
 
 const HEADER_SUBTITLES: Record<string, string[]> = {
   partner: [
-    "Välj vad som lockar er, eller låt oss välja.",
-    "Plocka det ni vill dyka in i. Eller kasta tärningen.",
-    "Era val. Eller slumpens.",
+    "Låt nyfikenhete visa vägen in i ert undermedvetna"
   ],
   group: [
-    "Välj vad gruppen orkar med. Eller låt ödet avgöra.",
-    "Plocka ihop ert kvällsprogram, eller överlåt det åt slumpen.",
-    "Alla väljer, ingen bestämmer. Eller låt oss sköta det.",
+    "Svara ärligt och spontant på frågorna som dyker upp"
   ],
   solo: [
-    "Välj vad du vill brottas med. Eller låt slumpen ta rodret.",
-    "Dina val, eller överlåt dem till universum.",
-    "Plocka det du vill gå in i. Eller låt det komma till dig.",
+    "Människokännedom och självkännedom är livskunskap"
   ],
 };
 
@@ -118,19 +107,13 @@ function pickHeaderSubtitle(mode: string): string {
 
 const SURPRISE_DESCS: Record<string, string[]> = {
   partner: [
-    "Ett handplockat urval för er två. Men med ett uns överraskning.",
-    "Kurerat för er. Ordningen är slumpens fel.",
-    "Rätt frågor för er två, i fel ordning. Med flit.",
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   ],
   group: [
-    "Utvalda för gruppen. Men ingen vet vad som kommer härnäst.",
-    "Kurerat kaos för alla inblandade.",
-    "Rätt kortlekar för er. Fel ordning. Med avsikt.",
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   ],
   solo: [
-    "Handplockat för dig. Ordningen bestämmer sig själv.",
-    "Kurerat för en. Överraskningarna ingår.",
-    "Rätt frågor för dig, i en ordning bara slumpen känner till.",
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   ],
 };
 
@@ -282,13 +265,13 @@ export default function CategoriesScreen() {
             >
               <View style={styles.surpriseInner}>
                 <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-                  <RandomSvg width={32} height={32} fill={randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary} />
+                  <RandomSvg width={32} height={32} fill={randomize ? colors.textOnBrand : colors.textPrimary} />
                 </View>
                 <View style={styles.surpriseText}>
-                  <Text style={[styles.surpriseTitle, { color: randomize ? (colorScheme === 'light' ? '#111111' : colors.bgPrimary) : colors.textPrimary }]}>
+                  <Text style={[styles.surpriseTitle, { color: randomize ? colors.textOnBrand : colors.textPrimary }]}>
                     ÖVERRASKA MIG!
                   </Text>
-                  <Text style={[styles.surpriseDesc, { color: randomize ? (colorScheme === 'light' ? '#44444499' : colors.bgPrimary + '99') : colors.textMuted }]}>
+                  <Text style={[styles.surpriseDesc, { color: randomize ? colors.textOnBrand + '99' : colors.textMuted }]}>
                     {surpriseDesc}
                   </Text>
                 </View>

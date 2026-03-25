@@ -18,18 +18,18 @@ import { useGameStore } from "../../src/store/gameStore";
 const MODES = [
   {
     id: "partner",
-    label: "On a date",
+    label: "På date",
     sublabel: "Lär känna varandra genom att betrakta andra.",
   },
   {
     id: "group",
-    label: "With frens",
+    label: "Med vänner",
     sublabel: "Fantasi och intuition i en ohelig kombination.",
   },
   {
     id: "solo",
-    label: "Riding solo",
-    sublabel: "Upptäck din inre värld genom utblickar och insikter.",
+    label: "På egen hand",
+    sublabel: "Få syn på dig själv genom utblickar och insikter.",
   },
 ];
 

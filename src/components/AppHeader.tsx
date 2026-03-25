@@ -11,9 +11,7 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
   const colors = useColors();
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.wordmark} onPress={() => router.replace('/')} activeOpacity={0.7}>
-        <Text style={[styles.wordmarkLine, { color: colors.textMuted }]}>{appName.toUpperCase()}</Text>
-      </TouchableOpacity>
+      <View style={styles.wordmark} />
       {/* <MeltsMascot size={SIZE} /> */}
       <TouchableOpacity onPress={onBack ?? (() => router.replace('/'))} activeOpacity={0.7}>
         <GroovyEmoji size={SIZE} />

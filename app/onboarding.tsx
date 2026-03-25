@@ -55,7 +55,7 @@ const SLIDES: Slide[] = [
     id: '2',
     topLabel: 'VEM HÄR ÄR',
     headline: 'Ett helt nytt spel.',
-    body: 'Som du redan har spelat i hela ditt liv. Du är omgiven av människor du inte känner - men vad har de att berätta, utan att säga ett ord? Vi möter ständigt omvärlden med både intuition och intellekt. Genom erfarenhet och undermedvetna fördomar drar vi snabba slutsatser om andra människors inre världar.',
+    body: 'Välkommen till ett nytt spel som du omedvetet redan spelat hela ditt liv. Dagligen möter vi vår omvärld och gör blixtsnabba läsningar av de människor vi ser. Det sker intuitivt och oftast helt utan medveten reflektion, men det är väldigt sällan som vi sätter ord på dessa intryck. ',
     bottomLabel: 'bla bla',
   },
   {
@@ -155,7 +155,7 @@ function SlideCard({ slide }: { slide: Slide }) {
 
       <View style={styles.cardMiddle}>
         <Text selectable={false} style={[styles.headline, { color: colors.textPrimary }]}>{slide.headline}</Text>
-        <Text selectable={false} style={[styles.body, { color: colors.textMuted }]}>{slide.body}</Text>
+        <Text selectable={false} style={[styles.body, { color: colors.textPrimary }]}>{slide.body}</Text>
       </View>
 
       <View style={styles.cardBottom} />

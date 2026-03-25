@@ -1,8 +1,11 @@
+export const appName = 'Vem här...?';
+export const cardPrefix = 'Vem här…';
+
 // ─── Primitive tokens ────────────────────────────────────────────────────────
 // 5 base colors. Swap hex here to rebrand — never reference these directly in UI.
 
 const palette = {
-  brand:    '#FE99D9',   // pink accent
+  brand:    '#e82c07',   // pink accent
   ink:      '#111111',   // near-black (never pure black)
   dim:      '#1A1A1A',   // dark surface
   smoke:    '#2E2E2E',   // dark secondary surface
@@ -17,8 +20,8 @@ export const warmTones = {
   periwinkle: '#dfe5f3',  // light blue
   blush:      '#f9edf0',  // very light pink
   champagne:  '#e6c8b7',  // soft peach-cream
-  cognac:     '#c3955b',  // warm brown
-  amber:      '#ba6a36',  // burnt orange
+  cognac:     '#0c3879',  // warm brown
+  amber:      '#69ba36',  // burnt orange
   espresso:   '#261311',  // very dark brown
 } as const;
 
@@ -49,7 +52,7 @@ export const warmTones = {
 export const darkColors = {
   bgPrimary:   palette.ink,
   bgSecondary: palette.dim,
-  bgCard:      warmTones.espresso,
+  bgCard:      warmTones.cognac,
   bgBrand:     palette.brand,
   bgBlack:     palette.ink,
 
@@ -125,12 +128,12 @@ export const fonts = {
 
 export const typography = {
   display: { fontFamily: fonts.bold,       fontSize: 32, lineHeight: 28, letterSpacing: -1 },
-  brand:   { fontFamily: fonts.bold,       fontSize: 16, lineHeight: 24, letterSpacing: 0 },
+  brand:   { fontFamily: fonts.regular,       fontSize: 24, lineHeight: 24, letterSpacing: 0 },
   heading: { fontFamily: fonts.bold,       fontSize: 16, lineHeight: 26, letterSpacing: 0 },
   body:    { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 24 },
-  caption: { fontFamily: fonts.regular,    fontSize: 14, lineHeight: 18 },
+  caption: { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 18 },
   badge:   { fontFamily: fonts.regular,    fontSize: 10, lineHeight: 14, letterSpacing: 1 },
-  card:    { fontFamily: fonts.extraLight,       fontSize: 28, lineHeight: 28, letterSpacing: 0.1 },
+  card:    { fontFamily: fonts.bold,       fontSize: 28, lineHeight: 28, letterSpacing: 0.1 },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────
@@ -147,8 +150,7 @@ export const dimensions = {
 
 // ─── Animation ────────────────────────────────────────────────────────────────
 
-export const appName = 'stereotype';
-export const cardPrefix = 'Vem här…';
+
 
 export const animation = {
   press:  60,

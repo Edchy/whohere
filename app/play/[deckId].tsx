@@ -130,8 +130,8 @@ function makeStyles(colors: AppColors) {
     },
     whoHere: {
       ...typography.brand,
-      color: colors.accent,
-      marginBottom: spacing.xs,
+      color: colors.textPrimary,
+      marginBottom: spacing.md,
       textTransform: "uppercase" as const,
     },
     question: {
@@ -213,7 +213,7 @@ function CardFace({ card, deck, cardIndex, totalCards, colors, resolvedText, can
     <View style={{ flex: 1 }}>
       <View style={styles.questionBlock}>
         <Text selectable={false} style={styles.whoHere}>Vem här…</Text>
-        <Text selectable={false} style={[styles.question, { color: resolvedText }]} allowFontScaling={false} android_hyphenationFrequency="full">{card.question.toUpperCase()}</Text>
+        <Text selectable={false} style={[styles.question, { color: resolvedText }]} allowFontScaling={false} android_hyphenationFrequency="full">...{card.question.toUpperCase()}</Text>
       </View>
       <View style={styles.cardBottom}>
         <View style={styles.bottomRow}>

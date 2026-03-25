@@ -2,19 +2,18 @@
 
 ## Overview
 
-The game is a question card experience. A player selects a mode, optionally picks decks, and then swipes through cards one by one. No scoring, no timers — just the questions.
+The game is a question card experience. A player selects a mode, picks decks (or lets the app randomize), and swipes through cards one by one. No scoring, no timers — just the questions.
 
 ---
 
 ## Modes
 
-Three modes: **partner**, **group**, **solo**. Modes are selected on the home screen before entering the deck selection modal.
+Three modes: **partner**, **group**, **solo**. Selected on the home screen before entering the deck selection modal (`app/play/categories.tsx`).
 
-Currently, mode does two things:
-1. **Determines the default deck pool** — which decks are suggested/available for that mode
-2. **Filters cards by intensity** — cards outside the mode's intensity ranges are excluded
+Mode currently does one thing:
+1. **Determines the default deck pool** — which decks are eligible for "Överraska mig" (Surprise Me)
 
-Modes do NOT currently affect the play screen UI or card format.
+Mode does **not** filter cards by intensity (the intensity system described in earlier versions has been removed). Mode does not affect play screen UI.
 
 ---
 
@@ -23,87 +22,62 @@ Modes do NOT currently affect the play screen UI or card format.
 After choosing a mode, the user lands on the categories modal. Here they can:
 
 - **Select one or more decks manually** — cards from all selected decks are merged and shuffled
-- **Tap "Överraska mig"** — triggers automatic deck selection (see below)
+- **Tap "Överraska mig"** — uses all decks from the mode's default pool (see below)
 
-On start, `buildDeck()` assembles a virtual curated deck from the selected deck IDs and the active mode.
+On start, `buildDeck()` assembles a virtual curated deck from the selected deck IDs, the active mode, and the user's premium status.
 
-### Default deck pools per mode
+### Default deck pools per mode (used for Surprise Me)
 
 ```
-partner: ["relationer-kanslor", "personlighet"]
-group:   ["livssituationer", "personlighet"]
-solo:    ["liv-bakgrund", "relationer-kanslor"]
+partner: decks where mode includes "partner"
+group:   decks where mode includes "group"
+solo:    decks where mode includes "solo"
 ```
+
+Filtered from `allDecks` at runtime: `allDecks.filter(d => d.mode.includes(mode))`.
+
+### Manual selection
+
+All decks (`allDecks`) are shown regardless of mode. Non-free decks show a lock if the user is not premium — tapping a locked deck triggers the purchase flow.
 
 ---
 
 ## "Överraska mig" (Surprise Me)
 
-Current behavior: picks a **random subset** of 1–N decks from the mode's default pool using `randomSubset()`, then runs those through `buildDeck()`.
-
-With only 2 decks per mode pool this is not very meaningful — it randomly picks 1 or 2 decks. This is a known placeholder pending a richer card/deck library.
-
-> **TODO:** Revisit once the card pool grows. Options: fixed curated preset per mode, all decks always, or a smarter random.
+Uses **all eligible decks** for the current mode (premium: all mode decks; free: only free mode decks). Passes all their IDs into `buildDeck()`. Selected by default when the screen opens.
 
 ---
 
-## Intensity Filtering
+## Premium & Free Card Limits
 
-Each card has up to 7 intensity axes, each scored **0–5**:
+The session card cap depends on premium status:
 
-| Axis | What it measures |
-|------|-----------------|
-| `bold` | How confrontational or direct |
-| `daring` | How risky or socially daring |
-| `sexual` | Sexual charge |
-| `vulnerable` | Emotional exposure required |
-| `controversial` | Divisive or politically charged |
-| `dark` | Heavy, morbid, or bleak themes |
-| `funny` | Comedic or lighthearted |
+- **Free:** 10 cards total
+- **Premium:** 15 cards total
 
-### Filtering rule
+Cards are distributed evenly across selected decks:
 
-- If a card scores **0** on an axis → always passes (0 = not applicable for this card)
-- If a card scores **non-zero** → must fall within the mode's `[min, max]` range for that axis
-- If it falls outside the range on **any** axis → card is excluded
+- 1 deck → all cards (up to cap)
+- 2 decks → split evenly, remainder to first deck(s)
+- N decks → `floor(cap / N)` per deck, remainder distributed to earlier decks
 
-### Intensity ranges per mode
-
-| Axis | partner | group | solo |
-|------|---------|-------|------|
-| bold | [1, 4] | [1, 5] | [0, 3] |
-| daring | [1, 4] | [1, 5] | [0, 3] |
-| sexual | [0, 3] | [0, 1] | [0, 0] |
-| vulnerable | [1, 4] | [0, 2] | [2, 5] |
-| controversial | [0, 2] | [0, 3] | [1, 4] |
-| dark | [0, 2] | [0, 2] | [1, 4] |
-| funny | [0, 4] | [1, 5] | [0, 2] |
-
-**Fallback:** If filtering eliminates all cards, all cards are used unfiltered.
-
-### Mode personalities (implied by ranges)
-
-- **partner** — emotionally bold and vulnerable, moderate sexual charge, avoids heavy/dark
-- **group** — high energy, funny, socially daring, low sexual/vulnerability, allows some controversy
-- **solo** — introspective, dark, vulnerable, no sexual content, no low-effort humor
+Non-free decks are locked for free users. Attempting to select a locked deck triggers the purchase flow.
 
 ---
 
 ## Card Assembly (`buildDeck`)
 
-A game session is capped at **15 cards total**, distributed evenly across selected decks:
-
-- 1 deck → 15 cards
-- 2 decks → 7 + 8 cards
-- 3 decks → 5 + 5 + 5 cards
-- 4 decks → 3 + 4 + 4 + 4 cards (remainder distributed to earlier decks)
+```
+function buildDeck(selectedIds, modeId, isPremium)
+```
 
 Steps:
-1. For each selected deck, filter its cards through `passesIntensityFilter`. Fall back to all cards if filtering eliminates everything.
-2. Shuffle the filtered pool per deck, then slice to that deck's quota.
+1. For each selected deck, stamp each card with its source deck's metadata (`deckIcon`, `deckSvgIcon`, `deckTitle`) — used for visual attribution.
+2. Shuffle the stamped cards per deck, then slice to that deck's quota.
 3. Merge all slices and shuffle the combined result.
-4. Stamp each card with its source deck's metadata (icon, title, color, cardBackground, cardText) — used for visual attribution in the play screen.
-5. Return a virtual `Deck` object with `id: "curated-{mode}"`.
+4. Return a virtual `Deck` object with `id: "curated-{modeId}"`.
+
+There is no intensity filtering.
 
 ---
 
@@ -115,40 +89,67 @@ State:
 - `activeDeck` — the assembled curated deck
 - `currentCardIndex` — 0-based
 - `mode` — DeckMode
-- `isFlipped` — whether current card is showing back face
+- `isFlipped` — whether the current card is showing its back face
 
 Actions:
-- `startGame(deck, mode)` — sets active deck, resets index
-- `nextCard()` — increments index (bounded)
-- `prevCard()` — decrements index (bounded)
+- `startGame(deck, mode)` — sets active deck, resets index and flip state
+- `nextCard()` — increments index (bounded), resets flip
+- `prevCard()` — decrements index (bounded), resets flip
 - `flipCard()` — toggles `isFlipped`
 - `endGame()` — clears active deck
 
-Navigation: after `startGame`, app navigates to `/play/{deck.id}`. On last card swipe, navigates to `/play/results`.
+Derived helpers: `currentCard()`, `isLastCard()`, `progress()`.
+
+Navigation: after `startGame`, app navigates to `/play/{deck.id}`. After all cards, an end card is shown inline (no separate results screen).
 
 ---
 
-## Card Display
+## Card Display (`app/play/[deckId].tsx`)
 
-Cards show:
-- Source deck icon + title (uppercase, top)
-- **"Vem här…"**  — the brand hook
-- Main question (fontSize 28, fontWeight 300)
-- Optional `followUp` question (after a divider, if present)
-- Card counter (e.g. "3 / 24")
-- Navigation dots (corners — left if not first, right if not last)
+Cards are stacked — the top card is draggable, the next card is visible underneath.
 
-Back face (on flip):
-- Source deck icon (large)
-- Source deck title
-- "tryck för att vända" hint
+**Swipe gestures:**
+- Swipe left (or fast flick left) → next card
+- Swipe right (or fast flick right) → previous card (blocked on first card)
+- Tap → flip card (front ↔ back)
+
+**Front face shows:**
+- "Vem här…" brand hook (accent color, uppercase)
+- Main question (uppercase, fontWeight 300)
+- Source deck icon + title (bottom left)
+- Card counter, e.g. "3 / 15" (bottom right)
+
+**Back face shows:**
+- Optional SVG pattern (based on `cardBackStyle` setting: plain, pattern, bubbles, chevron, polka, tictactoe)
+- Source deck icon — corner pips (top-left, bottom-right rotated 180°) + large centered icon
+
+**End card** (shown after the last question card, as part of the same swipe stack):
+- `variant="completion"` if premium
+- `variant="paywall"` if free — prompts purchase
+
+Swiping left on the end card navigates home (`router.replace("/")`).
+
+A close button (✕) at the bottom ends the game and navigates back.
+
+---
+
+## Settings Persisted
+
+Stored in `AsyncStorage` and reflected in Zustand:
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `@whohere/isPremium` | false | Premium unlock status |
+| `@whohere/hapticsEnabled` | true | Vibrate on card swipe |
+| `@whohere/colorScheme` | dark | Dark / light mode |
+| `@whohere/cardBackStyle` | plain | Card back pattern |
+| `@whohere/hasSeenOnboarding` | false | Onboarding shown flag |
 
 ---
 
 ## Known TODOs / Open Questions
 
-- **"Överraska mig" logic** needs revisiting once card pool grows
-- **Subtitle copy** ("vi blandar ihop resten") is not accurate — we only mix selected decks, not "the rest"
-- **Mode UI hints** — not implemented, decided against for now (modes = filtering only)
-- **Intensity customization** — decided against for now (trust the mode presets)
+- **"Överraska mig" logic** — currently uses all mode decks; may need curation once card pool grows
+- **Subtitle copy** on categories screen may need updating to reflect actual behavior
 - **Group mode turn order** — not implemented, not planned yet
+- **Purchase flow** — currently a stub (AsyncStorage only, no real IAP). `restorePurchases` only works on the same device.
