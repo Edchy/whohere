@@ -12,9 +12,11 @@ import {
   Text,
   View,
 } from 'react-native';
+import GroovyEmoji from '../src/components/GroovyEmoji';
 import {
   appName,
   dimensions as dim,
+  fonts,
   radius,
   spacing,
   typography,
@@ -46,64 +48,51 @@ const SLIDES: Slide[] = [
     id: '1',
     topLabel: '...?',
     headline: 'VEM HÄR',
-    subheading: 'Intuitiva mikrohistorier\nom människor omkring oss',
+    subheading: 'Intuitiva mikrohistorier om människor omkring oss',
     body: '',
     bottomLabel: '',
     isWelcome: true,
   },
   {
     id: '2',
-    topLabel: 'VEM HÄR ÄR',
-    headline: 'Ett helt nytt spel.',
+    topLabel: 'varje dag',
+    headline: 'INTRYCKEN',
     body: 'Välkommen till ett nytt spel som du omedvetet redan spelat hela ditt liv. Dagligen möter vi vår omvärld och gör blixtsnabba läsningar av de människor vi ser. Det sker intuitivt och oftast helt utan medveten reflektion, men det är väldigt sällan som vi sätter ord på dessa intryck. ',
-    bottomLabel: 'bla bla',
+    bottomLabel: '...',
   },
   {
     id: '3',
-    topLabel: 'VEM HÄR ÄR',
-    headline: 'Självreflektion',
-    body: 'Vi tror oss veta något om främlingars bakgrunder, personligheter och liv. Men det vi tror oss kunna se säger minst lika mycket om oss själva som om de människor vi betraktar. Vad som är sant är inte det intressanta här, det är våra egna mikrohistorier som är det.',
-    bottomLabel: 'lugnt och nyfiket',
+    topLabel: 'flugan på väggen',
+    headline: 'IAKTTAGAREN',
+    body: 'Genom att vara en fluga på väggen och medvetet iaktta de människor du ser just nu, kan du också få syn på något i dig själv och i det sällskap du spelar med. Det är ett kul sätt att bli varse om det förgivettagna, oavsett om det är på en date, med vänner eller på egen hand. ',
+    bottomLabel: '...',
   },
 
   {
     id: '4',
-    topLabel: 'VEM HÄR ÄR',
-    headline: 'Inte en tävling',
-    body: 'Det finns inga rätt eller fel svar, inga vinnare eller förlorare, bara skratt, gemensam reflektion och nya perspektiv.',
-    bottomLabel: 'thin-slice judgment',
+    topLabel: 'hur man spelar',
+    headline: 'UPPGIFTEN',
+    body: 'Varje fråga inleds med “Vem här…?” och er uppgift är att läsa av rummet för att se vem ni tycker passar bäst in som svar på frågan. Väljer ni samma person som svar eller tycker ni helt olika? Vart går gränsen mellan knivskarp intuition och förblindande fördomar?',
+    bottomLabel: '...',
   },
   {
     id: '5',
-    topLabel: 'SÅ HÄR GÅR DET TILL',
-    headline: 'Observera',
-    body: '...människorna omkring dig. Spela med din dejt, med dina vänner eller på egen hand. Befinn er på en plats med människor omkring er. I en restaurang, tunnelbanan eller en park.',
-    bottomLabel: 'svep för att börja spela',
+    topLabel: 'inga vinnare',
+    headline: 'POÄNGEN',
+    body: 'Det finns inga vinnare och inga förlorare i detta spel, faktum är att sanningen om de ni betraktar är mindre intressant än det som blir synligt i er själva. De mikrohistorier vi skapar om andra kan i själva verket berätta en hel del om vilka vi är och hur vi ser på vår omvärld.',
+    bottomLabel: '...',
   },
     {
     id: '6',
-    topLabel: 'SÅ HÄR GÅR DET TILL',
-    headline: 'Välj',
-    body: '...en kategori eller blanda helt fritt. Läs frågan tillsammans, besvara den var och en.',
-    bottomLabel: 'lugnt och nyfiket',
+    topLabel: 'kom ihåg',
+    headline: 'RESPEKTEN',
+    body: 'Spela med respekt för andra människors integritet, låt ingen utanför ert sällskap ana vad som pågår. Välj utan att peka - svara utan att någon utanför ert spelande sällskap hör. Att vara en fluga på väggen är ett osynligt iakttagande, så visa hänsyn och ha det så kul!',
+    bottomLabel: '...',
   },
-    {
-    id: '7',
-    topLabel: 'SÅ HÄR GÅR DET TILL',
-    headline: 'Motivera',
-    body: '...vem som passar in och varför? Väljer ni samma person eller helt olika? Övertänk inte, men motivera gärna.',
-    bottomLabel: 'lugnt och nyfiket',
-  },
-    {
-    id: '8',
-    topLabel: 'KOM IHÅG',
-    headline: 'Du är en fluga på väggen.',
-    body: '...den som betraktar utan att synas. Syftet är inte att göra andra obekväma, utan att sätta ord på era egna tankar. Se utan att stirra - välj utan att peka. Människorna omkring er är inte med i spelet. de är bara era livs levande projektionsytor. Det ni tror er veta om dem är mikrohistorier som ni själva vanemässigt skapar. Skillnaden mot vardagen är enkel: Här får ni syn på era sätt att se.',
-    bottomLabel: 'lugnt och nyfiket',
-  },
+   
 ];
 
-function SwipeHint() {
+function SwipeHint({ size = 32 }: { size?: number }) {
   const colors = useColors();
   const x = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(1)).current;
@@ -129,7 +118,7 @@ function SwipeHint() {
 
   return (
     <Animated.View style={{ transform: [{ translateX: x }], opacity }}>
-      <FingerIcon width={32} height={32} fill={colors.textMuted} />
+      <FingerIcon width={size} height={size} fill={colors.textMuted} />
     </Animated.View>
   );
 }
@@ -140,10 +129,27 @@ function SlideCard({ slide }: { slide: Slide }) {
   if (slide.isWelcome) {
     return (
       <View style={[styles.card, styles.cardWelcome, { backgroundColor: colors.bgPrimary, borderColor: colors.textPrimary }]}>
-        <Text selectable={false} style={{ color: colors.textPrimary, fontSize: 48, lineHeight: 56, textAlign: 'center' }}>{appName}</Text>
-        <View style={styles.swipeHintRow}>
-          <SwipeHint />
-          <Text selectable={false} style={[styles.swipeHintLabel, { color: colors.textMuted }]}>svep för att börja</Text>
+        {/* Top: groovy emoji anchored to top-left */}
+        <GroovyEmoji size={80} />
+
+        {/* Center: title + tagline grouped tightly */}
+        <View style={styles.welcomeCenter}>
+          <Text selectable={false} style={[styles.welcomeAppName, { color: colors.textPrimary }]}>
+            {appName.toUpperCase()}
+          </Text>
+          {slide.subheading ? (
+            <Text selectable={false} style={[styles.welcomeSubheading, { color: colors.textSecondary }]}>
+              {slide.subheading}
+            </Text>
+          ) : null}
+        </View>
+
+        {/* Bottom: swipe hint */}
+        <View style={styles.welcomeHintRow}>
+          <SwipeHint size={20} />
+          <Text selectable={false} style={[styles.welcomeHintLabel, { color: colors.textMuted }]}>
+            svep för att börja
+          </Text>
         </View>
       </View>
     );
@@ -371,9 +377,34 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   cardWelcome: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xl,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  welcomeCenter: {
+    alignSelf: 'stretch',
+    gap: 2,
+    marginBottom: spacing.xxl,
+  },
+  welcomeAppName: {
+    fontFamily: fonts.bold,
+    fontSize: 48,
+    lineHeight: 50,
+  },
+  welcomeSubheading: {
+    fontFamily: fonts.regular,
+    fontSize: 22,
+    lineHeight: 24,
+    opacity: 0.6,
+  },
+  welcomeHintRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    alignSelf: 'flex-end' as const,
+    gap: spacing.xs,
+  },
+  welcomeHintLabel: {
+    fontFamily: fonts.regular,
+    fontSize: 11,
   },
   rotatedContainer: {
     flex: 1,

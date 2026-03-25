@@ -4,6 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { appName, spacing, typography } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
 import GroovyEmoji from './GroovyEmoji';
+import EyesLogo from './EyesLogo';
 
 const SIZE = 120;
 
@@ -14,7 +15,8 @@ export default function AppHeader({ onBack }: { onBack?: () => void }) {
       <View style={styles.wordmark} />
       {/* <MeltsMascot size={SIZE} /> */}
       <TouchableOpacity onPress={onBack ?? (() => router.replace('/'))} activeOpacity={0.7}>
-        <GroovyEmoji size={SIZE} />
+        {/* <GroovyEmoji size={SIZE} /> */}
+        <EyesLogo size={SIZE} />
       </TouchableOpacity>
       {onBack ? (
         <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7} hitSlop={12}>
@@ -33,6 +35,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
+    paddingBlockStart: spacing.xl,
   },
   row: {
     flexDirection: 'row',
