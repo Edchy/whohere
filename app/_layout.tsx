@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef } from 'react';
 import { Platform, useColorScheme, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { darkColors, lightColors } from '../src/constants/theme';
 import { useGameStore } from '../src/store/gameStore';
@@ -79,6 +80,7 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <View style={Platform.OS === 'web' ? {
@@ -101,5 +103,6 @@ export default function RootLayout() {
         </View>
       </View>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

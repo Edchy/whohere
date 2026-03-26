@@ -57,7 +57,7 @@ function makeStyles(colors: AppColors) {
     },
     iconWrap: {
       width: 44,
-      height: 44,
+      height: 28,
       alignItems: 'center',
       justifyContent: 'center',
     },

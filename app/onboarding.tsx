@@ -1,17 +1,27 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import FingerIcon from '../assets/icons/noun-finger-3414109.svg';
 import {
   Animated,
+  Dimensions,
   Easing,
-  PanResponder,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import ReAnimated, {
+  Extrapolation,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import EyesLogo from '../src/components/EyesLogo';
 import {
   appName,
@@ -26,8 +36,15 @@ import { useHaptics } from '../src/hooks/useHaptics';
 import { useGameStore } from '../src/store/gameStore';
 
 const ONBOARDING_KEY = '@whohere/hasSeenOnboarding';
-const SWIPE_DISTANCE = 60;
-const SWIPE_VELOCITY = 400;
+
+/* ── Animation constants ─────────────────────────────────────────────────── */
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SWIPE_THRESHOLD = 80;
+const SWIPE_VELOCITY_THRESHOLD = 500;
+const DISMISS_DISTANCE = SCREEN_WIDTH * 1.2;
+const MAX_ROTATION = 15;
+const STACK_OFFSET_Y = 6;
+const STACK_SCALE_STEP = 0.04;
 
 type Slide = {
   id: string;
@@ -85,6 +102,8 @@ const SLIDES: Slide[] = [
     bottomLabel: '...',
   },
 ];
+
+/* ── Sub-components (still use RN Animated for looping anims) ────────────── */
 
 function SwipeHint({ size = 32 }: { size?: number }) {
   const colors = useColors();
@@ -229,9 +248,13 @@ function LastSlideHint({ colors }: { colors: ReturnType<typeof useColors> }) {
   );
 }
 
+/* ── Main screen ─────────────────────────────────────────────────────────── */
+
 export default function OnboardingScreen() {
   const colors = useColors();
   const haptics = useHaptics();
+  const hapticsRef = useRef(haptics);
+  hapticsRef.current = haptics;
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const [slideIndex, setSlideIndex] = useState(0);
 
@@ -242,46 +265,174 @@ export default function OnboardingScreen() {
     router.replace('/');
   };
 
-  const dismiss = () => dismissRef.current();
+  const dismiss = useCallback(() => { dismissRef.current(); }, []);
 
-  const slideIndexRef = useRef(slideIndex);
-  slideIndexRef.current = slideIndex;
+  /* ── Swipe animation ─────────────────────────────────────────────────── */
+  const translateX = useSharedValue(0);
+  const isAnimating = useSharedValue(false);
+  const isOnLastSlide = useSharedValue(false);
+  const isOnFirstSlide = useSharedValue(true);
 
-  const goNext = () => {
-    const next = slideIndexRef.current + 1;
-    haptics.light();
-    if (next >= SLIDES.length) {
-      dismiss();
+  const commitNext = useCallback(() => {
+    hapticsRef.current.light();
+    setSlideIndex((i) => i + 1);
+  }, []);
+
+  const commitPrev = useCallback(() => {
+    hapticsRef.current.light();
+    setSlideIndex((i) => i - 1);
+  }, []);
+
+  const commitDismiss = useCallback(() => {
+    hapticsRef.current.light();
+    dismissRef.current();
+  }, []);
+
+  // Reset shared values after React paints the new slide
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    isOnLastSlide.value = slideIndex >= SLIDES.length - 1;
+    isOnFirstSlide.value = slideIndex <= 0;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
       return;
     }
-    setSlideIndex(next);
-  };
+    translateX.value = 0;
+    isAnimating.value = false;
+  }, [slideIndex]);
 
-  const goPrev = () => {
-    const prev = slideIndexRef.current - 1;
-    if (prev < 0) return;
-    haptics.light();
-    setSlideIndex(prev);
-  };
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, g) =>
-        Math.abs(g.dx) > 8 && Math.abs(g.dx) > Math.abs(g.dy),
-      onPanResponderRelease: (_, g) => {
-        const goLeft = g.dx < -SWIPE_DISTANCE || g.vx < -(SWIPE_VELOCITY / 1000);
-        const goRight = g.dx > SWIPE_DISTANCE || g.vx > SWIPE_VELOCITY / 1000;
-        if (goLeft) goNext();
-        else if (goRight) goPrev();
-      },
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([-10, 10])
+    .failOffsetY([-15, 15])
+    .onUpdate((e) => {
+      'worklet';
+      if (isAnimating.value) return;
+      // Clamp: no right swipe on first slide, no left swipe past last
+      if (e.translationX > 0 && isOnFirstSlide.value) return;
+      translateX.value = e.translationX;
     })
-  ).current;
+    .onEnd((e) => {
+      'worklet';
+      if (isAnimating.value) return;
+
+      const swipeLeft =
+        e.translationX < -SWIPE_THRESHOLD ||
+        e.velocityX < -SWIPE_VELOCITY_THRESHOLD;
+      const swipeRight =
+        e.translationX > SWIPE_THRESHOLD ||
+        e.velocityX > SWIPE_VELOCITY_THRESHOLD;
+
+      if (swipeLeft) {
+        isAnimating.value = true;
+        const onLast = isOnLastSlide.value;
+        translateX.value = withTiming(
+          -DISMISS_DISTANCE,
+          { duration: 200 },
+          (finished) => {
+            'worklet';
+            if (finished) {
+              if (onLast) {
+                runOnJS(commitDismiss)();
+              } else {
+                runOnJS(commitNext)();
+              }
+            }
+          }
+        );
+      } else if (swipeRight && !isOnFirstSlide.value) {
+        isAnimating.value = true;
+        translateX.value = withTiming(
+          DISMISS_DISTANCE,
+          { duration: 200 },
+          (finished) => {
+            'worklet';
+            if (finished) {
+              runOnJS(commitPrev)();
+            }
+          }
+        );
+      } else {
+        translateX.value = withSpring(0, {
+          damping: 20,
+          stiffness: 200,
+          mass: 0.5,
+        });
+      }
+    });
+
+  /* ── Animated styles ───────────────────────────────────────────────────── */
+  const topCardStyle = useAnimatedStyle(() => {
+    'worklet';
+    return {
+      transform: [
+        { translateX: translateX.value },
+        {
+          rotate: `${interpolate(
+            translateX.value,
+            [-DISMISS_DISTANCE, 0, DISMISS_DISTANCE],
+            [-MAX_ROTATION, 0, MAX_ROTATION],
+            Extrapolation.CLAMP
+          )}deg`,
+        },
+      ],
+    };
+  });
+
+  const secondCardStyle = useAnimatedStyle(() => {
+    'worklet';
+    const progress = Math.min(Math.abs(translateX.value) / SWIPE_THRESHOLD, 1);
+    return {
+      transform: [
+        { translateY: interpolate(progress, [0, 1], [STACK_OFFSET_Y, 0]) },
+        { scale: interpolate(progress, [0, 1], [1 - STACK_SCALE_STEP, 1]) },
+      ],
+    };
+  });
+
+  const thirdCardStyle = useAnimatedStyle(() => {
+    'worklet';
+    const progress = Math.min(Math.abs(translateX.value) / SWIPE_THRESHOLD, 1);
+    return {
+      transform: [
+        { translateY: interpolate(progress, [0, 1], [STACK_OFFSET_Y * 2, STACK_OFFSET_Y]) },
+        { scale: interpolate(progress, [0, 1], [1 - STACK_SCALE_STEP * 2, 1 - STACK_SCALE_STEP]) },
+      ],
+    };
+  });
+
+  /* ── Render helpers ────────────────────────────────────────────────────── */
+  function renderSlide(
+    index: number,
+    animStyle: ReturnType<typeof useAnimatedStyle>,
+    zIndex: number,
+  ) {
+    if (index < 0 || index >= SLIDES.length) return null;
+
+    return (
+      <ReAnimated.View
+        key={`slide-${index}`}
+        style={[
+          styles.cardAbsolute,
+          { zIndex },
+          animStyle,
+        ]}
+        pointerEvents={zIndex === 3 ? 'auto' : 'none'}
+      >
+        <SlideCard slide={SLIDES[index]} />
+      </ReAnimated.View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
-      <View style={styles.cardArea} {...panResponder.panHandlers}>
-        <SlideCard slide={SLIDES[slideIndex]} />
+      <View style={styles.cardArea}>
+        <GestureDetector gesture={panGesture}>
+          <ReAnimated.View style={styles.stackContainer}>
+            {renderSlide(slideIndex + 2, thirdCardStyle, 1)}
+            {renderSlide(slideIndex + 1, secondCardStyle, 2)}
+            {renderSlide(slideIndex, topCardStyle, 3)}
+          </ReAnimated.View>
+        </GestureDetector>
       </View>
 
       <View style={styles.dots} pointerEvents="none">
@@ -313,6 +464,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
+  },
+  stackContainer: {
+    width: '100%',
+    height: dim.cardHeight,
+  },
+  cardAbsolute: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
   },
   skipText: {
     ...typography.caption,
