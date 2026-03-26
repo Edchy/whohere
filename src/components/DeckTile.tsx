@@ -96,9 +96,9 @@ export const DeckTile = React.memo(function DeckTile({ deck, isSelected = false,
   const activeBg = selectedColor ?? colors.accent;
   const bg = isSelected ? activeBg : colors.bgSecondary;
   const onColor = isSelected ? contrastText(activeBg) : colors.textPrimary;
-  const textColor = onColor;
+  const textColor = isSelected ? onColor : !locked ? colors.accent : onColor;
   const subColor = isSelected ? onColor + '99' : colors.textSecondary;
-  const iconColor = isSelected ? onColor : !locked ? (colorScheme === 'light' ? colors.accent : '#e6c8b7') : onColor;
+  const iconColor = isSelected ? onColor : !locked ? colors.accent : onColor;
 
   return (
     <Animated.View style={{ opacity }}>

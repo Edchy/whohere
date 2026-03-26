@@ -5,7 +5,7 @@ export const cardPrefix = 'Vem här…';
 // 5 base colors. Swap hex here to rebrand — never reference these directly in UI.
 
 const palette = {
-  brand:    '#e82c07',   // red accent
+  brand:    '#e80707',   // red accent
   ink:      '#111111',   // near-black (never pure black)
   dim:      '#1A1A1A',   // dark surface
   smoke:    '#2E2E2E',   // dark secondary surface
