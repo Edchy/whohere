@@ -13,11 +13,12 @@ interface EyesLogoProps {
 }
 
 // ─── Fly compound eye colors ──────────────────────────────────────────────────
-const EYE_BASE       = '#2A2A2A';   // dark grey — main eye surface
+const BRAND          = '#e82c07';   // brand red-orange
+const EYE_BASE       = '#1A1A1A';   // near-black eye surface
 const EYE_BORDER     = '#0A0A0A';   // near-black border
-const FACET_LIGHT    = '#4A4A4A';   // lighter facet highlight
-const FACET_DARK     = '#1A1A1A';   // darker facet shadow
-const PSEUDOPUPIL    = '#000000';   // the dark moving centre spot
+const FACET_LIGHT    = BRAND;       // brand color facet highlight
+const FACET_DARK     = '#2A2A2A';   // dark grey facet shadow
+const PSEUDOPUPIL    = '#FFFFFF';   // the moving centre spot
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
 function rand(min: number, max: number) {
@@ -69,7 +70,7 @@ function FacetGrid({ eyeW, eyeH }: FacetGridProps) {
             backgroundColor: useDark ? FACET_DARK : FACET_LIGHT,
             borderWidth:     0.5,
             borderColor:     EYE_BORDER,
-            opacity:         0.55,
+            opacity:         0.2,
           }}
         />
       );
@@ -113,7 +114,7 @@ function Eye({ eyeW, eyeH, borderW, pupilSize, irisAnimStyle }: EyeProps) {
         borderRadius:    eyeW * 0.5,
         backgroundColor: EYE_BASE,
         borderWidth:     borderW,
-        borderColor:     EYE_BORDER,
+        borderColor:     '#FFFFFF',
         alignItems:      'center',
         justifyContent:  'center',
         overflow:        'hidden',
@@ -121,7 +122,24 @@ function Eye({ eyeW, eyeH, borderW, pupilSize, irisAnimStyle }: EyeProps) {
         // achieved by layering a translucent dark ring inside
       }}
     >
-      {/* Compound facet texture — static layer */}
+      {/* Pseudo-pupil — behind the facet grid */}
+      <Animated.View
+        style={[
+          {
+            width:           pupilSize,
+            height:          pupilSize,
+            borderRadius:    pupilSize / 2,
+            backgroundColor: PSEUDOPUPIL,
+            shadowColor:     '#000',
+            shadowOffset:    { width: 0, height: 0 },
+            shadowOpacity:   0.8,
+            shadowRadius:    pupilSize * 0.3,
+          },
+          irisAnimStyle,
+        ]}
+      />
+
+      {/* Compound facet texture — on top of pupil */}
       <FacetGrid eyeW={eyeW} eyeH={eyeH} />
 
       {/* Radial darkening around the edge (limbus equivalent) */}
@@ -138,24 +156,6 @@ function Eye({ eyeW, eyeH, borderW, pupilSize, irisAnimStyle }: EyeProps) {
         }}
         pointerEvents="none"
       />
-
-      {/* Pseudo-pupil — the animated dark centre spot */}
-      <Animated.View
-        style={[
-          {
-            width:           pupilSize,
-            height:          pupilSize,
-            borderRadius:    pupilSize / 2,
-            backgroundColor: PSEUDOPUPIL,
-            // A soft outer glow in slightly reddish-dark to blend with eye surface
-            shadowColor:     '#000',
-            shadowOffset:    { width: 0, height: 0 },
-            shadowOpacity:   0.8,
-            shadowRadius:    pupilSize * 0.3,
-          },
-          irisAnimStyle,
-        ]}
-      />
     </View>
   );
 }
@@ -169,9 +169,9 @@ export default function EyesLogo({ size = 64 }: EyesLogoProps) {
   const gap     = size * 0.01;   // close together
   const borderW = size * 0.025;
   // Pseudo-pupil is a smaller dark spot — about 28% of eye height
-  const pupilSize = eyeH * 0.28;
+  const pupilSize = eyeH * 0.55;
 
-  const maxX = (eyeW - pupilSize) / 2 - borderW * 0.5;
+  const maxX = ((eyeW - pupilSize) / 2 - borderW * 0.5) * 2.5;
 
   const translateX = useSharedValue(0);
 
