@@ -243,11 +243,12 @@ export default function OnboardingScreen() {
   const haptics = useHaptics();
 const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const [topIndex, setTopIndex] = useState(0);
+  const [undercardDisplayIndex, setUndercardDisplayIndex] = useState(1);
+  const [exitSlideIndex, setExitSlideIndex] = useState<number | null>(null);
   const [dotIndex, setDotIndex] = useState(0);
-  const [swipeDir, setSwipeDir] = useState<'forward' | 'back'>('forward');
-  const frozenUndercardIndex = useRef<number | null>(null);
 
   const dragX = useRef(new Animated.Value(0)).current;
+  const exitX = useRef(new Animated.Value(0)).current;
 
   const topIndexRef = useRef(topIndex);
   topIndexRef.current = topIndex;
@@ -265,15 +266,24 @@ const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
     const cur = topIndexRef.current;
     const next = cur + 1;
     haptics.light();
-    setSwipeDir('forward');
     setDotIndex(Math.min(next, SLIDES.length - 1));
+    const currentDragX = dragX.__getValue();
+    exitX.setValue(currentDragX);
+    dragX.setValue(0);
+    setExitSlideIndex(cur);
     if (next >= SLIDES.length) {
-      Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => dismissRef.current());
+      Animated.timing(exitX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
+        setExitSlideIndex(null);
+        exitX.setValue(0);
+        dismissRef.current();
+      });
       return;
     }
-    Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
-      setTopIndex(next);
-      requestAnimationFrame(() => dragX.setValue(0));
+    setTopIndex(next);
+    setUndercardDisplayIndex(next + 1);
+    Animated.timing(exitX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
+      setExitSlideIndex(null);
+      exitX.setValue(0);
     });
   };
 
@@ -282,19 +292,19 @@ const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
     const prev = cur - 1;
     if (prev < 0) return;
     haptics.light();
-    setSwipeDir('back');
     setDotIndex(prev);
-    frozenUndercardIndex.current = cur + 1;
-    Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 150, useNativeDriver: true }).start(() => {
-      dragX.setValue(-SCREEN_WIDTH * 1.5);
-      setTopIndex(prev);
-      requestAnimationFrame(() => {
-        Animated.spring(dragX, { toValue: 0, useNativeDriver: true, damping: 22, stiffness: 400, mass: 0.8 }).start(() => {
-          frozenUndercardIndex.current = null;
-          setSwipeDir('forward');
-        });
-      });
+    // For going back: exit the current card to the right, bring prev in from left
+    const currentDragX = dragX.__getValue();
+    exitX.setValue(currentDragX);
+    dragX.setValue(-SCREEN_WIDTH * 1.5);
+    setExitSlideIndex(cur);
+    setTopIndex(prev);
+    setUndercardDisplayIndex(prev + 1);
+    Animated.timing(exitX, { toValue: SCREEN_WIDTH * 1.5, duration: 150, useNativeDriver: true }).start(() => {
+      setExitSlideIndex(null);
+      exitX.setValue(0);
     });
+    Animated.spring(dragX, { toValue: 0, useNativeDriver: true, damping: 22, stiffness: 400, mass: 0.8 }).start();
   };
 
   const panResponder = useRef(
@@ -324,40 +334,59 @@ const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
     })
   ).current;
 
+  const topCardRotate = useRef(dragX.interpolate({
+    inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
+    outputRange: ['-7deg', '0deg', '7deg'],
+  })).current;
+
+  const exitCardRotate = useRef(exitX.interpolate({
+    inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
+    outputRange: ['-7deg', '0deg', '7deg'],
+  })).current;
+
+  const undercardOpacity = useRef(dragX.interpolate({
+    inputRange: [-SWIPE_DISTANCE, 0, SWIPE_DISTANCE],
+    outputRange: [1, 0, 1],
+    extrapolate: 'clamp',
+  })).current;
+
   const topCardStyle = {
     transform: [
       { translateX: dragX },
-      {
-        rotate: dragX.interpolate({
-          inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
-          outputRange: ['-7deg', '0deg', '7deg'],
-        }),
-      },
+      { rotate: topCardRotate },
     ],
   };
 
-  const undercardIdx = frozenUndercardIndex.current ?? topIndex + 1;
-  const nextSlide: Slide | undefined = SLIDES[undercardIdx];
-  const nextCardOpacity = dragX.interpolate({
-    inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
-    outputRange: [1, 1, 0, 1, 1],
-    extrapolate: 'clamp',
-  });
+  const exitCardStyle = {
+    transform: [
+      { translateX: exitX },
+      { rotate: exitCardRotate },
+    ],
+  };
+
+  const nextSlide: Slide | undefined = SLIDES[undercardDisplayIndex];
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
       <View style={styles.cardArea} {...panResponder.panHandlers}>
-        {/* Next slide sits underneath — peeks when swiping left or right (not on welcome slide) */}
+        {/* Undercard — peeks when top card is dragged */}
         {nextSlide && (
-          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
+          <Animated.View style={[styles.cardWrapper, { opacity: undercardOpacity }]}>
             <SlideCard slide={nextSlide} />
           </Animated.View>
         )}
 
-        {/* Top card — draggable */}
+        {/* Top card — sits at rest, draggable */}
         <Animated.View style={[styles.cardWrapper, topCardStyle]}>
           <SlideCard slide={SLIDES[topIndex]} />
         </Animated.View>
+
+        {/* Exit card — frozen, flies off */}
+        {exitSlideIndex !== null && SLIDES[exitSlideIndex] && (
+          <Animated.View style={[styles.cardWrapper, exitCardStyle]} pointerEvents="none">
+            <SlideCard slide={SLIDES[exitSlideIndex]} />
+          </Animated.View>
+        )}
       </View>
 
       <View style={styles.dots} pointerEvents="none">

@@ -1,11 +1,11 @@
-export const appName = 'Vem här...?';
+export const appName = 'Vem här?';
 export const cardPrefix = 'Vem här…';
 
 // ─── Primitive tokens ────────────────────────────────────────────────────────
 // 5 base colors. Swap hex here to rebrand — never reference these directly in UI.
 
 const palette = {
-  brand:    '#e80707',   // red accent
+  brand:    '#df0404',   // red accent
   ink:      '#111111',   // near-black (never pure black)
   dim:      '#1A1A1A',   // dark surface
   smoke:    '#2E2E2E',   // dark secondary surface
@@ -16,7 +16,7 @@ const palette = {
   stone:    '#D6D0CA',   // light border / tertiary surface
   navy:     '#e89595',   // dark navy (card bg in dark mode)
   blush:    '#f9edf0',   // very light pink (card bg in light mode)
-  champagne:'#f19090',   
+  champagne:'#ee0808',   
 } as const;
 
 // ─── Brand hue rotation ───────────────────────────────────────────────────────
@@ -80,6 +80,7 @@ export const darkColors = {
   textSecondary: palette.silver,
   textMuted:     palette.grey,
   textOnBrand:   palette.fog,
+  textOnCard:    palette.fog,
 
   accent:  palette.brand,
   border:  palette.smoke,
@@ -100,6 +101,7 @@ export const lightColors = {
   textSecondary: palette.grey,
   textMuted:     '#999999',
   textOnBrand:   palette.fog,
+  textOnCard:    palette.fog,
 
   accent:  palette.brand,
   border:  palette.stone,
@@ -142,7 +144,12 @@ export const fonts = {
   extraLight: 'AuthorExtralight',
   regular:    'AuthorRegular',
   bold:       'AuthorBold',
-  brand:      'Matemasie',
+  brand:      'AuthorRegular',  // will be overridden with custom font in AppHeader
+  B: 'Bangers',
+  M: 'MateMasie',
+  C: 'Caprasimo',
+  BC: 'BarlowCondensed',
+  F: 'FiraSansCondensed-Bold',
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
@@ -156,13 +163,13 @@ export const fonts = {
 //   card     — question card text
 
 export const typography = {
-  display: { fontFamily: fonts.bold,       fontSize: 32, lineHeight: 38, letterSpacing: -0.5 },
-  brand:   { fontFamily: fonts.brand,      fontSize: 24, lineHeight: 30, letterSpacing: 0 },
+  display: { fontFamily: fonts.BC,       fontSize: 32, lineHeight: 38, letterSpacing: -0.5 },
+  brand:   { fontFamily: fonts.B,      fontSize: 18, lineHeight: 30, letterSpacing: 0 },
   heading: { fontFamily: fonts.bold,       fontSize: 16, lineHeight: 22, letterSpacing: 0 },
   body:    { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 26 },
   caption: { fontFamily: fonts.regular,    fontSize: 14, lineHeight: 20 },
   badge:   { fontFamily: fonts.regular,    fontSize: 10, lineHeight: 14, letterSpacing: 1.2 },
-  card:    { fontFamily: fonts.bold,       fontSize: 22, lineHeight: 30, letterSpacing: 0 },
+  card:    { fontFamily: fonts.F,       fontSize: 22, lineHeight: 30, letterSpacing: 0 },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────

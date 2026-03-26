@@ -92,13 +92,13 @@ function makeStyles(colors: AppColors) {
     },
     mark: {
       fontSize: 32,
-      color: colors.accent,
+      color: colors.textOnCard,
     },
     title: {
       fontFamily: fonts.bold,
       fontSize: 24,
       lineHeight: 30,
-      color: colors.textPrimary,
+      color: colors.textOnCard,
       textAlign: 'center',
       letterSpacing: -0.3,
     },
@@ -106,7 +106,7 @@ function makeStyles(colors: AppColors) {
       fontFamily: fonts.regular,
       fontSize: 16,
       lineHeight: 24,
-      color: colors.textSecondary,
+      color: colors.textOnCard,
       textAlign: 'center',
     },
     actions: {
@@ -114,7 +114,7 @@ function makeStyles(colors: AppColors) {
       paddingBottom: spacing.md,
     },
     primaryBtn: {
-      backgroundColor: colors.accent,
+      backgroundColor: colors.textOnCard,
       borderRadius: radius.md,
       paddingVertical: spacing.md,
       alignItems: 'center',
@@ -123,7 +123,7 @@ function makeStyles(colors: AppColors) {
       fontFamily: fonts.bold,
       fontSize: 16,
       letterSpacing: 0.3,
-      color: colors.textOnBrand,
+      color: colors.bgCard,
     },
     secondaryBtn: {
       paddingVertical: spacing.sm,
@@ -134,7 +134,7 @@ function makeStyles(colors: AppColors) {
     secondaryBtnText: {
       fontFamily: fonts.regular,
       fontSize: 16,
-      color: colors.textMuted,
+      color: colors.textOnCard,
     },
   });
 }

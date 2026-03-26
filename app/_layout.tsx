@@ -20,7 +20,7 @@ export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     'AuthorBold': require('../assets/fonts/Author-Bold.otf'),
     'AuthorRegular': require('../assets/fonts/Author-Regular.otf'),
-    'AuthorExtralight': require('../assets/fonts/Author-Extralight.otf'),
+    'AuthorExtralight': require('../assets/fonts/Author-Extralight.otf'), 'MateMasie': require('../assets/fonts/Matemasie-Regular.ttf'), 'Bangers': require('../assets/fonts/Bangers-Regular.ttf'), 'BarlowCondensed': require('../assets/fonts/BarlowCondensed-Regular.ttf'), 'Caprasimo': require('../assets/fonts/Caprasimo-Regular.ttf'), 'FiraSansCondensed-Bold': require('../assets/fonts/FiraSansCondensed-Bold.ttf'), 
   });
 
   const systemColorScheme = useColorScheme();

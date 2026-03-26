@@ -92,9 +92,17 @@ function makeStyles(colors: AppColors) {
       ...typography.badge,
       letterSpacing: 1.5,
     },
+    whoHereWrapper: {
+      alignSelf: "flex-start",
+      backgroundColor: colors.fog ?? "#F2EEE9",
+      borderRadius: 999,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs,
+      marginBottom: spacing.md,
+    },
     whoHere: {
       ...typography.brand,
-      marginBottom: spacing.md,
+      color: colors.accent,
       textTransform: "uppercase" as const,
       letterSpacing: 2,
     },
@@ -128,7 +136,9 @@ const CardFace = React.memo(function CardFace({
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.questionBlock}>
-        <Text selectable={false} style={[styles.whoHere, { color: colors.textOnCard }]}>Vem här…</Text>
+        <View style={styles.whoHereWrapper}>
+          <Text selectable={false} style={styles.whoHere}>Vem här…</Text>
+        </View>
         <Text
           selectable={false}
           style={styles.question}
@@ -171,9 +181,16 @@ export default function PlayScreen() {
   const nextCardStore = useGameStore((s) => s.nextCard);
   const endGame = useGameStore((s) => s.endGame);
 
+  // topIndex = the card currently sitting at rest on top
+  // exitCard = the card being animated off-screen (frozen content, separate element)
   const [topIndex, setTopIndex] = useState(0);
+  const [undercardDisplayIndex, setUndercardDisplayIndex] = useState(1);
+  const [exitCardIndex, setExitCardIndex] = useState<number | null>(null);
 
+  // dragX drives two things: the live drag of the top card, and the exit fly-off
   const dragX = useRef(new Animated.Value(0)).current;
+  // exitX drives only the exit animation — separate from drag so top card is unaffected
+  const exitX = useRef(new Animated.Value(0)).current;
 
   const topIndexRef = useRef(topIndex);
   topIndexRef.current = topIndex;
@@ -198,16 +215,29 @@ export default function PlayScreen() {
     const next = cur + 1;
     if (!deck) return;
     if (cur >= deck.cards.length) {
-      endGame();
-      Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
+      // Already on results card — animate it off and go home
+      exitX.setValue(dragX.__getValue());
+      setExitCardIndex(cur);
+      setTopIndex(next); // clears top card
+      Animated.timing(exitX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
+        setExitCardIndex(null);
+        exitX.setValue(0);
         router.replace("/");
       });
       return;
     }
     nextCardStore();
-    Animated.timing(dragX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
-      setTopIndex(next);
-      requestAnimationFrame(() => dragX.setValue(0));
+    // Freeze current drag position into exitX, then immediately promote next card to top
+    const currentDragX = dragX.__getValue();
+    exitX.setValue(currentDragX);
+    dragX.setValue(0);
+    setExitCardIndex(cur);
+    setTopIndex(next);
+    setUndercardDisplayIndex(next + 1);
+    // Now animate only the exit card off — top card is already at rest with correct content
+    Animated.timing(exitX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
+      setExitCardIndex(null);
+      exitX.setValue(0);
     });
   };
 
@@ -235,16 +265,35 @@ export default function PlayScreen() {
     })
   ).current;
 
+  const topCardRotate = useRef(dragX.interpolate({
+    inputRange: [-SCREEN_WIDTH, 0],
+    outputRange: ["-7deg", "0deg"],
+    extrapolate: "clamp",
+  })).current;
+
+  const exitCardRotate = useRef(exitX.interpolate({
+    inputRange: [-SCREEN_WIDTH, 0],
+    outputRange: ["-7deg", "0deg"],
+    extrapolate: "clamp",
+  })).current;
+
+  const undercardOpacity = useRef(dragX.interpolate({
+    inputRange: [-SWIPE_DISTANCE, 0],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  })).current;
+
   const topCardAnimStyle = {
     transform: [
       { translateX: dragX },
-      {
-        rotate: dragX.interpolate({
-          inputRange: [-SCREEN_WIDTH, 0],
-          outputRange: ["-7deg", "0deg"],
-          extrapolate: "clamp",
-        }),
-      },
+      { rotate: topCardRotate },
+    ],
+  };
+
+  const exitCardAnimStyle = {
+    transform: [
+      { translateX: exitX },
+      { rotate: exitCardRotate },
     ],
   };
 
@@ -257,30 +306,18 @@ export default function PlayScreen() {
 
   const isResultsCard = topIndex === deck.cards.length;
   const topCard: Card | undefined = isResultsCard ? undefined : deck.cards[topIndex];
-  const undercardIdx = topIndex + 1;
-  const isUndercardResults = undercardIdx === deck.cards.length;
-  const nextCard: Card | undefined = isUndercardResults ? undefined : deck.cards[undercardIdx];
+  const isUndercardResults = undercardDisplayIndex === deck.cards.length;
+  const nextCard: Card | undefined = isUndercardResults ? undefined : deck.cards[undercardDisplayIndex];
 
-  const nextCardOpacity = dragX.interpolate({
-    inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
-    outputRange: [1, 1, 0, 1, 1],
-    extrapolate: "clamp",
-  });
-
-  const nextCardScale = dragX.interpolate({
-    inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
-    outputRange: [1, 1, 0.96, 1, 1],
-    extrapolate: "clamp",
-  });
 
   return (
     <SafeAreaView style={styles.safe}>
       <AppHeader />
 
       <View style={styles.cardArea} {...panResponder.panHandlers}>
-        {/* Next card sits underneath — peeks when swiping */}
+        {/* Undercard — peeks behind top card while dragging */}
         {isUndercardResults && (
-          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity, transform: [{ scale: nextCardScale }] }]} pointerEvents="none">
+          <Animated.View style={[styles.cardWrapper, { opacity: undercardOpacity }]} pointerEvents="none">
             <View style={[styles.cardFace, { backgroundColor: colors.bgCard, opacity: 0.5 }]}>
               <EndCard
                 variant={isPremium ? 'completion' : 'paywall'}
@@ -293,12 +330,12 @@ export default function PlayScreen() {
           </Animated.View>
         )}
         {nextCard && (
-          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity, transform: [{ scale: nextCardScale }] }]}>
+          <Animated.View style={[styles.cardWrapper, { opacity: undercardOpacity }]}>
             <View style={[styles.cardFace, { backgroundColor: colors.bgCard }]}>
               <CardFace
                 card={nextCard}
                 deck={deck}
-                cardIndex={undercardIdx}
+                cardIndex={undercardDisplayIndex}
                 totalCards={deck.cards.length}
                 colors={colors}
                 styles={styles}
@@ -307,7 +344,7 @@ export default function PlayScreen() {
           </Animated.View>
         )}
 
-        {/* Top card — draggable */}
+        {/* Top card — sits at rest, draggable */}
         <Animated.View style={[styles.cardWrapper, topCardAnimStyle]}>
           {isResultsCard ? (
             <View style={[styles.cardFace, { backgroundColor: colors.bgCard }]}>
@@ -325,10 +362,10 @@ export default function PlayScreen() {
                 colors={colors}
               />
             </View>
-          ) : (
+          ) : topCard ? (
             <View style={[styles.cardFace, { backgroundColor: colors.bgCard }]}>
               <CardFace
-                card={topCard!}
+                card={topCard}
                 deck={deck}
                 cardIndex={topIndex}
                 totalCards={deck.cards.length}
@@ -336,8 +373,34 @@ export default function PlayScreen() {
                 styles={styles}
               />
             </View>
-          )}
+          ) : null}
         </Animated.View>
+
+        {/* Exit card — frozen content flying off, rendered on top */}
+        {exitCardIndex !== null && (
+          <Animated.View style={[styles.cardWrapper, exitCardAnimStyle]} pointerEvents="none">
+            <View style={[styles.cardFace, { backgroundColor: colors.bgCard }]}>
+              {exitCardIndex === deck.cards.length ? (
+                <EndCard
+                  variant={isPremium ? 'completion' : 'paywall'}
+                  onUnlock={() => {}}
+                  onReplay={() => {}}
+                  onHome={() => {}}
+                  colors={colors}
+                />
+              ) : (
+                <CardFace
+                  card={deck.cards[exitCardIndex]}
+                  deck={deck}
+                  cardIndex={exitCardIndex}
+                  totalCards={deck.cards.length}
+                  colors={colors}
+                  styles={styles}
+                />
+              )}
+            </View>
+          </Animated.View>
+        )}
       </View>
 
       <View style={styles.closeRow}>
