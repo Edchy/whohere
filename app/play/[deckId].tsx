@@ -83,11 +83,11 @@ function makeStyles(colors: AppColors) {
     },
     whoHereWrapper: {
       alignSelf: "flex-start",
-      backgroundColor: colors.fog ?? "#F2EEE9",
+      backgroundColor: colors.textOnBrand,
       borderRadius: radius.md,
       paddingHorizontal: spacing.md,
       paddingVertical: spacing.xs,
-      marginTop: 20,
+      marginTop: spacing.lg,
     },
     whoHere: {
       ...typography.brand,

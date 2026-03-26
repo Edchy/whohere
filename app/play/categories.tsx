@@ -201,9 +201,11 @@ export default function CategoriesScreen() {
   }, [isPremium, purchasePremium]);
 
   const handleSurpriseToggle = useCallback(() => {
-    setRandomize(true);
-    setSelected([]);
-  }, []);
+    const eligibleDecks = isPremium ? modeDecks : modeDecks.filter((d) => d.free);
+    const deck = buildDeck(eligibleDecks.map((d) => d.id), mode ?? "partner");
+    startGame(deck, (mode ?? "partner") as any);
+    router.replace(`/play/${deck.id}`);
+  }, [isPremium, modeDecks, mode, startGame, router]);
 
   const canStart = randomize || selected.length > 0;
 
