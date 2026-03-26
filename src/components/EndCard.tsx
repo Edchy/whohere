@@ -101,7 +101,7 @@ function makeStyles(colors: AppColors) {
       fontFamily: fonts.bold,
       fontSize: 14,
       letterSpacing: 0.5,
-      color: colors.bgPrimary,
+      color: colors.textOnBrand,
     },
     secondaryBtn: {
       paddingVertical: spacing.sm,

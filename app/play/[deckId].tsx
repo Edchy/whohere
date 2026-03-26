@@ -143,7 +143,7 @@ const CardFace = React.memo(function CardFace({
         <View style={styles.bottomRow}>
           <View style={styles.bottomRowLeft}>
             <DeckIcon deck={{ icon, svgIcon }} size={18} color={colors.textMuted} />
-            <Text selectable={false} style={[styles.bottomRowText, { color: colors.textMuted }]}>
+            <Text selectable={false} style={[styles.bottomRowText, { color: colors.textMuted }]} numberOfLines={1}>
               {title.toUpperCase()}
             </Text>
           </View>
@@ -189,6 +189,9 @@ export default function PlayScreen() {
       if (deck) {
         startGame(deck, deck.mode[0]);
         setTopIndex(0);
+      } else {
+        // Curated deck was not pre-loaded via startGame — navigate home
+        router.replace('/');
       }
     }
   }, [deckId]);
@@ -286,48 +289,45 @@ export default function PlayScreen() {
   const isUndercardResults = undercardIdx === deck.cards.length;
   const nextCard: Card | undefined = isUndercardResults ? undefined : deck.cards[undercardIdx];
 
+  const nextCardOpacity = dragX.interpolate({
+    inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
+    outputRange: [1, 1, 0, 1, 1],
+    extrapolate: "clamp",
+  });
+
   return (
     <SafeAreaView style={styles.safe}>
       <AppHeader />
 
       <View style={styles.cardArea} {...panResponder.panHandlers}>
         {/* Next card sits underneath — peeks when swiping */}
-        {(nextCard || isUndercardResults) && (() => {
-          const nextCardOpacity = dragX.interpolate({
-            inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
-            outputRange: [1, 1, 0, 1, 1],
-            extrapolate: "clamp",
-          });
-          if (isUndercardResults) {
-            return (
-              <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]} pointerEvents="none">
-                <View style={[styles.cardFace, { backgroundColor: colors.bgCard, opacity: 0.5 }]}>
-                  <EndCard
-                    variant={isPremium ? 'completion' : 'paywall'}
-                    onUnlock={() => {}}
-                    onReplay={() => {}}
-                    onHome={() => {}}
-                    colors={colors}
-                  />
-                </View>
-              </Animated.View>
-            );
-          }
-          return (
-            <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
-              <View style={[styles.cardFace, { backgroundColor: colors.bgCard }]}>
-                <CardFace
-                  card={nextCard!}
-                  deck={deck}
-                  cardIndex={undercardIdx}
-                  totalCards={deck.cards.length}
-                  colors={colors}
-                  styles={styles}
-                />
-              </View>
-            </Animated.View>
-          );
-        })()}
+        {isUndercardResults && (
+          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]} pointerEvents="none">
+            <View style={[styles.cardFace, { backgroundColor: colors.bgCard, opacity: 0.5 }]}>
+              <EndCard
+                variant={isPremium ? 'completion' : 'paywall'}
+                onUnlock={() => {}}
+                onReplay={() => {}}
+                onHome={() => {}}
+                colors={colors}
+              />
+            </View>
+          </Animated.View>
+        )}
+        {nextCard && (
+          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
+            <View style={[styles.cardFace, { backgroundColor: colors.bgCard }]}>
+              <CardFace
+                card={nextCard}
+                deck={deck}
+                cardIndex={undercardIdx}
+                totalCards={deck.cards.length}
+                colors={colors}
+                styles={styles}
+              />
+            </View>
+          </Animated.View>
+        )}
 
         {/* Top card — draggable */}
         <Animated.View style={[styles.cardWrapper, topCardAnimStyle]}>

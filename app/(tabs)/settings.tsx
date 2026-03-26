@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import {
   Animated,
   Linking,
@@ -13,7 +13,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { animation, appName, AppColors, radius, spacing, TAB_BAR_BOTTOM_CLEARANCE, typography } from '../../src/constants/theme';
+import { animation, AppColors, fonts, radius, spacing, TAB_BAR_BOTTOM_CLEARANCE, typography } from '../../src/constants/theme';
 import ScreenLayout from '../../src/components/ScreenLayout';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
@@ -48,7 +48,7 @@ function TogglePill({ active }: { active: boolean }) {
 function Chevron() {
   const colors = useColors();
   return (
-    <Text style={{ color: colors.textMuted, fontSize: 18, lineHeight: 22, fontWeight: '300' }}>›</Text>
+    <Text style={{ color: colors.textMuted, fontSize: 18, lineHeight: 22, fontFamily: fonts.extraLight }}>›</Text>
   );
 }
 
@@ -92,107 +92,23 @@ function makeStyles(colors: AppColors) {
     infoBlock: {
       paddingTop: spacing.xl,
       paddingBottom: spacing.xl,
-      gap: 0,
-    },
-    infoBlockLight: {},
-    appHeader: {
-      gap: 2,
-      marginBottom: 0,
-    },
-    appName: {
-      fontFamily: 'AuthorBold',
-      fontSize: 28,
-      lineHeight: 30,
-      textTransform: 'uppercase',
-      color: colors.textPrimary,
-      
-    },
-    subtitle: {
-      fontFamily: 'AuthorExtralight',
-      fontSize: 20,
-      lineHeight: 22,
-      color: colors.textSecondary,
-      textTransform: 'uppercase'
-    },
-    pronunciation: {
-      fontFamily: 'AuthorRegular',
-      fontSize: 12,
-      lineHeight: 18,
-      color: colors.textMuted,
-      marginTop: 4,
-    },
-    pronunciationItalic: {
-      fontFamily: 'AuthorExtralight',
-      fontStyle: 'italic',
-      fontSize: 12,
-      color: colors.textMuted,
+      gap: spacing.md,
     },
     infoText: {
-      fontFamily: 'AuthorRegular',
+      fontFamily: fonts.regular,
       fontSize: 14,
       lineHeight: 22,
       color: colors.textSecondary,
     },
-    infoEmphasis: {
-      fontFamily: 'AuthorExtralight',
-      fontSize: 14,
-      lineHeight: 22,
-      color: colors.textPrimary,
-    },
     infoLink: {
-      fontFamily: 'AuthorExtralight',
+      fontFamily: fonts.extraLight,
       fontSize: 14,
       lineHeight: 22,
       color: colors.textPrimary,
       textDecorationLine: 'underline',
     },
-    quoteBlock: {
-      paddingVertical: spacing.md,
-      paddingHorizontal: spacing.xxl,
-      gap: spacing.xs,
-    },
-    quoteText: {
-      fontFamily: 'AuthorExtralight',
-      fontSize: 18,
-      lineHeight: 26,
-      fontStyle: 'italic',
-      color: colors.textPrimary,
-    },
-    quoteAttribution: {
-      fontFamily: 'AuthorRegular',
-      fontSize: 11,
-      lineHeight: 16,
-      letterSpacing: 1.5,
-      textTransform: 'uppercase',
-      color: colors.textMuted,
-    },
-    infoItalic: {
-      fontFamily: 'AuthorExtralight',
-      fontSize: 14,
-      lineHeight: 22,
-      fontStyle: 'italic',
-      color: colors.textSecondary,
-    },
-    infoMeta: {
-      gap: spacing.md,
-      marginTop: spacing.lg,
-    },
-    feedbackSection: {
-      marginTop: spacing.lg,
-      gap: 0,
-    },
-    feedbackRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingVertical: spacing.sm,
-    },
-    feedbackRowArrow: {
-      fontFamily: 'AuthorRegular',
-      fontSize: 16,
-      color: colors.accent,
-    },
     version: {
-      fontFamily: 'AuthorRegular',
+      fontFamily: fonts.regular,
       fontSize: 14,
       color: colors.textMuted,
       marginTop: spacing.xl,
@@ -206,11 +122,11 @@ function AnimatedRow({ onPress, right, children }: { onPress?: () => void; right
   const colorScheme = useGameStore((s) => s.colorScheme);
   const opacity = useRef(new Animated.Value(1)).current;
 
-  const onPressIn = () =>
-    Animated.timing(opacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start();
+  const onPressIn = useCallback(() =>
+    Animated.timing(opacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start(), []);
 
-  const onPressOut = () =>
-    Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
+  const onPressOut = useCallback(() =>
+    Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start(), []);
 
   const glassContent = (
     <>
@@ -264,16 +180,6 @@ function AnimatedRow({ onPress, right, children }: { onPress?: () => void; right
   );
 }
 
-function Quote({ text, attribution }: { text: string; attribution: string }) {
-  const colors = useColors();
-  const styles = makeStyles(colors);
-  return (
-    <View style={styles.quoteBlock}>
-      <Text style={styles.quoteText}>"{text}"</Text>
-      <Text style={styles.quoteAttribution}>{attribution}</Text>
-    </View>
-  );
-}
 
 export default function SettingsScreen() {
   const colors = useColors();
@@ -286,6 +192,24 @@ export default function SettingsScreen() {
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
 
   const { isPremium, purchasePremium, restorePurchases, resetPremium } = usePurchase();
+
+  const handleToggleColorScheme = useCallback(() => {
+    const next = colorScheme === 'dark' ? 'light' : 'dark';
+    setColorScheme(next);
+    AsyncStorage.setItem(COLOR_SCHEME_KEY, next);
+  }, [colorScheme, setColorScheme]);
+
+  const handleToggleHaptics = useCallback(() => {
+    const next = !hapticsEnabled;
+    setHapticsEnabled(next);
+    AsyncStorage.setItem(HAPTICS_KEY, String(next));
+  }, [hapticsEnabled, setHapticsEnabled]);
+
+  const handleShowIntro = useCallback(() => {
+    AsyncStorage.removeItem('@whohere/hasSeenOnboarding');
+    setHasSeenOnboarding(false);
+    router.push({ pathname: '/onboarding', params: { from: 'settings' } });
+  }, [setHasSeenOnboarding]);
 
   return (
     <ScreenLayout>
@@ -333,14 +257,10 @@ export default function SettingsScreen() {
           </AnimatedRow>
 
           <AnimatedRow
-            onPress={() => {
-              const next = colorScheme === 'dark' ? 'light' : 'dark';
-              setColorScheme(next);
-              AsyncStorage.setItem(COLOR_SCHEME_KEY, next);
-            }}
+            onPress={handleToggleColorScheme}
             right={<TogglePill active={colorScheme === 'dark'} />}
           >
-            {(c) => (
+            {() => (
               <View style={styles.rowText}>
                 <Text style={styles.rowLabel}>UTSEENDE</Text>
                 <Text style={styles.rowSublabel}>Dark mode</Text>
@@ -349,14 +269,10 @@ export default function SettingsScreen() {
           </AnimatedRow>
 
           <AnimatedRow
-            onPress={() => {
-              const next = !hapticsEnabled;
-              setHapticsEnabled(next);
-              AsyncStorage.setItem(HAPTICS_KEY, String(next));
-            }}
+            onPress={handleToggleHaptics}
             right={<TogglePill active={hapticsEnabled} />}
           >
-            {(c) => (
+            {() => (
               <View style={styles.rowText}>
                 <Text style={styles.rowLabel}>HAPTIK</Text>
                 <Text style={styles.rowSublabel}>Vibrera när du byter kort</Text>
@@ -365,14 +281,10 @@ export default function SettingsScreen() {
           </AnimatedRow>
 
           <AnimatedRow
-            onPress={() => {
-              AsyncStorage.removeItem('@whohere/hasSeenOnboarding');
-              setHasSeenOnboarding(false);
-              router.push({ pathname: '/onboarding', params: { from: 'settings' } });
-            }}
+            onPress={handleShowIntro}
             right={<Chevron />}
           >
-            {(c) => (
+            {() => (
               <View style={styles.rowText}>
                 <Text style={styles.rowLabel}>INTRO</Text>
                 <Text style={styles.rowSublabel}>Visa igen</Text>
@@ -382,75 +294,14 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.infoBlock}>
-          {/* <View style={styles.appHeader}>
-            <Text style={styles.appName}>{appName}</Text>
-            <Text style={styles.subtitle}>Intuitiva mikrohistorier om människorna omkring dig.</Text>
-            <Text style={styles.pronunciation}>ˈsterēəˌtīp  ·  grek. <Text style={styles.pronunciationItalic}>stereos</Text> (fast) + <Text style={styles.pronunciationItalic}>typos</Text> (intryck)</Text>
-          </View>
-
-          <View style={styles.infoMeta}>
-            <Text style={styles.infoText}>
-              Ordet kommer från tryckerivärlden — en stereotype var en gjuten metallplatta som alltid tryckte exakt samma bild, om och om igen, utan variation. Sedan blev det ett begrepp för något annat: de fasta bilder vi bär av folk vi aldrig riktigt träffat.
-            </Text>
-            <Text style={styles.infoText}>
-              Hjärnan är lat på ett smart sätt. Den kategoriserar folk snabbt — kläder, ålder, accent, kroppsspråk — för att slippa börja om från noll varje gång. Det är egentligen ganska effektivt. Problemet är att mallen aldrig stämmer helt. Den person du tror dig se är alltid en förenkling av den som faktiskt sitter där.
-            </Text>
-          </View> */}
-
-          {/* <View style={styles.infoMeta}>
-         
-
-          
-
-            <Quote
-              text="We don't see things as they are, we see them as we are."
-              attribution="Anaïs Nin"
-            />
-
-            <Text style={styles.infoText}>
-              Det här spelet är en resa i fem steg:{' '}
-              <Text style={styles.infoEmphasis}>observation, projektion, jämförelse, reflektion, uppenbarelse.</Text>
-              {' '}Du tittar. Du väljer. Du förklarar varför. Och i det ögonblicket händer något oväntat.
-            </Text>
-
-            <Quote
-              text="We make snap judgments in the blink of an eye — and we pay a steep price for that snap judgment when it's wrong."
-              attribution="Malcolm Gladwell, Blink"
-            />
-
-            <Text style={styles.infoText}>
-              Det börjar med <Text style={styles.infoEmphasis}>bekräftelsebias</Text>
-              {', '}vi hittar precis det vi letade efter. Sedan <Text style={styles.infoEmphasis}>haloeffekten</Text>
-              {': '}snygga skor och plötsligt verkar hen också vara rolig på fester. Lite <Text style={styles.infoEmphasis}>stereotypisering</Text>
-              {', '}en jacka, en ålder, en hel livshistoria. Och till sist, det finaste: <Text style={styles.infoEmphasis}>projektion</Text>
-              {'. '}Personen du valde säger förmodligen mer om dig än om dem.
-            </Text>
-
-            <Quote
-              text="Everything that irritates us about others can lead us to an understanding of ourselves."
-              attribution="Carl Jung"
-            />
-
-       
-
-            <Text style={styles.infoText}>
-              Efter idé av{' '}
-              <Text style={styles.infoLink} onPress={() => Linking.openURL('https://rubenwatte.com')}>Ruben Wätte.</Text>
-              {' '}Utvecklad och designad i samarbete med{' '}
-              <Text style={styles.infoLink} onPress={() => Linking.openURL('https://nope.digital')}>Nope Digital.</Text>
-            </Text>
-          </View> */}
-
-          <View style={styles.feedbackSection}>
-            <Text style={styles.infoText}>
-              Tankar, idéer eller något som inte fungerar?{'\n'}
-              <Text style={styles.infoLink} onPress={() => Linking.openURL('mailto:hello@whohere.app?subject=Feedback')}>hello@whohere.app</Text>
-            </Text>
-            <Text style={styles.infoText}>
-              Buggar och tekniska problem:{'\n'}
-              <Text style={styles.infoLink} onPress={() => Linking.openURL('mailto:bugs@whohere.app?subject=Bug report')}>bugs@whohere.app</Text>
-            </Text>
-          </View>
+          <Text style={styles.infoText}>
+            Tankar, idéer eller något som inte fungerar?{'\n'}
+            <Text style={styles.infoLink} onPress={() => Linking.openURL('mailto:hello@whohere.app?subject=Feedback')}>hello@whohere.app</Text>
+          </Text>
+          <Text style={styles.infoText}>
+            Buggar och tekniska problem:{'\n'}
+            <Text style={styles.infoLink} onPress={() => Linking.openURL('mailto:bugs@whohere.app?subject=Bug report')}>bugs@whohere.app</Text>
+          </Text>
 
           <Text style={styles.version}>v1.0.0</Text>
         </View>

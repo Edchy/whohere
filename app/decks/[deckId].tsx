@@ -1,6 +1,6 @@
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { DeckIcon } from '../../src/components/DeckIcon';
@@ -12,9 +12,9 @@ import { usePurchase } from '../../src/hooks/usePurchase';
 import allDecks from '../../assets/data/decks/index';
 
 const MODE_LABELS: Record<string, string> = {
-  solo: 'Solo',
-  partner: 'Date',
-  group: 'Friends',
+  solo: 'På egen hand',
+  partner: 'På date',
+  group: 'Med vänner',
 };
 
 const FREE_PREVIEW_COUNT = 3;
@@ -26,7 +26,10 @@ export default function DeckDetailScreen() {
   const { isPremium, purchasePremium } = usePurchase();
 
   const deck = allDecks.find((d) => d.id === deckId);
-  if (!deck) return null;
+  if (!deck) {
+    router.back();
+    return null;
+  }
 
   const isLocked = !isPremium && !deck.free;
   const previewCount = isLocked ? LOCKED_PREVIEW_COUNT : FREE_PREVIEW_COUNT;

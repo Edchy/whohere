@@ -370,12 +370,6 @@ const styles = StyleSheet.create({
   cardBottom: {
     alignItems: 'flex-end',
   },
-  mascotBottomRight: {
-    alignSelf: 'flex-end',
-  },
-  mascotTopCenter: {
-    alignSelf: 'center',
-  },
   cardWelcome: {
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -405,39 +399,6 @@ const styles = StyleSheet.create({
   welcomeHintLabel: {
     fontFamily: fonts.regular,
     fontSize: 11,
-  },
-  rotatedContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  welcomeHeadingGroup: {
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  headlineRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headlineWelcome: {
-    ...typography.brand,
-  },
-  subheading: {
-    ...typography.caption,
-  },
-  swipeHintRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  swipeHintLabel: {
-    ...typography.caption,
-    letterSpacing: 1.5,
   },
   dots: {
     position: 'absolute',

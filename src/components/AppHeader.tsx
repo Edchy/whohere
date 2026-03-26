@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
-    paddingBlockStart: spacing.xl,
+    paddingTop: spacing.xl,
   },
   spacer: {
     flex: 1,
