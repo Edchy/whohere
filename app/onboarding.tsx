@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import FingerIcon from '../assets/icons/noun-finger-3414109.svg';
 import {
   Animated,
-  Dimensions,
   Easing,
   PanResponder,
   Platform,
@@ -27,13 +26,8 @@ import { useHaptics } from '../src/hooks/useHaptics';
 import { useGameStore } from '../src/store/gameStore';
 
 const ONBOARDING_KEY = '@whohere/hasSeenOnboarding';
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CAPPED_WIDTH = Math.min(SCREEN_WIDTH, 480);
-const CARD_WIDTH = CAPPED_WIDTH - spacing.xl * 2;
-
 const SWIPE_DISTANCE = 60;
 const SWIPE_VELOCITY = 400;
-
 
 type Slide = {
   id: string;
@@ -69,12 +63,11 @@ const SLIDES: Slide[] = [
     body: 'Genom att vara en fluga på väggen och medvetet iaktta de människor du ser just nu, kan du också få syn på något i dig själv och i det sällskap du spelar med. Det är ett kul sätt att bli varse om det förgivettagna, oavsett om det är på en date, med vänner eller på egen hand. ',
     bottomLabel: '...',
   },
-
   {
     id: '4',
     topLabel: 'hur man spelar',
     headline: 'UPPGIFTEN',
-    body: 'Varje fråga inleds med “Vem här…?” och er uppgift är att läsa av rummet för att se vem ni tycker passar bäst in som svar på frågan. Väljer ni samma person som svar eller tycker ni helt olika? Vart går gränsen mellan knivskarp intuition och förblindande fördomar?',
+    body: 'Varje fråga inleds med "Vem här…?" och er uppgift är att läsa av rummet för att se vem ni tycker passar bäst in som svar på frågan. Väljer ni samma person som svar eller tycker ni helt olika? Vart går gränsen mellan knivskarp intuition och förblindande fördomar?',
     bottomLabel: '...',
   },
   {
@@ -84,14 +77,13 @@ const SLIDES: Slide[] = [
     body: 'Det finns inga vinnare och inga förlorare i detta spel, faktum är att sanningen om de ni betraktar är mindre intressant än det som blir synligt i er själva. De mikrohistorier vi skapar om andra kan i själva verket berätta en hel del om vilka vi är och hur vi ser på vår omvärld.',
     bottomLabel: '...',
   },
-    {
+  {
     id: '6',
     topLabel: 'kom ihåg',
     headline: 'RESPEKTEN',
     body: 'Spela med respekt för andra människors integritet, låt ingen utanför ert sällskap ana vad som pågår. Välj utan att peka - svara utan att någon utanför ert spelande sällskap hör. Att vara en fluga på väggen är ett osynligt iakttagande, så visa hänsyn och ha det så kul!',
     bottomLabel: '...',
   },
-   
 ];
 
 function SwipeHint({ size = 32 }: { size?: number }) {
@@ -131,7 +123,6 @@ function SlideCard({ slide }: { slide: Slide }) {
   if (slide.isWelcome) {
     return (
       <View style={[styles.card, styles.cardWelcome, { backgroundColor: colors.bgPrimary, borderColor: colors.textPrimary }]}>
-        {/* Center: logo + title + tagline */}
         <View style={styles.welcomeCenter}>
           <EyesLogo size={80} />
           <Text selectable={false} style={[styles.welcomeAppName, { color: colors.accent }]}>
@@ -144,7 +135,6 @@ function SlideCard({ slide }: { slide: Slide }) {
           ) : null}
         </View>
 
-        {/* Bottom: swipe hint */}
         <View style={styles.welcomeHintRow}>
           <SwipeHint size={20} />
           <Text selectable={false} style={[styles.welcomeHintLabel, { color: colors.textMuted }]}>
@@ -196,44 +186,45 @@ function AnimatedDot({ active, colors }: { active: boolean; colors: ReturnType<t
   });
 
   return (
-    <Animated.View
-      style={[styles.dot, { width, backgroundColor }]}
-    />
+    <Animated.View style={[styles.dot, { width, backgroundColor }]} />
   );
 }
 
-function AnimatedCta({ colors, onPress }: { colors: ReturnType<typeof useColors>; onPress: () => void }) {
+function LastSlideHint({ colors }: { colors: ReturnType<typeof useColors> }) {
   const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(12)).current;
+  const x = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 320,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration: 320,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }),
-    ]).start();
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 400,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: true,
+    }).start(() => {
+      const loop = Animated.loop(
+        Animated.sequence([
+          Animated.delay(600),
+          Animated.parallel([
+            Animated.timing(x, { toValue: -36, duration: 420, useNativeDriver: true }),
+          ]),
+          Animated.parallel([
+            Animated.timing(x, { toValue: 0, duration: 320, useNativeDriver: true }),
+          ]),
+          Animated.delay(400),
+        ])
+      );
+      loop.start();
+    });
   }, []);
 
   return (
-    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-      <Pressable
-        style={[styles.ctaButton, { borderColor: colors.textPrimary }]}
-        onPress={onPress}
-        hitSlop={8}
-      >
-        <Text selectable={false} style={[styles.ctaText, { color: colors.textPrimary }]}>
-          Börja spela
-        </Text>
-      </Pressable>
+    <Animated.View style={[styles.lastHintRow, { opacity }]}>
+      <Animated.View style={{ transform: [{ translateX: x }] }}>
+        <FingerIcon width={20} height={20} fill={colors.textMuted} />
+      </Animated.View>
+      <Text selectable={false} style={[styles.lastHintLabel, { color: colors.textMuted }]}>
+        svep för att börja spela
+      </Text>
     </Animated.View>
   );
 }
@@ -241,17 +232,8 @@ function AnimatedCta({ colors, onPress }: { colors: ReturnType<typeof useColors>
 export default function OnboardingScreen() {
   const colors = useColors();
   const haptics = useHaptics();
-const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
-  const [topIndex, setTopIndex] = useState(0);
-  const [undercardDisplayIndex, setUndercardDisplayIndex] = useState(1);
-  const [exitSlideIndex, setExitSlideIndex] = useState<number | null>(null);
-  const [dotIndex, setDotIndex] = useState(0);
-
-  const dragX = useRef(new Animated.Value(0)).current;
-  const exitX = useRef(new Animated.Value(0)).current;
-
-  const topIndexRef = useRef(topIndex);
-  topIndexRef.current = topIndex;
+  const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
+  const [slideIndex, setSlideIndex] = useState(0);
 
   const dismissRef = useRef(async () => {});
   dismissRef.current = async () => {
@@ -262,49 +244,24 @@ const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
 
   const dismiss = () => dismissRef.current();
 
+  const slideIndexRef = useRef(slideIndex);
+  slideIndexRef.current = slideIndex;
+
   const goNext = () => {
-    const cur = topIndexRef.current;
-    const next = cur + 1;
+    const next = slideIndexRef.current + 1;
     haptics.light();
-    setDotIndex(Math.min(next, SLIDES.length - 1));
-    const currentDragX = dragX.__getValue();
-    exitX.setValue(currentDragX);
-    dragX.setValue(0);
-    setExitSlideIndex(cur);
     if (next >= SLIDES.length) {
-      Animated.timing(exitX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
-        setExitSlideIndex(null);
-        exitX.setValue(0);
-        dismissRef.current();
-      });
+      dismiss();
       return;
     }
-    setTopIndex(next);
-    setUndercardDisplayIndex(next + 1);
-    Animated.timing(exitX, { toValue: -SCREEN_WIDTH * 1.5, duration: 220, useNativeDriver: true }).start(() => {
-      setExitSlideIndex(null);
-      exitX.setValue(0);
-    });
+    setSlideIndex(next);
   };
 
   const goPrev = () => {
-    const cur = topIndexRef.current;
-    const prev = cur - 1;
+    const prev = slideIndexRef.current - 1;
     if (prev < 0) return;
     haptics.light();
-    setDotIndex(prev);
-    // For going back: exit the current card to the right, bring prev in from left
-    const currentDragX = dragX.__getValue();
-    exitX.setValue(currentDragX);
-    dragX.setValue(-SCREEN_WIDTH * 1.5);
-    setExitSlideIndex(cur);
-    setTopIndex(prev);
-    setUndercardDisplayIndex(prev + 1);
-    Animated.timing(exitX, { toValue: SCREEN_WIDTH * 1.5, duration: 150, useNativeDriver: true }).start(() => {
-      setExitSlideIndex(null);
-      exitX.setValue(0);
-    });
-    Animated.spring(dragX, { toValue: 0, useNativeDriver: true, damping: 22, stiffness: 400, mass: 0.8 }).start();
+    setSlideIndex(prev);
   };
 
   const panResponder = useRef(
@@ -312,96 +269,34 @@ const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_, g) =>
         Math.abs(g.dx) > 8 && Math.abs(g.dx) > Math.abs(g.dy),
-      onPanResponderGrant: () => {
-        dragX.stopAnimation();
-      },
-      onPanResponderMove: (_, g) => {
-        if (g.dx > 0 && topIndexRef.current === 0) return;
-        dragX.setValue(g.dx);
-      },
       onPanResponderRelease: (_, g) => {
-        const cur = topIndexRef.current;
         const goLeft = g.dx < -SWIPE_DISTANCE || g.vx < -(SWIPE_VELOCITY / 1000);
-        const goRight = g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000);
-        if (goLeft) {
-          goNext();
-        } else if (goRight && cur > 0) {
-          goPrev();
-        } else {
-          Animated.spring(dragX, { toValue: 0, damping: 20, stiffness: 300, useNativeDriver: true }).start();
-        }
+        const goRight = g.dx > SWIPE_DISTANCE || g.vx > SWIPE_VELOCITY / 1000;
+        if (goLeft) goNext();
+        else if (goRight) goPrev();
       },
     })
   ).current;
 
-  const topCardRotate = useRef(dragX.interpolate({
-    inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
-    outputRange: ['-7deg', '0deg', '7deg'],
-  })).current;
-
-  const exitCardRotate = useRef(exitX.interpolate({
-    inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
-    outputRange: ['-7deg', '0deg', '7deg'],
-  })).current;
-
-  const undercardOpacity = useRef(dragX.interpolate({
-    inputRange: [-SWIPE_DISTANCE, 0, SWIPE_DISTANCE],
-    outputRange: [1, 0, 1],
-    extrapolate: 'clamp',
-  })).current;
-
-  const topCardStyle = {
-    transform: [
-      { translateX: dragX },
-      { rotate: topCardRotate },
-    ],
-  };
-
-  const exitCardStyle = {
-    transform: [
-      { translateX: exitX },
-      { rotate: exitCardRotate },
-    ],
-  };
-
-  const nextSlide: Slide | undefined = SLIDES[undercardDisplayIndex];
-
   return (
     <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
       <View style={styles.cardArea} {...panResponder.panHandlers}>
-        {/* Undercard — peeks when top card is dragged */}
-        {nextSlide && (
-          <Animated.View style={[styles.cardWrapper, { opacity: undercardOpacity }]}>
-            <SlideCard slide={nextSlide} />
-          </Animated.View>
-        )}
-
-        {/* Top card — sits at rest, draggable */}
-        <Animated.View style={[styles.cardWrapper, topCardStyle]}>
-          <SlideCard slide={SLIDES[topIndex]} />
-        </Animated.View>
-
-        {/* Exit card — frozen, flies off */}
-        {exitSlideIndex !== null && SLIDES[exitSlideIndex] && (
-          <Animated.View style={[styles.cardWrapper, exitCardStyle]} pointerEvents="none">
-            <SlideCard slide={SLIDES[exitSlideIndex]} />
-          </Animated.View>
-        )}
+        <SlideCard slide={SLIDES[slideIndex]} />
       </View>
 
       <View style={styles.dots} pointerEvents="none">
         {SLIDES.map((_, i) => (
-          <AnimatedDot key={i} active={i === dotIndex} colors={colors} />
+          <AnimatedDot key={i} active={i === slideIndex} colors={colors} />
         ))}
       </View>
 
       <View style={styles.bottomArea}>
-        {topIndex < SLIDES.length - 1 ? (
+        {slideIndex < SLIDES.length - 1 ? (
           <Pressable onPress={dismiss} hitSlop={12}>
             <Text selectable={false} style={[styles.skipText, { color: colors.textMuted }]}>hoppa över</Text>
           </Pressable>
         ) : (
-          <AnimatedCta colors={colors} onPress={() => { haptics.success(); dismiss(); }} />
+          <LastSlideHint key="last-hint" colors={colors} />
         )}
       </View>
     </View>
@@ -419,18 +314,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
-  cardWrapper: {
-    position: 'absolute',
-    width: CARD_WIDTH,
-  },
   skipText: {
     ...typography.caption,
     letterSpacing: 1,
   },
   card: {
-    width: CARD_WIDTH,
+    width: '100%',
     height: dim.cardHeight,
-    borderRadius: radius.xl,
+    borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing.xl,
     justifyContent: 'space-between',
@@ -477,7 +368,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 28,
     opacity: 0.6,
-    // textAlign: 'center',
   },
   welcomeHintRow: {
     position: 'absolute' as const,
@@ -507,18 +397,14 @@ const styles = StyleSheet.create({
     height: dim.dotSize,
     borderRadius: dim.dotSize / 2,
   },
-  ctaButton: {
-    width: CARD_WIDTH,
-    height: 52,
-    borderRadius: radius.md,
-    borderWidth: 1,
+  lastHintRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: spacing.xs,
   },
-  ctaText: {
-    fontFamily: fonts.bold,
-    fontSize: 15,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+  lastHintLabel: {
+    fontFamily: fonts.regular,
+    fontSize: 11,
+    letterSpacing: 0.5,
   },
 });

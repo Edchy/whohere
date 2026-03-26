@@ -31,7 +31,7 @@ function makeStyles(colors: AppColors) {
     // The visible pill — clips blur + overlays to rounded shape
     barContainer: {
       overflow: 'hidden',
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: colors.accent + '59', // ~35% opacity
     },

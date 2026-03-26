@@ -25,7 +25,7 @@ function makeStyles(colors: AppColors) {
       flex: 1,
       alignItems: 'center',
       padding: spacing.md,
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: colors.border,
       backgroundColor: colors.bgSecondary,

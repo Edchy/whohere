@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
   questionCard: {
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   unlockBtn: {
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
   },

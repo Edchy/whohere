@@ -121,7 +121,7 @@ function makeStyles(colors: AppColors) {
     surpriseTile: {
       paddingVertical: spacing.xl,
       paddingHorizontal: spacing.md,
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: colors.bgSecondary,
       backgroundColor: colors.bgSecondary,

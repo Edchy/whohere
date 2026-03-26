@@ -70,7 +70,7 @@ function makeStyles(colors: AppColors) {
       overflow: 'hidden',
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.md,
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: colors.accent + '18',
       flexDirection: 'row',

@@ -17,7 +17,7 @@ function makeStyles(colors: AppColors) {
       alignItems: 'flex-start',
       padding: spacing.md,
       marginBottom: spacing.sm,
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
     },
     iconWrapper: {
