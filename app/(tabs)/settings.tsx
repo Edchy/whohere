@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
   Animated,
   Linking,
@@ -13,7 +13,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { animation, appName, AppColors, radius, spacing, typography } from '../../src/constants/theme';
+import { animation, appName, AppColors, radius, spacing, TAB_BAR_BOTTOM_CLEARANCE, typography } from '../../src/constants/theme';
 import ScreenLayout from '../../src/components/ScreenLayout';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
@@ -54,14 +54,13 @@ function Chevron() {
 
 const COLOR_SCHEME_KEY = '@whohere/colorScheme';
 const HAPTICS_KEY = '@whohere/hapticsEnabled';
-const CARD_BACK_KEY = '@whohere/cardBackStyle';
 
 function makeStyles(colors: AppColors) {
   return StyleSheet.create({
     scroll: {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
-      paddingBottom: 120,
+      paddingBottom: TAB_BAR_BOTTOM_CLEARANCE,
       gap: spacing.md,
     },
     grid: {
@@ -74,7 +73,6 @@ function makeStyles(colors: AppColors) {
       borderRadius: radius.md,
       borderWidth: 1,
       borderColor: colors.accent + '18',
-      backgroundColor: 'rgba(255, 255, 255, 0.02)',
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.xs,
@@ -89,7 +87,6 @@ function makeStyles(colors: AppColors) {
     },
     rowSublabel: {
       ...typography.caption,
-      opacity: 0.8,
       color: colors.textSecondary,
     },
     infoBlock: {
@@ -205,7 +202,7 @@ function makeStyles(colors: AppColors) {
 
 function AnimatedRow({ onPress, right, children }: { onPress?: () => void; right?: React.ReactNode; children: (colors: AppColors) => React.ReactNode }) {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const colorScheme = useGameStore((s) => s.colorScheme);
   const opacity = useRef(new Animated.Value(1)).current;
 
@@ -280,24 +277,15 @@ function Quote({ text, attribution }: { text: string; attribution: string }) {
 
 export default function SettingsScreen() {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const hapticsEnabled = useGameStore((s) => s.hapticsEnabled);
   const setHapticsEnabled = useGameStore((s) => s.setHapticsEnabled);
   const colorScheme = useGameStore((s) => s.colorScheme);
   const setColorScheme = useGameStore((s) => s.setColorScheme);
-  const cardBackStyle = useGameStore((s) => s.cardBackStyle);
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
 
   const { isPremium, purchasePremium, restorePurchases, resetPremium } = usePurchase();
-
-  const cardBackLabel =
-    cardBackStyle === 'plain' ? 'Enfärgad' :
-    cardBackStyle === 'chevron' ? 'Curtain' :
-    cardBackStyle === 'bubbles' ? 'Moroccan' :
-    cardBackStyle === 'polka' ? 'Polka Dots' :
-    cardBackStyle === 'tictactoe' ? 'Tic Tac Toe' :
-    'Skulls';
 
   return (
     <ScreenLayout>
@@ -313,14 +301,16 @@ export default function SettingsScreen() {
                 </View>
                 <Text style={{ color: colors.accent + '80', fontSize: 12 }}>✦</Text>
               </View>
-              <AnimatedRow onPress={resetPremium}>
-                {() => (
-                  <View style={styles.rowText}>
-                    <Text style={styles.rowLabel}>DEV: RESET PREMIUM</Text>
-                    <Text style={styles.rowSublabel}>Lås premium igen</Text>
-                  </View>
-                )}
-              </AnimatedRow>
+              {__DEV__ && (
+                <AnimatedRow onPress={resetPremium}>
+                  {() => (
+                    <View style={styles.rowText}>
+                      <Text style={styles.rowLabel}>DEV: RESET PREMIUM</Text>
+                      <Text style={styles.rowSublabel}>Lås premium igen</Text>
+                    </View>
+                  )}
+                </AnimatedRow>
+              )}
             </>
           ) : (
             <AnimatedRow onPress={purchasePremium}>
@@ -370,15 +360,6 @@ export default function SettingsScreen() {
               <View style={styles.rowText}>
                 <Text style={styles.rowLabel}>HAPTIK</Text>
                 <Text style={styles.rowSublabel}>Vibrera när du byter kort</Text>
-              </View>
-            )}
-          </AnimatedRow>
-
-          <AnimatedRow onPress={() => router.push('/settings/card-back')} right={<Chevron />}>
-            {(c) => (
-              <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>KORTBAKSIDA</Text>
-                <Text style={styles.rowSublabel}>{cardBackLabel}</Text>
               </View>
             )}
           </AnimatedRow>
@@ -477,7 +458,7 @@ export default function SettingsScreen() {
       </ScrollView>
       <LinearGradient
         colors={[colors.bgPrimary + '00', colors.bgPrimary + 'EE', colors.bgPrimary]}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 220, pointerEvents: 'none' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: TAB_BAR_BOTTOM_CLEARANCE + 100, pointerEvents: 'none' }}
       />
     </ScreenLayout>
   );

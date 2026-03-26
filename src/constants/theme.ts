@@ -20,8 +20,8 @@ export const warmTones = {
   periwinkle: '#dfe5f3',  // light blue
   blush:      '#f9edf0',  // very light pink
   champagne:  '#e6c8b7',  // soft peach-cream
-  cognac:     '#0c3879',  // warm brown
-  amber:      '#69ba36',  // burnt orange
+  navy:       '#0c3879',  // dark navy (card bg in dark mode)
+  forest:     '#69ba36',  // bright green
   espresso:   '#261311',  // very dark brown
 } as const;
 
@@ -52,7 +52,7 @@ export const warmTones = {
 export const darkColors = {
   bgPrimary:   palette.ink,
   bgSecondary: palette.dim,
-  bgCard:      warmTones.cognac,
+  bgCard:      warmTones.navy,
   bgBrand:     palette.brand,
   bgBlack:     palette.ink,
 
@@ -73,8 +73,8 @@ export const lightColors = {
   bgBlack:     palette.ink,
 
   textPrimary:   palette.ink,
-  textSecondary: palette.ink,
-  textMuted:     palette.grey,
+  textSecondary: palette.grey,
+  textMuted:     '#999999',
   textOnBrand:   palette.fog,
 
   accent:  palette.brand,
@@ -127,7 +127,7 @@ export const fonts = {
 //   card     — question card text
 
 export const typography = {
-  display: { fontFamily: fonts.bold,       fontSize: 32, lineHeight: 28, letterSpacing: -1 },
+  display: { fontFamily: fonts.bold,       fontSize: 32, lineHeight: 36, letterSpacing: -1 },
   brand:   { fontFamily: fonts.regular,       fontSize: 24, lineHeight: 24, letterSpacing: 0 },
   heading: { fontFamily: fonts.bold,       fontSize: 16, lineHeight: 26, letterSpacing: 0 },
   body:    { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 24 },
@@ -147,6 +147,10 @@ export const dimensions = {
   dotSize:         5,
   rowHeight:      80,
 } as const;
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+// Bottom clearance needed to clear the floating tab bar + safe area
+export const TAB_BAR_BOTTOM_CLEARANCE = 120;
 
 // ─── Animation ────────────────────────────────────────────────────────────────
 

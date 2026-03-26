@@ -137,11 +137,14 @@ function makeStyles(colors: AppColors) {
       gap: 0,
     },
     title: {
-      ...typography.heading,
+      ...typography.display,
+      fontSize: 26,
+      lineHeight: 30,
       color: colors.textPrimary,
     },
     subtitle: {
-      ...typography.caption,
+      ...typography.body,
+      lineHeight: 20,
       color: colors.textMuted,
     },
     tileList: {

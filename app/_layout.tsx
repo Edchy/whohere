@@ -14,7 +14,6 @@ SplashScreen.preventAutoHideAsync();
 const ONBOARDING_KEY = '@whohere/hasSeenOnboarding';
 const COLOR_SCHEME_KEY = '@whohere/colorScheme';
 const HAPTICS_KEY = '@whohere/hapticsEnabled';
-const CARD_BACK_KEY = '@whohere/cardBackStyle';
 const PREMIUM_KEY = '@whohere/isPremium';
 
 export default function RootLayout() {
@@ -30,7 +29,6 @@ export default function RootLayout() {
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const setColorScheme = useGameStore((s) => s.setColorScheme);
   const setHapticsEnabled = useGameStore((s) => s.setHapticsEnabled);
-  const setCardBackStyle = useGameStore((s) => s.setCardBackStyle);
   const setIsPremium = useGameStore((s) => s.setIsPremium);
   const hydrated = useRef(false);
 
@@ -48,9 +46,8 @@ export default function RootLayout() {
       AsyncStorage.getItem(ONBOARDING_KEY),
       AsyncStorage.getItem(COLOR_SCHEME_KEY),
       AsyncStorage.getItem(HAPTICS_KEY),
-      AsyncStorage.getItem(CARD_BACK_KEY),
       AsyncStorage.getItem(PREMIUM_KEY),
-    ]).then(([onboardingValue, colorSchemeValue, hapticsValue, cardBackValue, premiumValue]) => {
+    ]).then(([onboardingValue, colorSchemeValue, hapticsValue, premiumValue]) => {
       if (colorSchemeValue === 'dark' || colorSchemeValue === 'light') {
         setColorScheme(colorSchemeValue);
       } else {
@@ -58,9 +55,6 @@ export default function RootLayout() {
       }
       if (hapticsValue !== null) {
         setHapticsEnabled(hapticsValue === 'true');
-      }
-      if (cardBackValue) {
-        setCardBackStyle(cardBackValue as Parameters<typeof setCardBackStyle>[0]);
       }
       if (premiumValue === 'true') {
         setIsPremium(true);

@@ -4,7 +4,7 @@ import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import ScreenLayout from '../../src/components/ScreenLayout';
 import { DeckTile } from '../../src/components/DeckTile';
-import { spacing } from '../../src/constants/theme';
+import { spacing, TAB_BAR_BOTTOM_CLEARANCE } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
 import { usePurchase } from '../../src/hooks/usePurchase';
 import allDecks from '../../assets/data/decks/index';
@@ -32,7 +32,7 @@ export default function DecksScreen() {
       </ScrollView>
       <LinearGradient
         colors={[colors.bgPrimary + '00', colors.bgPrimary + 'EE', colors.bgPrimary]}
-        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 120, pointerEvents: 'none' }}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: TAB_BAR_BOTTOM_CLEARANCE, pointerEvents: 'none' }}
       />
     </ScreenLayout>
   );
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
-    paddingBottom: 120,
+    paddingBottom: TAB_BAR_BOTTOM_CLEARANCE,
     gap: spacing.sm,
   },
 });

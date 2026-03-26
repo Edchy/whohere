@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { AppColors, fonts, radius, spacing, typography } from '../constants/theme';
+import { AppColors, dimensions, fonts, radius, spacing, typography } from '../constants/theme';
 
 type EndCardProps = {
   variant: 'paywall' | 'completion';
@@ -24,10 +24,10 @@ export function EndCard({ variant, onUnlock, onReplay, onHome, colors }: EndCard
           </Text>
         </View>
         <View style={s.actions}>
-          <Pressable style={s.primaryBtn} onPress={onUnlock}>
+          <Pressable style={s.primaryBtn} onPress={onUnlock} accessibilityLabel="Lås upp premium — 69 kr" accessibilityRole="button">
             <Text style={s.primaryBtnText}>Lås upp — 69 kr</Text>
           </Pressable>
-          <Pressable style={s.secondaryBtn} onPress={onHome}>
+          <Pressable style={s.secondaryBtn} onPress={onHome} accessibilityLabel="Avsluta ändå" accessibilityRole="button">
             <Text style={s.secondaryBtnText}>Avsluta ändå</Text>
           </Pressable>
         </View>
@@ -43,10 +43,10 @@ export function EndCard({ variant, onUnlock, onReplay, onHome, colors }: EndCard
         <Text style={s.body}>Bra samtal tar tid att landa.</Text>
       </View>
       <View style={s.actions}>
-        <Pressable style={s.primaryBtn} onPress={onReplay}>
+        <Pressable style={s.primaryBtn} onPress={onReplay} accessibilityLabel="Spela igen" accessibilityRole="button">
           <Text style={s.primaryBtnText}>Spela igen</Text>
         </Pressable>
-        <Pressable style={s.secondaryBtn} onPress={onHome}>
+        <Pressable style={s.secondaryBtn} onPress={onHome} accessibilityLabel="Gå hem" accessibilityRole="button">
           <Text style={s.secondaryBtnText}>Gå hem</Text>
         </Pressable>
       </View>
@@ -106,6 +106,8 @@ function makeStyles(colors: AppColors) {
     secondaryBtn: {
       paddingVertical: spacing.sm,
       alignItems: 'center',
+      minHeight: dimensions.buttonHeight,
+      justifyContent: 'center',
     },
     secondaryBtnText: {
       fontFamily: fonts.regular,

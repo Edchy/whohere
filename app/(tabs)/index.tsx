@@ -1,7 +1,7 @@
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import {
   Animated,
   Platform,
@@ -51,7 +51,6 @@ function makeStyles(colors: AppColors) {
       borderRadius: radius.md,
       borderWidth: 1,
       borderColor: colors.accent + '18',
-      backgroundColor: 'rgba(255, 255, 255, 0.02)',
     },
     rowInner: {
       flexDirection: "row",
@@ -76,7 +75,7 @@ function makeStyles(colors: AppColors) {
 function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors }) {
   const router = useRouter();
   const colorScheme = useGameStore((s) => s.colorScheme);
-  const styles = makeStyles(colors);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const opacity = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () => {
@@ -102,6 +101,8 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
         onPressOut={onPressOut}
         onPress={() => router.push(`/play/categories?mode=${mode.id}`)}
         style={styles.row}
+        accessibilityLabel={`${mode.label} — ${mode.sublabel}`}
+        accessibilityRole="button"
       >
         {Platform.OS !== 'web' && colorScheme === 'dark' && (
           <BlurView style={StyleSheet.absoluteFillObject} intensity={20} tint="dark" />
@@ -137,7 +138,7 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
 
 export default function HomeScreen() {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
     <ScreenLayout>
