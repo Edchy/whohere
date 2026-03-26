@@ -6,7 +6,7 @@ import PlayArrowSvg from "../../assets/icons/noun-arrow-8300346.svg";
 import RandomSvg from "../../assets/icons/category-icons/noun-doodle-197625.svg";
 import { DeckTile } from "../../src/components/DeckTile";
 import ModalLayout from "../../src/components/ModalLayout";
-import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
+import { animation, AppColors, radius, spacing, TAB_BAR_BOTTOM_CLEARANCE, typography } from "../../src/constants/theme";
 import { useColors } from "../../src/hooks/useColors";
 
 import { useGameStore } from "../../src/store/gameStore";
@@ -107,13 +107,13 @@ function pickHeaderSubtitle(mode: string): string {
 
 const SURPRISE_DESCS: Record<string, string[]> = {
   partner: [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    "Vi blandar ihop allt och låter slumpen styra",
   ],
   group: [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    "Vi blandar ihop allt och låter slumpen styra",
   ],
   solo: [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    "Vi blandar ihop allt och låter slumpen styra",
   ],
 };
 
@@ -127,14 +127,13 @@ function makeStyles(colors: AppColors) {
     scroll: {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
-      paddingBottom: 160,
+      paddingBottom: TAB_BAR_BOTTOM_CLEARANCE + spacing.xl,
       gap: spacing.sm,
     },
     header: {
-      paddingHorizontal: spacing.lg,
       paddingTop: spacing.md,
       paddingBottom: spacing.sm,
-      gap: 0,
+      gap: spacing.xs,
     },
     title: {
       ...typography.display,
@@ -151,7 +150,7 @@ function makeStyles(colors: AppColors) {
       gap: spacing.sm,
     },
     surpriseTile: {
-      paddingVertical: spacing.lg,
+      paddingVertical: spacing.xl,
       paddingHorizontal: spacing.md,
       borderRadius: radius.md,
       borderWidth: 1,
@@ -165,13 +164,30 @@ function makeStyles(colors: AppColors) {
     },
     surpriseText: {
       flex: 1,
-      gap: 0,
+      gap: spacing.xs,
     },
     surpriseTitle: {
-      ...typography.heading,
+      ...typography.display,
+      fontSize: 20,
+      lineHeight: 24,
     },
     surpriseDesc: {
       ...typography.caption,
+    },
+    divider: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      paddingVertical: spacing.xs,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    dividerLabel: {
+      ...typography.badge,
+      color: colors.textMuted,
     },
     startBtn: {
       width: 64,
@@ -191,7 +207,6 @@ function makeStyles(colors: AppColors) {
 
 export default function CategoriesScreen() {
   const colors = useColors();
-  const colorScheme = useGameStore((s) => s.colorScheme);
   const styles = makeStyles(colors);
 
   const router = useRouter();
@@ -282,6 +297,13 @@ export default function CategoriesScreen() {
             </Pressable>
           </Animated.View>
 
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerLabel}>ELLER VÄLJ SJÄLV</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
           {/* Deck tiles */}
           {visibleDecks.map((deck) => (
             <DeckTile
@@ -311,7 +333,7 @@ export default function CategoriesScreen() {
           disabled={!canStart}
           style={[styles.startBtn, !canStart && styles.startBtnDisabled]}
         >
-          <PlayArrowSvg width={24} height={24} fill={colors.textOnBrand} />
+          <PlayArrowSvg width={20} height={20} fill={colors.textOnBrand} />
         </Pressable>
       </Animated.View>
     </ModalLayout>

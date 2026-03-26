@@ -5,7 +5,7 @@ export const cardPrefix = 'Vem här…';
 // 5 base colors. Swap hex here to rebrand — never reference these directly in UI.
 
 const palette = {
-  brand:    '#e82c07',   // pink accent
+  brand:    '#e82c07',   // red accent
   ink:      '#111111',   // near-black (never pure black)
   dim:      '#1A1A1A',   // dark surface
   smoke:    '#2E2E2E',   // dark secondary surface
@@ -14,45 +14,17 @@ const palette = {
   fog:      '#F2EEE9',   // off-white (never pure white)
   mist:     '#E8E3DD',   // light secondary surface
   stone:    '#D6D0CA',   // light border / tertiary surface
+  navy:     '#0c3879',   // dark navy (card bg in dark mode)
+  blush:    '#f9edf0',   // very light pink (card bg in light mode)
+  champagne:'#e6c8b7',   // soft peach-cream (deck icons)
 } as const;
-
-export const warmTones = {
-  periwinkle: '#dfe5f3',  // light blue
-  blush:      '#f9edf0',  // very light pink
-  champagne:  '#e6c8b7',  // soft peach-cream
-  navy:       '#0c3879',  // dark navy (card bg in dark mode)
-  forest:     '#69ba36',  // bright green
-  espresso:   '#261311',  // very dark brown
-} as const;
-
-// ─── Omnipollo palette (experimental) ────────────────────────────────────────
-// const omnipolloBase = {
-//   brand:    '#E8442A',   // red-orange accent — loud, primary
-//   ink:      '#1A0818',   // near-black with purple tint
-//   dim:      '#2A1040',   // dark surface — deep purple
-//   smoke:    '#3D1A5A',   // dark secondary surface
-//   grey:     '#7A5A90',   // mid purple-grey
-//   silver:   '#B090C8',   // muted lavender text
-//   fog:      '#FFF0FA',   // off-white with pink tint
-//   mist:     '#F0E0FF',   // light secondary surface — lavender
-//   stone:    '#D8B0F0',   // light border
-// };
-// const omnipolloTones = {
-//   periwinkle: '#5B2DB0',  // deep purple
-//   blush:      '#FFD0EE',  // very light pink
-//   champagne:  '#E87AC5',  // omnipollo pink
-//   cognac:     '#D43080',  // deep magenta
-//   amber:      '#4BC8E8',  // cyan — secondary highlight
-//   espresso:   '#1A0818',  // near-black
-// };
-
 
 // ─── Semantic tokens ──────────────────────────────────────────────────────────
 
 export const darkColors = {
   bgPrimary:   palette.ink,
   bgSecondary: palette.dim,
-  bgCard:      warmTones.navy,
+  bgCard:      palette.navy,
   bgBrand:     palette.brand,
   bgBlack:     palette.ink,
 
@@ -68,7 +40,7 @@ export const darkColors = {
 export const lightColors = {
   bgPrimary:   palette.fog,
   bgSecondary: palette.mist,
-  bgCard:      warmTones.blush,
+  bgCard:      palette.blush,
   bgBrand:     palette.brand,
   bgBlack:     palette.ink,
 

@@ -4,21 +4,9 @@ import React, { useRef } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import OkeySvg from '../../assets/icons/noun-okey-8020578.svg';
 import LockSvg from '../../assets/icons/noun-lock-826098.svg';
-import { animation, AppColors, radius, spacing, typography, warmTones } from '../constants/theme';
+import { animation, AppColors, radius, spacing, typography } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
 
-const DECK_ICON_COLORS: Record<string, string> = {
-  'personlighet':           warmTones.champagne,
-  'livssituationer':        warmTones.cognac,
-  'liv-bakgrund':           warmTones.amber,
-  'relationer-kanslor':     warmTones.blush,
-  'hemligheter-historier':  warmTones.periwinkle,
-  'absurt-ovantat':         warmTones.amber,
-  'ambitioner-drommar':     warmTones.champagne,
-  'kropp-halsa':            warmTones.cognac,
-  'pengar-prioriteringar':  warmTones.periwinkle,
-  'radsla-mod':             warmTones.blush,
-};
 import { useGameStore } from '../store/gameStore';
 import { DeckIcon } from './DeckIcon';
 import type { Deck } from '../types';
@@ -109,7 +97,7 @@ export function DeckTile({ deck, isSelected = false, selectedColor, badge, showC
   const onColor = isSelected ? contrastText(activeBg) : colors.textPrimary;
   const textColor = onColor;
   const subColor = isSelected ? onColor + '99' : colors.textSecondary;
-  const iconColor = isSelected ? onColor : !locked ? (colorScheme === 'light' ? warmTones.amber : warmTones.champagne) : onColor;
+  const iconColor = isSelected ? onColor : !locked ? (colorScheme === 'light' ? colors.accent : '#e6c8b7') : onColor;
 
   return (
     <Animated.View style={{ opacity }}>
@@ -147,7 +135,12 @@ export function DeckTile({ deck, isSelected = false, selectedColor, badge, showC
               <Text style={[styles.title, { color: textColor, opacity: locked ? 0.45 : 1 }]}>{deck.title.toUpperCase()}</Text>
               <View style={styles.titleRight}>
                 <OkeySvg width={24} height={24} fill={badge ? (isSelected ? '#000000' : colors.textMuted) : 'transparent'} />
-                {locked && <LockSvg width={22} height={22} fill={colors.textMuted} />}
+                {locked && (
+                  <>
+                    <Text style={[styles.count, { color: colors.textMuted }]}>PREMIUM</Text>
+                    <LockSvg width={18} height={18} fill={colors.textMuted} />
+                  </>
+                )}
                 {showCount && <Text style={[styles.count, { color: subColor }]}>{deck.cards.length} kort</Text>}
               </View>
             </View>

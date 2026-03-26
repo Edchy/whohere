@@ -1,12 +1,12 @@
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { DeckIcon } from '../../src/components/DeckIcon';
 import ModalLayout from '../../src/components/ModalLayout';
 import LockSvg from '../../assets/icons/noun-lock-826098.svg';
-import { fonts, radius, spacing, typography } from '../../src/constants/theme';
+import { fonts, radius, spacing } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
 import { usePurchase } from '../../src/hooks/usePurchase';
 import allDecks from '../../assets/data/decks/index';
@@ -22,7 +22,6 @@ const LOCKED_PREVIEW_COUNT = 2;
 
 export default function DeckDetailScreen() {
   const { deckId } = useLocalSearchParams<{ deckId: string }>();
-  const router = useRouter();
   const colors = useColors();
   const { isPremium, purchasePremium } = usePurchase();
 
@@ -62,7 +61,7 @@ export default function DeckDetailScreen() {
           {isLocked && (
             <View style={[styles.tag, { borderColor: colors.accent + '60', backgroundColor: colors.accent + '12', flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
               <LockSvg width={14} height={14} fill={colors.accent} />
-              <Text style={[styles.tagText, { color: colors.accent }]}>Låst</Text>
+              <Text style={[styles.tagText, { color: colors.accent }]}>Premium</Text>
             </View>
           )}
         </View>
