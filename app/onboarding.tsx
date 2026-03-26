@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import FingerIcon from '../assets/icons/noun-finger-3414109.svg';
 import {
   Animated,
   Dimensions,
+  Easing,
   PanResponder,
   Platform,
   Pressable,
@@ -12,7 +13,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import GroovyEmoji from '../src/components/GroovyEmoji';
+import EyesLogo from '../src/components/EyesLogo';
 import {
   appName,
   dimensions as dim,
@@ -22,6 +23,7 @@ import {
   typography,
 } from '../src/constants/theme';
 import { useColors } from '../src/hooks/useColors';
+import { useHaptics } from '../src/hooks/useHaptics';
 import { useGameStore } from '../src/store/gameStore';
 
 const ONBOARDING_KEY = '@whohere/hasSeenOnboarding';
@@ -129,12 +131,10 @@ function SlideCard({ slide }: { slide: Slide }) {
   if (slide.isWelcome) {
     return (
       <View style={[styles.card, styles.cardWelcome, { backgroundColor: colors.bgPrimary, borderColor: colors.textPrimary }]}>
-        {/* Top: groovy emoji anchored to top-left */}
-        <GroovyEmoji size={80} />
-
-        {/* Center: title + tagline grouped tightly */}
+        {/* Center: logo + title + tagline */}
         <View style={styles.welcomeCenter}>
-          <Text selectable={false} style={[styles.welcomeAppName, { color: colors.textPrimary }]}>
+          <EyesLogo size={80} />
+          <Text selectable={false} style={[styles.welcomeAppName, { color: colors.accent }]}>
             {appName.toUpperCase()}
           </Text>
           {slide.subheading ? (
@@ -169,10 +169,79 @@ function SlideCard({ slide }: { slide: Slide }) {
   );
 }
 
+function AnimatedDot({ active, colors }: { active: boolean; colors: ReturnType<typeof useColors> }) {
+  const width = useRef(new Animated.Value(active ? 20 : dim.dotSize)).current;
+  const bg = useRef(new Animated.Value(active ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(width, {
+        toValue: active ? 20 : dim.dotSize,
+        duration: 220,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      }),
+      Animated.timing(bg, {
+        toValue: active ? 1 : 0,
+        duration: 220,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      }),
+    ]).start();
+  }, [active]);
+
+  const backgroundColor = bg.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.textMuted, colors.textPrimary],
+  });
+
+  return (
+    <Animated.View
+      style={[styles.dot, { width, backgroundColor }]}
+    />
+  );
+}
+
+function AnimatedCta({ colors, onPress }: { colors: ReturnType<typeof useColors>; onPress: () => void }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(12)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 320,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 320,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      <Pressable
+        style={[styles.ctaButton, { borderColor: colors.textPrimary }]}
+        onPress={onPress}
+        hitSlop={8}
+      >
+        <Text selectable={false} style={[styles.ctaText, { color: colors.textPrimary }]}>
+          Börja spela
+        </Text>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
 export default function OnboardingScreen() {
   const colors = useColors();
-  const { from } = useLocalSearchParams<{ from?: string }>();
-  const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
+  const haptics = useHaptics();
+const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const [topIndex, setTopIndex] = useState(0);
   const [dotIndex, setDotIndex] = useState(0);
   const [swipeDir, setSwipeDir] = useState<'forward' | 'back'>('forward');
@@ -187,11 +256,7 @@ export default function OnboardingScreen() {
   dismissRef.current = async () => {
     await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
     setHasSeenOnboarding(true);
-    if (from === 'settings') {
-      router.back();
-    } else {
-      router.replace('/');
-    }
+    router.replace('/');
   };
 
   const dismiss = () => dismissRef.current();
@@ -199,6 +264,7 @@ export default function OnboardingScreen() {
   const goNext = () => {
     const cur = topIndexRef.current;
     const next = cur + 1;
+    haptics.light();
     setSwipeDir('forward');
     setDotIndex(Math.min(next, SLIDES.length - 1));
     if (next >= SLIDES.length) {
@@ -215,6 +281,7 @@ export default function OnboardingScreen() {
     const cur = topIndexRef.current;
     const prev = cur - 1;
     if (prev < 0) return;
+    haptics.light();
     setSwipeDir('back');
     setDotIndex(prev);
     frozenUndercardIndex.current = cur + 1;
@@ -293,25 +360,20 @@ export default function OnboardingScreen() {
         </Animated.View>
       </View>
 
-      {topIndex < SLIDES.length - 1 && (
-        <Pressable style={styles.skipButton} onPress={dismiss} hitSlop={12}>
-          <Text selectable={false} style={[styles.skipText, { color: colors.textMuted }]}>hoppa över</Text>
-        </Pressable>
-      )}
-
       <View style={styles.dots} pointerEvents="none">
         {SLIDES.map((_, i) => (
-          <View
-            key={i}
-            style={[
-              styles.dot,
-              {
-                width: i === dotIndex ? 20 : dim.dotSize,
-                backgroundColor: i === dotIndex ? colors.textPrimary : colors.textMuted,
-              },
-            ]}
-          />
+          <AnimatedDot key={i} active={i === dotIndex} colors={colors} />
         ))}
+      </View>
+
+      <View style={styles.bottomArea}>
+        {topIndex < SLIDES.length - 1 ? (
+          <Pressable onPress={dismiss} hitSlop={12}>
+            <Text selectable={false} style={[styles.skipText, { color: colors.textMuted }]}>hoppa över</Text>
+          </Pressable>
+        ) : (
+          <AnimatedCta colors={colors} onPress={() => { haptics.success(); dismiss(); }} />
+        )}
       </View>
     </View>
   );
@@ -331,12 +393,6 @@ const styles = StyleSheet.create({
   cardWrapper: {
     position: 'absolute',
     width: CARD_WIDTH,
-  },
-  skipButton: {
-    position: 'absolute',
-    top: spacing.xxxl,
-    right: spacing.lg,
-    zIndex: 10,
   },
   skipText: {
     ...typography.caption,
@@ -372,30 +428,33 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   cardWelcome: {
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   welcomeCenter: {
     alignSelf: 'stretch',
-    gap: 2,
-    marginBottom: spacing.xxl,
+    alignItems: 'center',
+    gap: spacing.md,
   },
   welcomeAppName: {
-    fontFamily: fonts.bold,
-    fontSize: 48,
-    lineHeight: 54,
+    fontFamily: fonts.brand,
+    fontSize: 38,
+    lineHeight: 52,
     letterSpacing: -0.5,
+    textAlign: 'center',
   },
   welcomeSubheading: {
     fontFamily: fonts.regular,
     fontSize: 20,
     lineHeight: 28,
     opacity: 0.6,
+    textAlign: 'center',
   },
   welcomeHintRow: {
+    position: 'absolute' as const,
+    bottom: spacing.xl,
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    alignSelf: 'flex-end' as const,
     gap: spacing.xs,
   },
   welcomeHintLabel: {
@@ -403,17 +462,34 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   dots: {
-    position: 'absolute',
-    bottom: spacing.xl,
-    left: 0,
-    right: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.lg,
+  },
+  bottomArea: {
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xxxl,
   },
   dot: {
     height: dim.dotSize,
     borderRadius: dim.dotSize / 2,
+  },
+  ctaButton: {
+    width: CARD_WIDTH,
+    height: 52,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ctaText: {
+    fontFamily: fonts.bold,
+    fontSize: 15,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
 });

@@ -97,7 +97,6 @@ function makeStyles(colors: AppColors) {
     },
     whoHere: {
       ...typography.brand,
-      color: colors.textPrimary,
       marginBottom: spacing.md,
       textTransform: "uppercase" as const,
       letterSpacing: 2,
@@ -116,6 +115,7 @@ const CardFace = React.memo(function CardFace({
   totalCards,
   colors,
   styles,
+  modeTint,
 }: {
   card: Card;
   deck: Deck;
@@ -131,7 +131,7 @@ const CardFace = React.memo(function CardFace({
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.questionBlock}>
-        <Text selectable={false} style={styles.whoHere}>Vem här…</Text>
+        <Text selectable={false} style={[styles.whoHere, { color: colors.textPrimary }]}>Vem här…</Text>
         <Text
           selectable={false}
           style={styles.question}
@@ -172,12 +172,9 @@ export default function PlayScreen() {
   const activeDeck = useGameStore((s) => s.activeDeck);
   const startGame = useGameStore((s) => s.startGame);
   const nextCardStore = useGameStore((s) => s.nextCard);
-  const prevCardStore = useGameStore((s) => s.prevCard);
   const endGame = useGameStore((s) => s.endGame);
 
   const [topIndex, setTopIndex] = useState(0);
-  const [swipeDir, setSwipeDir] = useState<"forward" | "back">("forward");
-  const frozenUndercardIndex = useRef<number | null>(null);
 
   const dragX = useRef(new Animated.Value(0)).current;
 
@@ -202,7 +199,6 @@ export default function PlayScreen() {
   const goNext = () => {
     const cur = topIndexRef.current;
     const next = cur + 1;
-    setSwipeDir("forward");
     if (!deck) return;
     if (cur >= deck.cards.length) {
       endGame();
@@ -218,25 +214,6 @@ export default function PlayScreen() {
     });
   };
 
-  const goPrev = () => {
-    const cur = topIndexRef.current;
-    const prev = cur - 1;
-    if (prev < 0) return;
-    prevCardStore();
-    setSwipeDir("back");
-    frozenUndercardIndex.current = topIndexRef.current + 1;
-    Animated.timing(dragX, { toValue: SCREEN_WIDTH * 1.5, duration: 150, useNativeDriver: true }).start(() => {
-      dragX.setValue(-SCREEN_WIDTH * 1.5);
-      setTopIndex(prev);
-      requestAnimationFrame(() => {
-        Animated.spring(dragX, { toValue: 0, useNativeDriver: true, damping: 22, stiffness: 400, mass: 0.8 }).start(() => {
-          frozenUndercardIndex.current = null;
-          setSwipeDir("forward");
-        });
-      });
-    });
-  };
-
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
@@ -246,18 +223,14 @@ export default function PlayScreen() {
         dragX.stopAnimation();
       },
       onPanResponderMove: (_, g) => {
-        if (g.dx > 0 && topIndexRef.current === 0) return;
+        if (g.dx > 0) return;
         dragX.setValue(g.dx);
       },
       onPanResponderRelease: (_, g) => {
         const goLeft = g.dx < -SWIPE_DISTANCE || g.vx < -(SWIPE_VELOCITY / 1000);
-        const goRight = g.dx > SWIPE_DISTANCE || g.vx > (SWIPE_VELOCITY / 1000);
         if (goLeft) {
           hapticsRef.current.light();
           goNext();
-        } else if (goRight && topIndexRef.current > 0) {
-          hapticsRef.current.light();
-          goPrev();
         } else {
           Animated.spring(dragX, { toValue: 0, useNativeDriver: true, damping: 20, stiffness: 300 }).start();
         }
@@ -270,8 +243,9 @@ export default function PlayScreen() {
       { translateX: dragX },
       {
         rotate: dragX.interpolate({
-          inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
-          outputRange: ["-7deg", "0deg", "7deg"],
+          inputRange: [-SCREEN_WIDTH, 0],
+          outputRange: ["-7deg", "0deg"],
+          extrapolate: "clamp",
         }),
       },
     ],
@@ -286,13 +260,19 @@ export default function PlayScreen() {
 
   const isResultsCard = topIndex === deck.cards.length;
   const topCard: Card | undefined = isResultsCard ? undefined : deck.cards[topIndex];
-  const undercardIdx = frozenUndercardIndex.current ?? topIndex + 1;
+  const undercardIdx = topIndex + 1;
   const isUndercardResults = undercardIdx === deck.cards.length;
   const nextCard: Card | undefined = isUndercardResults ? undefined : deck.cards[undercardIdx];
 
   const nextCardOpacity = dragX.interpolate({
     inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
     outputRange: [1, 1, 0, 1, 1],
+    extrapolate: "clamp",
+  });
+
+  const nextCardScale = dragX.interpolate({
+    inputRange: [-SCREEN_WIDTH * 1.5, -SWIPE_DISTANCE, 0, SWIPE_DISTANCE, SCREEN_WIDTH * 1.5],
+    outputRange: [1, 1, 0.96, 1, 1],
     extrapolate: "clamp",
   });
 
@@ -303,7 +283,7 @@ export default function PlayScreen() {
       <View style={styles.cardArea} {...panResponder.panHandlers}>
         {/* Next card sits underneath — peeks when swiping */}
         {isUndercardResults && (
-          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]} pointerEvents="none">
+          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity, transform: [{ scale: nextCardScale }] }]} pointerEvents="none">
             <View style={[styles.cardFace, { backgroundColor: colors.bgCard, opacity: 0.5 }]}>
               <EndCard
                 variant={isPremium ? 'completion' : 'paywall'}
@@ -316,7 +296,7 @@ export default function PlayScreen() {
           </Animated.View>
         )}
         {nextCard && (
-          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity }]}>
+          <Animated.View style={[styles.cardWrapper, { opacity: nextCardOpacity, transform: [{ scale: nextCardScale }] }]}>
             <View style={[styles.cardFace, { backgroundColor: colors.bgCard }]}>
               <CardFace
                 card={nextCard}

@@ -1,9 +1,10 @@
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import {
   Animated,
+  Easing,
   Platform,
   Pressable,
   StyleSheet,
@@ -63,7 +64,6 @@ function makeStyles(colors: AppColors) {
     rowLabel: {
       ...typography.display,
       textTransform: 'uppercase',
-      color: colors.bgBrand,
     },
     rowSublabel: {
       ...typography.caption,
@@ -72,11 +72,33 @@ function makeStyles(colors: AppColors) {
   });
 }
 
-function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors }) {
+function ModeRow({ mode, colors, index }: { mode: (typeof MODES)[0]; colors: AppColors; index: number }) {
   const router = useRouter();
   const colorScheme = useGameStore((s) => s.colorScheme);
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const opacity = useRef(new Animated.Value(1)).current;
+
+  const entranceOpacity = useRef(new Animated.Value(0)).current;
+  const entranceY = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(entranceOpacity, {
+        toValue: 1,
+        duration: 300,
+        delay: index * 80,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.timing(entranceY, {
+        toValue: 0,
+        duration: 300,
+        delay: index * 80,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   const onPressIn = () => {
     Animated.timing(opacity, {
@@ -95,6 +117,7 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
   };
 
   return (
+    <Animated.View style={{ opacity: entranceOpacity, transform: [{ translateY: entranceY }] }}>
     <Animated.View style={{ opacity }}>
       <Pressable
         onPressIn={onPressIn}
@@ -110,14 +133,14 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
         {colorScheme === 'light' && (
           <>
             <LinearGradient
-              colors={[colors.accent + '15', 'transparent']}
+              colors={[colors.accent + '10', 'transparent']}
               locations={[0, 0.6]}
               start={{ x: 1, y: 0 }}
               end={{ x: 0.2, y: 1 }}
               style={StyleSheet.absoluteFillObject}
             />
             <LinearGradient
-              colors={[colors.accent + '15', 'transparent']}
+              colors={[colors.accent + '10', 'transparent']}
               locations={[0, 0.6]}
               start={{ x: 0, y: 1 }}
               end={{ x: 0.8, y: 0 }}
@@ -127,11 +150,12 @@ function ModeRow({ mode, colors }: { mode: (typeof MODES)[0]; colors: AppColors 
         )}
         <View style={styles.rowInner}>
           <View style={styles.rowText}>
-            <Text style={styles.rowLabel}>{mode.label}</Text>
+            <Text style={[styles.rowLabel, { color: colors.textPrimary }]}>{mode.label}</Text>
             <Text style={styles.rowSublabel}>{mode.sublabel}</Text>
           </View>
         </View>
       </Pressable>
+    </Animated.View>
     </Animated.View>
   );
 }
@@ -144,8 +168,8 @@ export default function HomeScreen() {
     <ScreenLayout>
       <View style={styles.container}>
         <View style={styles.modeList}>
-          {MODES.map((mode) => (
-            <ModeRow key={mode.id} mode={mode} colors={colors} />
+          {MODES.map((mode, i) => (
+            <ModeRow key={mode.id} mode={mode} colors={colors} index={i} />
           ))}
         </View>
       </View>

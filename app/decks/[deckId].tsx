@@ -17,6 +17,7 @@ const MODE_LABELS: Record<string, string> = {
   group: 'Med vänner',
 };
 
+
 const FREE_PREVIEW_COUNT = 3;
 const LOCKED_PREVIEW_COUNT = 2;
 
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   prefix: {
-    fontFamily: fonts.bold,
+    fontFamily: fonts.brand,
     fontSize: 10,
     lineHeight: 14,
     letterSpacing: 1.5,

@@ -14,17 +14,65 @@ const palette = {
   fog:      '#F2EEE9',   // off-white (never pure white)
   mist:     '#E8E3DD',   // light secondary surface
   stone:    '#D6D0CA',   // light border / tertiary surface
-  navy:     '#0c3879',   // dark navy (card bg in dark mode)
+  navy:     '#e89595',   // dark navy (card bg in dark mode)
   blush:    '#f9edf0',   // very light pink (card bg in light mode)
-  champagne:'#e6c8b7',   // soft peach-cream (deck icons)
+  champagne:'#f19090',   
 } as const;
+
+// ─── Brand hue rotation ───────────────────────────────────────────────────────
+// Derives analogous mode tints from the brand color so they stay coherent
+// when the brand hex changes. Rotates in HSL space: ±60° off the brand hue.
+
+function hexToHsl(hex: string): [number, number, number] {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.slice(0, 2), 16) / 255;
+  const g = parseInt(h.slice(2, 4), 16) / 255;
+  const b = parseInt(h.slice(4, 6), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return [0, 0, l];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let hue = 0;
+  if (max === r) hue = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+  else if (max === g) hue = ((b - r) / d + 2) / 6;
+  else hue = ((r - g) / d + 4) / 6;
+  return [hue * 360, s, l];
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  h = ((h % 360) + 360) % 360;
+  const hNorm = h / 360;
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  const toC = (t: number) => {
+    if (t < 0) t += 1; if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+  };
+  const r = Math.round(toC(hNorm + 1/3) * 255);
+  const g = Math.round(toC(hNorm) * 255);
+  const b = Math.round(toC(hNorm - 1/3) * 255);
+  return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+function rotateHue(hex: string, degrees: number): string {
+  const [h, s, l] = hexToHsl(hex);
+  // Clamp saturation slightly so rotated tints stay rich but not garish
+  return hslToHex(h + degrees, Math.min(s, 0.80), l);
+}
+
+const modeFriends = rotateHue(palette.brand, -60);  // ~251° blue-violet
+const modeSolo    = rotateHue(palette.brand, +60);   // ~11°  warm coral-red
 
 // ─── Semantic tokens ──────────────────────────────────────────────────────────
 
 export const darkColors = {
   bgPrimary:   palette.ink,
   bgSecondary: palette.dim,
-  bgCard:      palette.navy,
+  bgCard:      palette.champagne,
   bgBrand:     palette.brand,
   bgBlack:     palette.ink,
 
@@ -35,12 +83,16 @@ export const darkColors = {
 
   accent:  palette.brand,
   border:  palette.smoke,
+
+  modeDating:  palette.brand,  // brand hue
+  modeFriends,                 // brand −60° (blue-violet)
+  modeSolo,                    // brand +60° (warm coral-red)
 } as const;
 
 export const lightColors = {
   bgPrimary:   palette.fog,
   bgSecondary: palette.mist,
-  bgCard:      palette.blush,
+  bgCard:      palette.champagne,
   bgBrand:     palette.brand,
   bgBlack:     palette.ink,
 
@@ -51,6 +103,10 @@ export const lightColors = {
 
   accent:  palette.brand,
   border:  palette.stone,
+
+  modeDating:  palette.brand,
+  modeFriends,
+  modeSolo,
 } as const;
 
 export type AppColors = { [K in keyof typeof darkColors]: string };
@@ -86,6 +142,7 @@ export const fonts = {
   extraLight: 'AuthorExtralight',
   regular:    'AuthorRegular',
   bold:       'AuthorBold',
+  brand:      'Matemasie',
 } as const;
 
 // ─── Typography ───────────────────────────────────────────────────────────────
@@ -100,12 +157,12 @@ export const fonts = {
 
 export const typography = {
   display: { fontFamily: fonts.bold,       fontSize: 32, lineHeight: 38, letterSpacing: -0.5 },
-  brand:   { fontFamily: fonts.regular,    fontSize: 24, lineHeight: 30, letterSpacing: 0 },
+  brand:   { fontFamily: fonts.brand,      fontSize: 24, lineHeight: 30, letterSpacing: 0 },
   heading: { fontFamily: fonts.bold,       fontSize: 16, lineHeight: 22, letterSpacing: 0 },
   body:    { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 26 },
   caption: { fontFamily: fonts.regular,    fontSize: 14, lineHeight: 20 },
   badge:   { fontFamily: fonts.regular,    fontSize: 10, lineHeight: 14, letterSpacing: 1.2 },
-  card:    { fontFamily: fonts.bold,       fontSize: 28, lineHeight: 36, letterSpacing: 0 },
+  card:    { fontFamily: fonts.bold,       fontSize: 22, lineHeight: 30, letterSpacing: 0 },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────
