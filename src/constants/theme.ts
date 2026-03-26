@@ -99,13 +99,13 @@ export const fonts = {
 //   card     — question card text
 
 export const typography = {
-  display: { fontFamily: fonts.bold,       fontSize: 32, lineHeight: 36, letterSpacing: -1 },
-  brand:   { fontFamily: fonts.regular,       fontSize: 24, lineHeight: 24, letterSpacing: 0 },
-  heading: { fontFamily: fonts.bold,       fontSize: 16, lineHeight: 26, letterSpacing: 0 },
-  body:    { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 24 },
-  caption: { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 18 },
-  badge:   { fontFamily: fonts.regular,    fontSize: 10, lineHeight: 14, letterSpacing: 1 },
-  card:    { fontFamily: fonts.bold,       fontSize: 28, lineHeight: 28, letterSpacing: 0.1 },
+  display: { fontFamily: fonts.bold,       fontSize: 32, lineHeight: 38, letterSpacing: -0.5 },
+  brand:   { fontFamily: fonts.regular,    fontSize: 24, lineHeight: 30, letterSpacing: 0 },
+  heading: { fontFamily: fonts.bold,       fontSize: 16, lineHeight: 22, letterSpacing: 0 },
+  body:    { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 26 },
+  caption: { fontFamily: fonts.regular,    fontSize: 14, lineHeight: 20 },
+  badge:   { fontFamily: fonts.regular,    fontSize: 10, lineHeight: 14, letterSpacing: 1.2 },
+  card:    { fontFamily: fonts.bold,       fontSize: 28, lineHeight: 36, letterSpacing: 0 },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────

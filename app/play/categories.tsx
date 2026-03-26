@@ -98,26 +98,25 @@ function makeStyles(colors: AppColors) {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
       paddingBottom: TAB_BAR_BOTTOM_CLEARANCE + spacing.xl,
-      gap: spacing.sm,
+      gap: spacing.lg,
     },
     header: {
       paddingTop: spacing.md,
-      paddingBottom: spacing.sm,
-      gap: spacing.xs,
+      paddingBottom: spacing.xs,
+      gap: spacing.sm,
     },
     title: {
       ...typography.display,
       fontSize: 26,
-      lineHeight: 30,
+      lineHeight: 34,
       color: colors.textPrimary,
     },
     subtitle: {
       ...typography.body,
-      lineHeight: 20,
       color: colors.textMuted,
     },
     tileList: {
-      gap: spacing.sm,
+      gap: spacing.md,
     },
     surpriseTile: {
       paddingVertical: spacing.xl,
@@ -137,9 +136,9 @@ function makeStyles(colors: AppColors) {
       gap: spacing.xs,
     },
     surpriseTitle: {
-      ...typography.display,
+      ...typography.heading,
       fontSize: 20,
-      lineHeight: 24,
+      lineHeight: 26,
     },
     surpriseDesc: {
       ...typography.caption,

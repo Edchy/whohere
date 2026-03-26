@@ -366,6 +366,7 @@ const styles = StyleSheet.create({
   },
   body: {
     ...typography.body,
+    lineHeight: 28,
   },
   cardBottom: {
     alignItems: 'flex-end',
@@ -382,12 +383,13 @@ const styles = StyleSheet.create({
   welcomeAppName: {
     fontFamily: fonts.bold,
     fontSize: 48,
-    lineHeight: 50,
+    lineHeight: 54,
+    letterSpacing: -0.5,
   },
   welcomeSubheading: {
     fontFamily: fonts.regular,
-    fontSize: 22,
-    lineHeight: 24,
+    fontSize: 20,
+    lineHeight: 28,
     opacity: 0.6,
   },
   welcomeHintRow: {

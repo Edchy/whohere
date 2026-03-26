@@ -100,6 +100,7 @@ function makeStyles(colors: AppColors) {
       color: colors.textPrimary,
       marginBottom: spacing.md,
       textTransform: "uppercase" as const,
+      letterSpacing: 2,
     },
     question: {
       ...typography.card,

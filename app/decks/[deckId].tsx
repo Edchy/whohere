@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxxl,
-    gap: spacing.md,
+    gap: spacing.lg,
   },
   deckInfo: {
     flexDirection: 'row',
@@ -145,13 +145,13 @@ const styles = StyleSheet.create({
   deckTitle: {
     fontFamily: fonts.bold,
     fontSize: 20,
-    lineHeight: 24,
-    letterSpacing: 0.5,
+    lineHeight: 26,
+    letterSpacing: 0.3,
   },
   deckDesc: {
     fontFamily: fonts.regular,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 24,
   },
   tagsRow: {
     flexDirection: 'row',
@@ -166,19 +166,18 @@ const styles = StyleSheet.create({
   },
   tagText: {
     fontFamily: fonts.regular,
-    fontSize: 11,
-    lineHeight: 16,
+    fontSize: 12,
+    lineHeight: 18,
     letterSpacing: 0.5,
   },
   divider: {
     height: 1,
-    marginVertical: spacing.xs,
   },
   sectionLabel: {
     fontFamily: fonts.regular,
-    fontSize: 11,
-    lineHeight: 16,
-    letterSpacing: 1.5,
+    fontSize: 10,
+    lineHeight: 14,
+    letterSpacing: 2,
     marginBottom: spacing.xs,
   },
   questions: {
@@ -192,15 +191,15 @@ const styles = StyleSheet.create({
   },
   prefix: {
     fontFamily: fonts.bold,
-    fontSize: 11,
+    fontSize: 10,
     lineHeight: 14,
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
   questionText: {
     fontFamily: fonts.extraLight,
     fontSize: 18,
-    lineHeight: 24,
+    lineHeight: 26,
   },
   lockedBlock: {
     gap: spacing.sm,
@@ -214,8 +213,8 @@ const styles = StyleSheet.create({
   },
   lockedCtaText: {
     fontFamily: fonts.regular,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
   },
   unlockBtn: {
@@ -225,13 +224,13 @@ const styles = StyleSheet.create({
   },
   unlockBtnText: {
     fontFamily: fonts.bold,
-    fontSize: 14,
-    letterSpacing: 0.5,
+    fontSize: 16,
+    letterSpacing: 0.3,
   },
   moreHint: {
     fontFamily: fonts.regular,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
     paddingVertical: spacing.sm,
   },

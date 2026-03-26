@@ -70,20 +70,19 @@ function makeStyles(colors: AppColors) {
     mark: {
       fontSize: 32,
       color: colors.accent,
-      marginBottom: spacing.sm,
     },
     title: {
       fontFamily: fonts.bold,
-      fontSize: 22,
-      lineHeight: 28,
+      fontSize: 24,
+      lineHeight: 30,
       color: colors.textPrimary,
       textAlign: 'center',
       letterSpacing: -0.3,
     },
     body: {
       fontFamily: fonts.regular,
-      fontSize: 14,
-      lineHeight: 20,
+      fontSize: 16,
+      lineHeight: 24,
       color: colors.textSecondary,
       textAlign: 'center',
     },
@@ -99,8 +98,8 @@ function makeStyles(colors: AppColors) {
     },
     primaryBtnText: {
       fontFamily: fonts.bold,
-      fontSize: 14,
-      letterSpacing: 0.5,
+      fontSize: 16,
+      letterSpacing: 0.3,
       color: colors.textOnBrand,
     },
     secondaryBtn: {
@@ -111,7 +110,7 @@ function makeStyles(colors: AppColors) {
     },
     secondaryBtnText: {
       fontFamily: fonts.regular,
-      fontSize: 14,
+      fontSize: 16,
       color: colors.textMuted,
     },
   });

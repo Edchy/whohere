@@ -41,8 +41,8 @@ export default function DecksScreen() {
 const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
+    paddingTop: spacing.xxl,
     paddingBottom: TAB_BAR_BOTTOM_CLEARANCE,
-    gap: spacing.sm,
+    gap: spacing.md,
   },
 });

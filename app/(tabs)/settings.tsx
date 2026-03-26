@@ -59,12 +59,12 @@ function makeStyles(colors: AppColors) {
   return StyleSheet.create({
     scroll: {
       paddingHorizontal: spacing.lg,
-      paddingTop: spacing.lg,
+      paddingTop: spacing.xxl,
       paddingBottom: TAB_BAR_BOTTOM_CLEARANCE,
-      gap: spacing.md,
+      gap: spacing.lg,
     },
     grid: {
-      gap: spacing.md,
+      gap: spacing.sm,
     },
     row: {
       overflow: 'hidden',
@@ -96,20 +96,21 @@ function makeStyles(colors: AppColors) {
     },
     infoText: {
       fontFamily: fonts.regular,
-      fontSize: 14,
-      lineHeight: 22,
+      fontSize: 16,
+      lineHeight: 26,
       color: colors.textSecondary,
     },
     infoLink: {
       fontFamily: fonts.extraLight,
-      fontSize: 14,
-      lineHeight: 22,
+      fontSize: 16,
+      lineHeight: 26,
       color: colors.textPrimary,
       textDecorationLine: 'underline',
     },
     version: {
       fontFamily: fonts.regular,
-      fontSize: 14,
+      fontSize: 12,
+      letterSpacing: 0.5,
       color: colors.textMuted,
       marginTop: spacing.xl,
     },
@@ -215,6 +216,7 @@ export default function SettingsScreen() {
     <ScreenLayout>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
+        {/* Purchase group */}
         <View style={styles.grid}>
           {isPremium ? (
             <>
@@ -255,7 +257,10 @@ export default function SettingsScreen() {
               </View>
             )}
           </AnimatedRow>
+        </View>
 
+        {/* Preferences group */}
+        <View style={styles.grid}>
           <AnimatedRow
             onPress={handleToggleColorScheme}
             right={<TogglePill active={colorScheme === 'dark'} />}
