@@ -437,18 +437,18 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   welcomeAppName: {
-    fontFamily: fonts.brand,
-    fontSize: 38,
-    lineHeight: 52,
+    fontFamily: fonts.B,
+    fontSize: 48,
+    lineHeight: 72,
     letterSpacing: -0.5,
     textAlign: 'center',
   },
   welcomeSubheading: {
-    fontFamily: fonts.regular,
+    fontFamily: fonts.BC,
     fontSize: 20,
     lineHeight: 28,
     opacity: 0.6,
-    textAlign: 'center',
+    // textAlign: 'center',
   },
   welcomeHintRow: {
     position: 'absolute' as const,

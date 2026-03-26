@@ -35,8 +35,7 @@ function makeStyles(colors: AppColors) {
     },
     cardArea: {
       flex: 1,
-      justifyContent: "flex-start",
-      paddingTop: spacing.md,
+      justifyContent: "center",
     },
     closeRow: {
       alignItems: 'center',
@@ -47,15 +46,13 @@ function makeStyles(colors: AppColors) {
       width: 48,
       height: 48,
       borderRadius: 24,
-      backgroundColor: colors.bgSecondary,
-      borderWidth: 1,
-      borderColor: colors.border,
+      backgroundColor: colors.bgCard,
       alignItems: 'center',
       justifyContent: 'center',
     },
     closeBtnText: {
       ...typography.body,
-      color: colors.textMuted,
+      color: colors.textOnCard,
       lineHeight: 20,
     },
     cardWrapper: {
@@ -103,7 +100,7 @@ function makeStyles(colors: AppColors) {
     },
     question: {
       ...typography.card,
-      color: colors.textPrimary,
+      color: colors.textOnCard,
     },
   });
 }
@@ -131,7 +128,7 @@ const CardFace = React.memo(function CardFace({
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.questionBlock}>
-        <Text selectable={false} style={[styles.whoHere, { color: colors.textPrimary }]}>Vem här…</Text>
+        <Text selectable={false} style={[styles.whoHere, { color: colors.textOnCard }]}>Vem här…</Text>
         <Text
           selectable={false}
           style={styles.question}
@@ -143,13 +140,13 @@ const CardFace = React.memo(function CardFace({
       <View style={styles.cardBottom}>
         <View style={styles.bottomRow}>
           <View style={styles.bottomRowLeft}>
-            <DeckIcon deck={{ icon, svgIcon }} size={18} color={colors.textMuted} />
-            <Text selectable={false} style={[styles.bottomRowText, { color: colors.textMuted }]} numberOfLines={1}>
+            <DeckIcon deck={{ icon, svgIcon }} size={18} color={colors.textOnCard} />
+            <Text selectable={false} style={[styles.bottomRowText, { color: colors.textOnCard }]} numberOfLines={1}>
               {title.toUpperCase()}
             </Text>
           </View>
           <View>
-            <Text selectable={false} style={[styles.bottomRowText, { color: colors.textMuted }]}>
+            <Text selectable={false} style={[styles.bottomRowText, { color: colors.textOnCard }]}>
               {cardIndex + 1} / {totalCards}
             </Text>
           </View>
