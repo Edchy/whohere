@@ -169,7 +169,7 @@ export const typography = {
   body:    { fontFamily: fonts.regular,    fontSize: 16, lineHeight: 26 },
   caption: { fontFamily: fonts.regular,    fontSize: 14, lineHeight: 20 },
   badge:   { fontFamily: fonts.regular,    fontSize: 10, lineHeight: 14, letterSpacing: 1.2 },
-  card:    { fontFamily: fonts.F,       fontSize: 22, lineHeight: 30, letterSpacing: 0 },
+  card:    { fontFamily: fonts.F,       fontSize: 26, lineHeight: 36, letterSpacing: 0 },
 } as const;
 
 // ─── Dimensions ───────────────────────────────────────────────────────────────

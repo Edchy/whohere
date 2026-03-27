@@ -164,8 +164,8 @@ function Eye({ eyeW, eyeH, borderW, pupilSize, irisAnimStyle }: EyeProps) {
 
 export default function EyesLogo({ size = 64 }: EyesLogoProps) {
   // Fly eyes are nearly circular and very large — closer to 1:1 ratio
-  const eyeW    = size * 0.50;
-  const eyeH    = size * 0.52;
+  const eyeW    = size * 0.38;
+  const eyeH    = size * 0.40;
   const gap     = size * 0.01;   // close together
   const borderW = size * 0.025;
   // Pseudo-pupil is a smaller dark spot — about 28% of eye height
