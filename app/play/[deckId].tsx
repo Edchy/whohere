@@ -2,13 +2,16 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import Animated, {
+  Easing,
   Extrapolation,
+  SharedValue,
   interpolate,
   runOnJS,
   useAnimatedStyle,
@@ -35,8 +38,31 @@ const SWIPE_THRESHOLD = 80;
 const SWIPE_VELOCITY_THRESHOLD = 500;
 const DISMISS_DISTANCE = SCREEN_WIDTH * 1.2;
 const MAX_ROTATION = 15;
-const STACK_OFFSET_Y = 6;
-const STACK_SCALE_STEP = 0.04;
+const MAX_VISIBLE_STACK = 5;
+const STACK_OFFSET_Y = 10;
+const STACK_OFFSET_X_VARIANCE = 1.2;
+const STACK_ROTATION_VARIANCE = 0.4;
+const STACK_SCALE_STEP = 0.03;
+const Y_TILT_MAX = 8;
+
+const SHADOW_BASE_OPACITY = 0.10;
+const SHADOW_LIFT_OPACITY = 0.25;
+const SHADOW_BASE_RADIUS = 8;
+const SHADOW_LIFT_RADIUS = 20;
+
+const SPRING_SNAP_BACK = { damping: 22, stiffness: 280, mass: 0.4 };
+const DISMISS_DURATION = 220;
+
+const IS_IOS = Platform.OS === "ios";
+
+/* ── Deterministic jitter for "messy" stack look ─────────────────────────── */
+function getStackJitter(cardIdx: number): { x: number; rotDeg: number } {
+  const seed = ((cardIdx * 2654435761) >>> 0) / 4294967296;
+  return {
+    x: (seed - 0.5) * 2 * STACK_OFFSET_X_VARIANCE,
+    rotDeg: (seed - 0.5) * 2 * STACK_ROTATION_VARIANCE,
+  };
+}
 
 /* ── Styles ──────────────────────────────────────────────────────────────── */
 function makeStyles(colors: AppColors) {
@@ -51,7 +77,7 @@ function makeStyles(colors: AppColors) {
       justifyContent: "center",
     },
     stackContainer: {
-      height: dimensions.cardHeight,
+      height: dimensions.cardHeight + STACK_OFFSET_Y * MAX_VISIBLE_STACK,
     },
     closeRow: {
       alignItems: "center",
@@ -78,10 +104,12 @@ function makeStyles(colors: AppColors) {
       flexDirection: "column",
       justifyContent: "space-between",
       backgroundColor: colors.bgCard,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.08)",
       shadowColor: colors.bgBlack,
-      shadowOffset: { width: 10, height: 10 },
-      shadowOpacity: 0.12,
-      shadowRadius: spacing.sm,
+      shadowOffset: { width: 2, height: 2 },
+      shadowOpacity: SHADOW_BASE_OPACITY,
+      shadowRadius: SHADOW_BASE_RADIUS,
       elevation: 3,
     },
     cardAbsolute: {
@@ -187,6 +215,206 @@ const CardFace = React.memo(function CardFace({
   );
 });
 
+/* ── StackDimOverlay ─────────────────────────────────────────────────────── */
+function StackDimOverlay({
+  isTop,
+  stackLevel,
+  translateX,
+  promotionProgress,
+}: {
+  isTop: boolean;
+  stackLevel: number;
+  translateX: SharedValue<number>;
+  promotionProgress: SharedValue<number>;
+}) {
+  const dimStyle = useAnimatedStyle(() => {
+    "worklet";
+    const baseDim = Math.min(stackLevel * 0.12, 0.4);
+
+    if (isTop) {
+      // Fade out as this card is promoted into top position
+      return {
+        opacity: interpolate(promotionProgress.value, [0, 1], [baseDim, 0], Extrapolation.CLAMP),
+      };
+    }
+
+    // Fade dim toward 0 as top card is swiped away
+    const swipeProgress = Math.min(Math.abs(translateX.value) / DISMISS_DISTANCE, 1);
+    const nextLevelDim = Math.min((stackLevel - 1) * 0.12, 0.4);
+    return {
+      opacity: interpolate(swipeProgress, [0, 1], [baseDim, nextLevelDim], Extrapolation.CLAMP),
+    };
+  });
+
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[
+        StyleSheet.absoluteFillObject,
+        { backgroundColor: "#000", borderRadius: radius.md },
+        dimStyle,
+      ]}
+    />
+  );
+}
+
+/* ── StackCard (animated wrapper per stack level) ────────────────────────── */
+const StackCard = React.memo(function StackCard({
+  cardIdx,
+  stackLevel,
+  isTop,
+  isBottom,
+  jitterX,
+  jitterRot,
+  translateX,
+  enterProgress,
+  promotionProgress,
+  card,
+  deck,
+  totalCards,
+  isEnd,
+  isPremium,
+  purchasePremium,
+  endGame,
+  router,
+  colors,
+  styles,
+}: {
+  cardIdx: number;
+  stackLevel: number;
+  isTop: boolean;
+  isBottom: boolean;
+  jitterX: number;
+  jitterRot: number;
+  translateX: SharedValue<number>;
+  enterProgress: SharedValue<number>;
+  promotionProgress: SharedValue<number>;
+  card: Card | undefined;
+  deck: Deck;
+  totalCards: number;
+  isEnd: boolean;
+  isPremium: boolean;
+  purchasePremium: () => void;
+  endGame: () => void;
+  router: ReturnType<typeof useRouter>;
+  colors: AppColors;
+  styles: ReturnType<typeof makeStyles>;
+}) {
+  const animStyle = useAnimatedStyle(() => {
+    "worklet";
+
+    if (isTop) {
+      const absX = Math.abs(translateX.value);
+      const swipeProgress = Math.min(absX / SWIPE_THRESHOLD, 1);
+
+      // Smooth promotion: animate from old stacked position (level 1) to top (level 0)
+      const promotedY = interpolate(promotionProgress.value, [0, 1], [STACK_OFFSET_Y, 0], Extrapolation.CLAMP);
+      const promotedScale = interpolate(promotionProgress.value, [0, 1], [1 - STACK_SCALE_STEP, 1], Extrapolation.CLAMP);
+
+      const transforms: any[] = [
+        { translateX: translateX.value },
+        {
+          translateY: promotedY + interpolate(
+            absX, [0, SWIPE_THRESHOLD], [0, -Y_TILT_MAX], Extrapolation.CLAMP
+          ),
+        },
+        {
+          rotate: `${interpolate(
+            translateX.value,
+            [-DISMISS_DISTANCE, 0],
+            [-MAX_ROTATION, 0],
+            Extrapolation.CLAMP
+          )}deg`,
+        },
+        { scale: promotedScale },
+      ];
+
+      if (IS_IOS) {
+        return {
+          transform: transforms,
+          shadowOpacity: interpolate(swipeProgress, [0, 1], [SHADOW_BASE_OPACITY, SHADOW_LIFT_OPACITY]),
+          shadowRadius: interpolate(swipeProgress, [0, 1], [SHADOW_BASE_RADIUS, SHADOW_LIFT_RADIUS]),
+          shadowOffset: {
+            width: interpolate(swipeProgress, [0, 1], [2, 8]),
+            height: interpolate(swipeProgress, [0, 1], [2, 12]),
+          },
+        };
+      }
+      return { transform: transforms };
+    }
+
+    // Stack cards (level >= 1) — static resting positions, no swipe-driven movement
+    const currentY = STACK_OFFSET_Y * stackLevel;
+    const currentScale = 1 - STACK_SCALE_STEP * stackLevel;
+
+    // Bottom card fades in after each commit
+    const ep = isBottom ? enterProgress.value : 1;
+
+    return {
+      opacity: interpolate(ep, [0, 1], [0.6, 1], Extrapolation.CLAMP),
+      transform: [
+        { translateY: currentY },
+        { translateX: jitterX },
+        { scale: currentScale },
+        { rotate: `${jitterRot}deg` },
+      ],
+      ...(IS_IOS ? {
+        shadowOpacity: interpolate(
+          stackLevel, [0, MAX_VISIBLE_STACK - 1], [SHADOW_BASE_OPACITY, 0.03]
+        ),
+        shadowRadius: interpolate(
+          stackLevel, [0, MAX_VISIBLE_STACK - 1], [SHADOW_BASE_RADIUS, 3]
+        ),
+      } : {}),
+    };
+  });
+
+  const zIndex = MAX_VISIBLE_STACK - stackLevel;
+
+  return (
+    <Animated.View
+      style={[
+        styles.cardFace,
+        styles.cardAbsolute,
+        { zIndex },
+        animStyle,
+      ]}
+      pointerEvents={isTop ? "auto" : "none"}
+    >
+      <StackDimOverlay
+        isTop={isTop}
+        stackLevel={stackLevel}
+        translateX={translateX}
+        promotionProgress={promotionProgress}
+      />
+      {isEnd ? (
+        <EndCard
+          variant={isPremium ? "completion" : "paywall"}
+          onUnlock={purchasePremium}
+          onReplay={() => {
+            endGame();
+            router.back();
+          }}
+          onHome={() => {
+            endGame();
+            router.replace("/");
+          }}
+          colors={colors}
+        />
+      ) : card ? (
+        <CardFace
+          card={card}
+          deck={deck}
+          cardIndex={cardIdx}
+          totalCards={totalCards}
+          colors={colors}
+          styles={styles}
+        />
+      ) : null}
+    </Animated.View>
+  );
+});
+
 /* ── PlayScreen ──────────────────────────────────────────────────────────── */
 export default function PlayScreen() {
   const colors = useColors();
@@ -223,6 +451,9 @@ export default function PlayScreen() {
   const translateX = useSharedValue(0);
   const isAnimating = useSharedValue(false);
   const isOnEndCard = useSharedValue(false);
+  const crossedThreshold = useSharedValue(false);
+  const enterProgress = useSharedValue(1);
+  const promotionProgress = useSharedValue(1);
 
   const dismissEndCard = useCallback(() => {
     hapticsRef.current.light();
@@ -248,7 +479,22 @@ export default function PlayScreen() {
     }
     translateX.value = 0;
     isAnimating.value = false;
+    crossedThreshold.value = false;
+    // Fade the new bottom card in
+    enterProgress.value = 0;
+    enterProgress.value = withSpring(1, { damping: 24, stiffness: 200, mass: 0.4 });
+    // Smoothly promote new top card from its old stacked position
+    promotionProgress.value = 0;
+    promotionProgress.value = withSpring(1, { damping: 28, stiffness: 180, mass: 0.6 });
   }, [cardIndex, deck]);
+
+  const fireThresholdHaptic = useCallback(() => {
+    hapticsRef.current.medium();
+  }, []);
+
+  const fireSnapHaptic = useCallback(() => {
+    hapticsRef.current.light();
+  }, []);
 
   const panGesture = Gesture.Pan()
     .activeOffsetX([-10, 10])
@@ -257,6 +503,15 @@ export default function PlayScreen() {
       "worklet";
       if (isAnimating.value) return;
       translateX.value = Math.min(0, e.translationX);
+
+      // Haptic at threshold crossing
+      if (!crossedThreshold.value && translateX.value <= -SWIPE_THRESHOLD) {
+        crossedThreshold.value = true;
+        runOnJS(fireThresholdHaptic)();
+      }
+      if (crossedThreshold.value && translateX.value > -SWIPE_THRESHOLD) {
+        crossedThreshold.value = false;
+      }
     })
     .onEnd((e) => {
       "worklet";
@@ -271,7 +526,7 @@ export default function PlayScreen() {
         const onEndCard = isOnEndCard.value;
         translateX.value = withTiming(
           -DISMISS_DISTANCE,
-          { duration: 200 },
+          { duration: DISMISS_DURATION, easing: Easing.in(Easing.quad) },
           (finished) => {
             "worklet";
             if (finished) {
@@ -284,53 +539,15 @@ export default function PlayScreen() {
           }
         );
       } else {
-        translateX.value = withSpring(0, {
-          damping: 20,
-          stiffness: 200,
-          mass: 0.5,
+        crossedThreshold.value = false;
+        translateX.value = withSpring(0, SPRING_SNAP_BACK, (finished) => {
+          "worklet";
+          if (finished) {
+            runOnJS(fireSnapHaptic)();
+          }
         });
       }
     });
-
-  /* ── Animated styles for each stack level ────────────────────────────── */
-  const topCardStyle = useAnimatedStyle(() => {
-    "worklet";
-    return {
-      transform: [
-        { translateX: translateX.value },
-        {
-          rotate: `${interpolate(
-            translateX.value,
-            [-DISMISS_DISTANCE, 0, DISMISS_DISTANCE],
-            [-MAX_ROTATION, 0, MAX_ROTATION],
-            Extrapolation.CLAMP
-          )}deg`,
-        },
-      ],
-    };
-  });
-
-  const secondCardStyle = useAnimatedStyle(() => {
-    "worklet";
-    const progress = Math.min(Math.abs(translateX.value) / SWIPE_THRESHOLD, 1);
-    return {
-      transform: [
-        { translateY: interpolate(progress, [0, 1], [STACK_OFFSET_Y, 0]) },
-        { scale: interpolate(progress, [0, 1], [1 - STACK_SCALE_STEP, 1]) },
-      ],
-    };
-  });
-
-  const thirdCardStyle = useAnimatedStyle(() => {
-    "worklet";
-    const progress = Math.min(Math.abs(translateX.value) / SWIPE_THRESHOLD, 1);
-    return {
-      transform: [
-        { translateY: interpolate(progress, [0, 1], [STACK_OFFSET_Y * 2, STACK_OFFSET_Y]) },
-        { scale: interpolate(progress, [0, 1], [1 - STACK_SCALE_STEP * 2, 1 - STACK_SCALE_STEP]) },
-      ],
-    };
-  });
 
   /* ── Helpers ─────────────────────────────────────────────────────────── */
   const handleClose = () => {
@@ -342,52 +559,41 @@ export default function PlayScreen() {
 
   const totalCards = deck.cards.length;
 
-  function renderCard(
-    index: number,
-    animStyle: ReturnType<typeof useAnimatedStyle>,
-    zIndex: number,
-  ) {
-    if (index > totalCards) return null;
+  // Build the visible stack (bottom to top for correct z-ordering)
+  const remainingAfterCurrent = totalCards - cardIndex;
+  const visibleCount = Math.min(MAX_VISIBLE_STACK, remainingAfterCurrent + 1); // +1 for EndCard
+  const stackCards: React.ReactNode[] = [];
 
-    const isEnd = index >= totalCards;
-    const card = isEnd ? undefined : deck!.cards[index];
+  for (let level = visibleCount - 1; level >= 0; level--) {
+    const idx = cardIndex + level;
+    if (idx > totalCards) continue; // beyond EndCard
+    const isEnd = idx >= totalCards;
+    const card = isEnd ? undefined : deck.cards[idx];
+    const jitter = level > 0 ? getStackJitter(idx) : { x: 0, rotDeg: 0 };
 
-    return (
-      <Animated.View
-        key={`card-${index}`}
-        style={[
-          styles.cardFace,
-          styles.cardAbsolute,
-          { zIndex },
-          animStyle,
-        ]}
-        pointerEvents={zIndex === 3 ? "auto" : "none"}
-      >
-        {isEnd ? (
-          <EndCard
-            variant={isPremium ? "completion" : "paywall"}
-            onUnlock={purchasePremium}
-            onReplay={() => {
-              endGame();
-              router.back();
-            }}
-            onHome={() => {
-              endGame();
-              router.replace("/");
-            }}
-            colors={colors}
-          />
-        ) : card ? (
-          <CardFace
-            card={card}
-            deck={deck!}
-            cardIndex={index}
-            totalCards={totalCards}
-            colors={colors}
-            styles={styles}
-          />
-        ) : null}
-      </Animated.View>
+    stackCards.push(
+      <StackCard
+        key={`card-${idx}`}
+        cardIdx={idx}
+        stackLevel={level}
+        isTop={level === 0}
+        isBottom={level === visibleCount - 1 && visibleCount > 1}
+        jitterX={jitter.x}
+        jitterRot={jitter.rotDeg}
+        translateX={translateX}
+        enterProgress={enterProgress}
+        promotionProgress={promotionProgress}
+        card={card}
+        deck={deck}
+        totalCards={totalCards}
+        isEnd={isEnd}
+        isPremium={isPremium}
+        purchasePremium={purchasePremium}
+        endGame={endGame}
+        router={router}
+        colors={colors}
+        styles={styles}
+      />
     );
   }
 
@@ -398,9 +604,7 @@ export default function PlayScreen() {
       <View style={styles.cardArea}>
         <GestureDetector gesture={panGesture}>
           <Animated.View style={styles.stackContainer}>
-            {renderCard(cardIndex + 2, thirdCardStyle, 1)}
-            {renderCard(cardIndex + 1, secondCardStyle, 2)}
-            {renderCard(cardIndex, topCardStyle, 3)}
+            {stackCards}
           </Animated.View>
         </GestureDetector>
       </View>
