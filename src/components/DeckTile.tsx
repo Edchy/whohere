@@ -1,24 +1,12 @@
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useRef } from 'react';
+import React, { useMemo, useCallback, useRef } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import OkeySvg from '../../assets/icons/noun-okey-8020578.svg';
 import LockSvg from '../../assets/icons/noun-lock-826098.svg';
-import { animation, AppColors, radius, spacing, typography, warmTones } from '../constants/theme';
+import { animation, AppColors, radius, spacing, typography } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
 
-const DECK_ICON_COLORS: Record<string, string> = {
-  'personlighet':           warmTones.champagne,
-  'livssituationer':        warmTones.cognac,
-  'liv-bakgrund':           warmTones.amber,
-  'relationer-kanslor':     warmTones.blush,
-  'hemligheter-historier':  warmTones.periwinkle,
-  'absurt-ovantat':         warmTones.amber,
-  'ambitioner-drommar':     warmTones.champagne,
-  'kropp-halsa':            warmTones.cognac,
-  'pengar-prioriteringar':  warmTones.periwinkle,
-  'radsla-mod':             warmTones.blush,
-};
 import { useGameStore } from '../store/gameStore';
 import { DeckIcon } from './DeckIcon';
 import type { Deck } from '../types';
@@ -43,7 +31,8 @@ function hexLuminance(hex: string): number {
 }
 
 function contrastText(hex: string): string {
-  return hexLuminance(hex) > 0.4 ? '#0D0D0D' : '#F5F0E8';
+  const lum = hexLuminance(hex);
+  return isNaN(lum) || lum > 0.4 ? '#0D0D0D' : '#F5F0E8';
 }
 
 function makeStyles(colors: AppColors) {
@@ -52,7 +41,7 @@ function makeStyles(colors: AppColors) {
       overflow: 'hidden',
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.md,
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: colors.accent + '18',
       backgroundColor: 'rgba(255, 255, 255, 0.02)',
@@ -92,24 +81,24 @@ function makeStyles(colors: AppColors) {
   });
 }
 
-export function DeckTile({ deck, isSelected = false, selectedColor, badge, showCount = true, locked = false, onPress }: Props) {
+export const DeckTile = React.memo(function DeckTile({ deck, isSelected = false, selectedColor, badge, showCount = true, locked = false, onPress }: Props) {
   const colors = useColors();
   const colorScheme = useGameStore((s) => s.colorScheme);
-  const styles = makeStyles(colors);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const opacity = useRef(new Animated.Value(1)).current;
 
-  const onPressIn = () =>
-    Animated.timing(opacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start();
+  const onPressIn = useCallback(() =>
+    Animated.timing(opacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start(), []);
 
-  const onPressOut = () =>
-    Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
+  const onPressOut = useCallback(() =>
+    Animated.timing(opacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start(), []);
 
   const activeBg = selectedColor ?? colors.accent;
   const bg = isSelected ? activeBg : colors.bgSecondary;
   const onColor = isSelected ? contrastText(activeBg) : colors.textPrimary;
-  const textColor = onColor;
+  const textColor = isSelected ? onColor : !locked ? colors.accent : onColor;
   const subColor = isSelected ? onColor + '99' : colors.textSecondary;
-  const iconColor = isSelected ? onColor : !locked ? (colorScheme === 'light' ? warmTones.amber : warmTones.champagne) : onColor;
+  const iconColor = isSelected ? onColor : !locked ? colors.accent : onColor;
 
   return (
     <Animated.View style={{ opacity }}>
@@ -144,17 +133,22 @@ export function DeckTile({ deck, isSelected = false, selectedColor, badge, showC
           <DeckIcon deck={deck} size={40} color={iconColor} style={locked ? { opacity: 0.45 } : undefined} />
           <View style={styles.text}>
             <View style={styles.titleRow}>
-              <Text style={[styles.title, { color: textColor, opacity: locked ? 0.45 : 1 }]}>{deck.title.toUpperCase()}</Text>
+              <Text style={[styles.title, { color: textColor, opacity: locked ? 0.45 : 1 }]} numberOfLines={1}>{deck.title.toUpperCase()}</Text>
               <View style={styles.titleRight}>
                 <OkeySvg width={24} height={24} fill={badge ? (isSelected ? '#000000' : colors.textMuted) : 'transparent'} />
-                {locked && <LockSvg width={22} height={22} fill={colors.textMuted} />}
+                {locked && (
+                  <>
+                    <Text style={[styles.count, { color: colors.textMuted }]}>PREMIUM</Text>
+                    <LockSvg width={18} height={18} fill={colors.textMuted} />
+                  </>
+                )}
                 {showCount && <Text style={[styles.count, { color: subColor }]}>{deck.cards.length} kort</Text>}
               </View>
             </View>
-            <Text style={[styles.desc, { color: subColor, opacity: locked ? 0.45 : 1 }]}>{deck.description}</Text>
+            <Text style={[styles.desc, { color: subColor, opacity: locked ? 0.45 : 1 }]} numberOfLines={2}>{deck.description}</Text>
           </View>
         </View>
       </Pressable>
     </Animated.View>
   );
-}
+});

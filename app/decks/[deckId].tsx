@@ -1,33 +1,36 @@
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { DeckIcon } from '../../src/components/DeckIcon';
 import ModalLayout from '../../src/components/ModalLayout';
 import LockSvg from '../../assets/icons/noun-lock-826098.svg';
-import { fonts, radius, spacing, typography } from '../../src/constants/theme';
+import { fonts, radius, spacing } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
 import { usePurchase } from '../../src/hooks/usePurchase';
 import allDecks from '../../assets/data/decks/index';
 
 const MODE_LABELS: Record<string, string> = {
-  solo: 'Solo',
-  partner: 'Date',
-  group: 'Friends',
+  solo: 'På egen hand',
+  partner: 'På date',
+  group: 'Med vänner',
 };
+
 
 const FREE_PREVIEW_COUNT = 3;
 const LOCKED_PREVIEW_COUNT = 2;
 
 export default function DeckDetailScreen() {
   const { deckId } = useLocalSearchParams<{ deckId: string }>();
-  const router = useRouter();
   const colors = useColors();
   const { isPremium, purchasePremium } = usePurchase();
 
   const deck = allDecks.find((d) => d.id === deckId);
-  if (!deck) return null;
+  if (!deck) {
+    router.back();
+    return null;
+  }
 
   const isLocked = !isPremium && !deck.free;
   const previewCount = isLocked ? LOCKED_PREVIEW_COUNT : FREE_PREVIEW_COUNT;
@@ -62,7 +65,7 @@ export default function DeckDetailScreen() {
           {isLocked && (
             <View style={[styles.tag, { borderColor: colors.accent + '60', backgroundColor: colors.accent + '12', flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
               <LockSvg width={14} height={14} fill={colors.accent} />
-              <Text style={[styles.tagText, { color: colors.accent }]}>Låst</Text>
+              <Text style={[styles.tagText, { color: colors.accent }]}>Premium</Text>
             </View>
           )}
         </View>
@@ -129,7 +132,7 @@ const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxxl,
-    gap: spacing.md,
+    gap: spacing.lg,
   },
   deckInfo: {
     flexDirection: 'row',
@@ -143,13 +146,13 @@ const styles = StyleSheet.create({
   deckTitle: {
     fontFamily: fonts.bold,
     fontSize: 20,
-    lineHeight: 24,
-    letterSpacing: 0.5,
+    lineHeight: 26,
+    letterSpacing: 0.3,
   },
   deckDesc: {
     fontFamily: fonts.regular,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 24,
   },
   tagsRow: {
     flexDirection: 'row',
@@ -164,19 +167,18 @@ const styles = StyleSheet.create({
   },
   tagText: {
     fontFamily: fonts.regular,
-    fontSize: 11,
-    lineHeight: 16,
+    fontSize: 12,
+    lineHeight: 18,
     letterSpacing: 0.5,
   },
   divider: {
     height: 1,
-    marginVertical: spacing.xs,
   },
   sectionLabel: {
     fontFamily: fonts.regular,
-    fontSize: 11,
-    lineHeight: 16,
-    letterSpacing: 1.5,
+    fontSize: 10,
+    lineHeight: 14,
+    letterSpacing: 2,
     marginBottom: spacing.xs,
   },
   questions: {
@@ -184,21 +186,21 @@ const styles = StyleSheet.create({
   },
   questionCard: {
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },
   prefix: {
-    fontFamily: fonts.bold,
-    fontSize: 11,
+    fontFamily: fonts.brand,
+    fontSize: 10,
     lineHeight: 14,
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
   questionText: {
     fontFamily: fonts.extraLight,
     fontSize: 18,
-    lineHeight: 24,
+    lineHeight: 26,
   },
   lockedBlock: {
     gap: spacing.sm,
@@ -212,24 +214,24 @@ const styles = StyleSheet.create({
   },
   lockedCtaText: {
     fontFamily: fonts.regular,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
   },
   unlockBtn: {
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
   },
   unlockBtnText: {
     fontFamily: fonts.bold,
-    fontSize: 14,
-    letterSpacing: 0.5,
+    fontSize: 16,
+    letterSpacing: 0.3,
   },
   moreHint: {
     fontFamily: fonts.regular,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
     paddingVertical: spacing.sm,
   },

@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef } from 'react';
 import { Platform, useColorScheme, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { darkColors, lightColors } from '../src/constants/theme';
 import { useGameStore } from '../src/store/gameStore';
@@ -14,14 +15,13 @@ SplashScreen.preventAutoHideAsync();
 const ONBOARDING_KEY = '@whohere/hasSeenOnboarding';
 const COLOR_SCHEME_KEY = '@whohere/colorScheme';
 const HAPTICS_KEY = '@whohere/hapticsEnabled';
-const CARD_BACK_KEY = '@whohere/cardBackStyle';
 const PREMIUM_KEY = '@whohere/isPremium';
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     'AuthorBold': require('../assets/fonts/Author-Bold.otf'),
     'AuthorRegular': require('../assets/fonts/Author-Regular.otf'),
-    'AuthorExtralight': require('../assets/fonts/Author-Extralight.otf'),
+    'AuthorExtralight': require('../assets/fonts/Author-Extralight.otf'), 'MateMasie': require('../assets/fonts/Matemasie-Regular.ttf'), 'Bangers': require('../assets/fonts/Bangers-Regular.ttf'), 'BarlowCondensed': require('../assets/fonts/BarlowCondensed-Regular.ttf'), 'Caprasimo': require('../assets/fonts/Caprasimo-Regular.ttf'), 'FiraSansCondensed-Bold': require('../assets/fonts/FiraSansCondensed-Bold.ttf'), 
   });
 
   const systemColorScheme = useColorScheme();
@@ -30,7 +30,6 @@ export default function RootLayout() {
   const setHasSeenOnboarding = useGameStore((s) => s.setHasSeenOnboarding);
   const setColorScheme = useGameStore((s) => s.setColorScheme);
   const setHapticsEnabled = useGameStore((s) => s.setHapticsEnabled);
-  const setCardBackStyle = useGameStore((s) => s.setCardBackStyle);
   const setIsPremium = useGameStore((s) => s.setIsPremium);
   const hydrated = useRef(false);
 
@@ -48,9 +47,8 @@ export default function RootLayout() {
       AsyncStorage.getItem(ONBOARDING_KEY),
       AsyncStorage.getItem(COLOR_SCHEME_KEY),
       AsyncStorage.getItem(HAPTICS_KEY),
-      AsyncStorage.getItem(CARD_BACK_KEY),
       AsyncStorage.getItem(PREMIUM_KEY),
-    ]).then(([onboardingValue, colorSchemeValue, hapticsValue, cardBackValue, premiumValue]) => {
+    ]).then(([onboardingValue, colorSchemeValue, hapticsValue, premiumValue]) => {
       if (colorSchemeValue === 'dark' || colorSchemeValue === 'light') {
         setColorScheme(colorSchemeValue);
       } else {
@@ -58,9 +56,6 @@ export default function RootLayout() {
       }
       if (hapticsValue !== null) {
         setHapticsEnabled(hapticsValue === 'true');
-      }
-      if (cardBackValue) {
-        setCardBackStyle(cardBackValue as Parameters<typeof setCardBackStyle>[0]);
       }
       if (premiumValue === 'true') {
         setIsPremium(true);
@@ -85,6 +80,7 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <View style={Platform.OS === 'web' ? {
@@ -107,5 +103,6 @@ export default function RootLayout() {
         </View>
       </View>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

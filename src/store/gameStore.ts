@@ -6,7 +6,6 @@ type GameState = {
   activeDeck: Deck | null;
   currentCardIndex: number;
   mode: DeckMode;
-  isFlipped: boolean;
 
   // Purchase
   isPremium: boolean;
@@ -17,8 +16,6 @@ type GameState = {
   setHapticsEnabled: (enabled: boolean) => void;
   colorScheme: 'dark' | 'light';
   setColorScheme: (scheme: 'dark' | 'light') => void;
-  cardBackStyle: 'plain' | 'pattern' | 'bubbles' | 'chevron' | 'polka' | 'tictactoe';
-  setCardBackStyle: (style: 'plain' | 'pattern' | 'bubbles' | 'chevron' | 'polka' | 'tictactoe') => void;
   hasSeenOnboarding: boolean;
   setHasSeenOnboarding: (seen: boolean) => void;
 
@@ -26,7 +23,6 @@ type GameState = {
   startGame: (deck: Deck, mode: DeckMode) => void;
   nextCard: () => void;
   prevCard: () => void;
-  flipCard: () => void;
   endGame: () => void;
 
   // Derived helpers
@@ -39,7 +35,6 @@ export const useGameStore = create<GameState>((set, get) => ({
   activeDeck: null,
   currentCardIndex: 0,
   mode: 'partner',
-  isFlipped: false,
 
   isPremium: false,
   setIsPremium: (value) => set({ isPremium: value }),
@@ -48,13 +43,11 @@ export const useGameStore = create<GameState>((set, get) => ({
   setHapticsEnabled: (enabled) => set({ hapticsEnabled: enabled }),
   colorScheme: 'dark' as const,
   setColorScheme: (scheme) => set({ colorScheme: scheme }),
-  cardBackStyle: 'plain' as const,
-  setCardBackStyle: (style) => set({ cardBackStyle: style }),
   hasSeenOnboarding: false,
   setHasSeenOnboarding: (seen) => set({ hasSeenOnboarding: seen }),
 
   startGame: (deck, mode) =>
-    set({ activeDeck: deck, currentCardIndex: 0, mode, isFlipped: false }),
+    set({ activeDeck: deck, currentCardIndex: 0, mode }),
 
   nextCard: () =>
     set((state) => ({
@@ -62,19 +55,15 @@ export const useGameStore = create<GameState>((set, get) => ({
         state.currentCardIndex + 1,
         (state.activeDeck?.cards.length ?? 1) - 1
       ),
-      isFlipped: false,
     })),
 
   prevCard: () =>
     set((state) => ({
       currentCardIndex: Math.max(state.currentCardIndex - 1, 0),
-      isFlipped: false,
     })),
 
-  flipCard: () => set((state) => ({ isFlipped: !state.isFlipped })),
-
   endGame: () =>
-    set({ activeDeck: null, currentCardIndex: 0, isFlipped: false }),
+    set({ activeDeck: null, currentCardIndex: 0 }),
 
   currentCard: () => {
     const { activeDeck, currentCardIndex } = get();

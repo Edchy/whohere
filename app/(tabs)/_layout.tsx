@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import PlayArrowSvg from '../../assets/icons/noun-arrow-8300346.svg';
 import LayersSvg from '../../assets/icons/noun-pattern-8300370.svg';
@@ -9,6 +9,9 @@ import AsteriskSvg from '../../assets/icons/noun-asterisk-8300387.svg';
 import { AppColors, radius, spacing, typography } from '../../src/constants/theme';
 import { useColors } from '../../src/hooks/useColors';
 import { useGameStore } from '../../src/store/gameStore';
+
+// Persists across mounts so the fade only plays once per app session
+let hasAnimatedIn = false;
 
 const ICONS: Record<string, [string, string]> = {
   index:    ['play-outline',     'play'],
@@ -28,7 +31,7 @@ function makeStyles(colors: AppColors) {
     // The visible pill — clips blur + overlays to rounded shape
     barContainer: {
       overflow: 'hidden',
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: colors.accent + '59', // ~35% opacity
     },
@@ -39,7 +42,7 @@ function makeStyles(colors: AppColors) {
       left: 0,
       right: 0,
       height: 1,
-      backgroundColor: 'rgba(255, 255, 255, 0.18)',
+      backgroundColor: colors.textPrimary + '2E',
     },
     // Row that holds the actual tab buttons
     tabsRow: {
@@ -53,7 +56,7 @@ function makeStyles(colors: AppColors) {
       gap: 0,
     },
     iconWrap: {
-      width: 32,
+      width: 44,
       height: 28,
       alignItems: 'center',
       justifyContent: 'center',
@@ -75,7 +78,7 @@ function makeStyles(colors: AppColors) {
 function CustomTabBar({ state, descriptors, navigation }: any) {
   const colors = useColors();
   const colorScheme = useGameStore((s) => s.colorScheme);
-  const tabStyles = makeStyles(colors);
+  const tabStyles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
     <View style={tabStyles.barWrapper} pointerEvents="box-none">
@@ -102,6 +105,9 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
                 style={tabStyles.tab}
                 onPress={() => navigation.navigate(route.name)}
                 activeOpacity={0.7}
+                accessibilityLabel={label}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: focused }}
               >
                 <View style={tabStyles.iconWrap}>
                   {route.name === 'index' ? (
@@ -143,9 +149,11 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
 }
 
 export default function TabsLayout() {
-  const opacity = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(hasAnimatedIn ? 1 : 0)).current;
 
   useEffect(() => {
+    if (hasAnimatedIn) return;
+    hasAnimatedIn = true;
     Animated.timing(opacity, { toValue: 1, duration: 400, useNativeDriver: true }).start();
   }, []);
 

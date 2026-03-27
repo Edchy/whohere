@@ -1,31 +1,44 @@
 import { router } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { appName, spacing, typography } from '../constants/theme';
+import { spacing, typography } from '../constants/theme';
 import { useColors } from '../hooks/useColors';
-import GroovyEmoji from './GroovyEmoji';
+import EyesLogo from './EyesLogo';
 
 const SIZE = 120;
 
-export default function AppHeader({ onBack }: { onBack?: () => void }) {
+const AppHeader = React.memo(function AppHeader({ onBack }: { onBack?: () => void }) {
   const colors = useColors();
   return (
     <View style={styles.container}>
       <View style={styles.wordmark} />
-      {/* <MeltsMascot size={SIZE} /> */}
-      <TouchableOpacity onPress={onBack ?? (() => router.replace('/'))} activeOpacity={0.7}>
-        <GroovyEmoji size={SIZE} />
+      <TouchableOpacity
+        onPress={onBack ?? (() => router.replace('/'))}
+        activeOpacity={0.7}
+        accessibilityLabel="Hem"
+        accessibilityRole="button"
+      >
+        <EyesLogo size={SIZE} />
       </TouchableOpacity>
       {onBack ? (
-        <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7} hitSlop={12}>
-          <Text style={{ color: colors.textMuted, fontSize: 32, lineHeight: 36, fontWeight: '300', textAlign: 'right' }}>‹</Text>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={onBack}
+          activeOpacity={0.7}
+          hitSlop={12}
+          accessibilityLabel="Gå tillbaka"
+          accessibilityRole="button"
+        >
+          <Text style={[styles.navIcon, { color: colors.textMuted }]}>‹</Text>
         </TouchableOpacity>
       ) : (
         <View style={styles.spacer} />
       )}
     </View>
   );
-}
+});
+
+export default AppHeader;
 
 const styles = StyleSheet.create({
   container: {
@@ -33,11 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
+    paddingTop: spacing.xl,
   },
   spacer: {
     flex: 1,
@@ -46,14 +55,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  wordmarkLine: {
-    ...typography.brand,
-    fontSize: 13,
-    lineHeight: 15,
-    letterSpacing: 2,
-    fontWeight: '700',
-  },
   backButton: {
     flex: 1,
+    alignItems: 'flex-end',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  navIcon: {
+    ...typography.display,
+    fontWeight: '300',
+    textAlign: 'right',
   },
 });

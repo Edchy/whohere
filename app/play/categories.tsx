@@ -1,12 +1,12 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import PlayArrowSvg from "../../assets/icons/noun-arrow-8300346.svg";
-import RandomSvg from "../../assets/icons/category-icons/noun-question-8320435.svg";
+import RandomSvg from "../../assets/icons/category-icons/noun-doodle-197625.svg";
 import { DeckTile } from "../../src/components/DeckTile";
 import ModalLayout from "../../src/components/ModalLayout";
-import { animation, AppColors, radius, spacing, typography } from "../../src/constants/theme";
+import { animation, AppColors, radius, spacing, TAB_BAR_BOTTOM_CLEARANCE, typography } from "../../src/constants/theme";
 import { useColors } from "../../src/hooks/useColors";
 
 import { useGameStore } from "../../src/store/gameStore";
@@ -22,7 +22,6 @@ const MODE_LABELS: Record<string, string> = {
 };
 
 const GAME_CARD_LIMIT = 30;
-const FREE_CARD_LIMIT = 30;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -33,9 +32,20 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function buildDeck(selectedIds: string[], modeId: string, isPremium: boolean): Deck {
+function buildDeck(selectedIds: string[], modeId: string): Deck {
+  if (selectedIds.length === 0) {
+    return {
+      id: `curated-${modeId}`,
+      title: MODE_LABELS[modeId] ?? "Spela",
+      description: "",
+      mode: [modeId as any],
+      category: "mixed",
+      icon: "",
+      cards: [],
+    };
+  }
 
-  const cardLimit = isPremium ? GAME_CARD_LIMIT : FREE_CARD_LIMIT;
+  const cardLimit = GAME_CARD_LIMIT;
   const deckCount = selectedIds.length;
   const basePerDeck = Math.floor(cardLimit / deckCount);
   const remainder = cardLimit % deckCount;
@@ -68,89 +78,50 @@ function buildDeck(selectedIds: string[], modeId: string, isPremium: boolean): D
 
 // ─── Header copy ──────────────────────────────────────────────────────────────
 
-const HEADER_TITLES: Record<string, string[]> = {
-  partner: [
-    "Vilka lager av liv vill ni utforska tillsammans?",
-  ],
-  group: [
-    "Välj kategorier själva, eller låt slumpen avgöra?",
-  ],
-  solo: [
-   "Vad säger din magkänsla om andra, egentligen?",
-
-  ],
+const HEADER_TITLES: Record<string, string> = {
+  partner: "Vilka lager av liv vill ni utforska tillsammans?",
+  group:   "Välj kategorier själva, eller låt slumpen avgöra?",
+  solo:    "Vad säger din magkänsla om andra, egentligen?",
 };
 
-const HEADER_SUBTITLES: Record<string, string[]> = {
-  partner: [
-    "Låt nyfikenhete visa vägen in i ert undermedvetna"
-  ],
-  group: [
-    "Svara ärligt och spontant på frågorna som dyker upp"
-  ],
-  solo: [
-    "Människokännedom och självkännedom är livskunskap"
-  ],
+const HEADER_SUBTITLES: Record<string, string> = {
+  partner: "Låt nyfikenheten visa vägen in i ert undermedvetna",
+  group:   "Svara ärligt och spontant på frågorna som dyker upp",
+  solo:    "Människokännedom och självkännedom är livskunskap",
 };
 
-function pickHeaderTitle(mode: string): string {
-  const options = HEADER_TITLES[mode] ?? HEADER_TITLES["partner"];
-  return options[Math.floor(Math.random() * options.length)];
-}
-
-function pickHeaderSubtitle(mode: string): string {
-  const options = HEADER_SUBTITLES[mode] ?? HEADER_SUBTITLES["partner"];
-  return options[Math.floor(Math.random() * options.length)];
-}
-
-// ─── Surprise tile descriptions ───────────────────────────────────────────────
-
-const SURPRISE_DESCS: Record<string, string[]> = {
-  partner: [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  ],
-  group: [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  ],
-  solo: [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  ],
-};
-
-function pickSurpriseDesc(mode: string): string {
-  const options = SURPRISE_DESCS[mode] ?? SURPRISE_DESCS["partner"];
-  return options[Math.floor(Math.random() * options.length)];
-}
+const SURPRISE_DESC = "Vi blandar ihop allt och låter slumpen styra";
 
 function makeStyles(colors: AppColors) {
   return StyleSheet.create({
     scroll: {
       paddingHorizontal: spacing.lg,
       paddingTop: spacing.lg,
-      paddingBottom: 160,
-      gap: spacing.sm,
+      paddingBottom: TAB_BAR_BOTTOM_CLEARANCE + spacing.xl,
+      gap: spacing.lg,
     },
     header: {
-      paddingHorizontal: spacing.lg,
       paddingTop: spacing.md,
-      paddingBottom: spacing.sm,
-      gap: 0,
+      paddingBottom: spacing.xs,
+      gap: spacing.sm,
     },
     title: {
-      ...typography.heading,
+      ...typography.display,
+      fontSize: 26,
+      lineHeight: 34,
       color: colors.textPrimary,
     },
     subtitle: {
-      ...typography.caption,
+      ...typography.body,
       color: colors.textMuted,
     },
     tileList: {
-      gap: spacing.sm,
+      gap: spacing.md,
     },
     surpriseTile: {
-      paddingVertical: spacing.lg,
+      paddingVertical: spacing.xl,
       paddingHorizontal: spacing.md,
-      borderRadius: radius.md,
+      borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: colors.bgSecondary,
       backgroundColor: colors.bgSecondary,
@@ -162,13 +133,30 @@ function makeStyles(colors: AppColors) {
     },
     surpriseText: {
       flex: 1,
-      gap: 0,
+      gap: spacing.xs,
     },
     surpriseTitle: {
       ...typography.heading,
+      fontSize: 20,
+      lineHeight: 26,
     },
     surpriseDesc: {
       ...typography.caption,
+    },
+    divider: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      paddingVertical: spacing.xs,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    dividerLabel: {
+      ...typography.badge,
+      color: colors.textMuted,
     },
     startBtn: {
       width: 64,
@@ -188,25 +176,20 @@ function makeStyles(colors: AppColors) {
 
 export default function CategoriesScreen() {
   const colors = useColors();
-  const colorScheme = useGameStore((s) => s.colorScheme);
-  const styles = makeStyles(colors);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode: string }>();
   const startGame = useGameStore((s) => s.startGame);
   const { isPremium, purchasePremium } = usePurchase();
-  const surpriseDesc = useRef(pickSurpriseDesc(mode ?? "partner")).current;
-  const headerTitle = useRef(pickHeaderTitle(mode ?? "partner")).current;
-  const headerSubtitle = useRef(pickHeaderSubtitle(mode ?? "partner")).current;
+  const headerTitle = HEADER_TITLES[mode ?? "partner"] ?? HEADER_TITLES["partner"];
+  const headerSubtitle = HEADER_SUBTITLES[mode ?? "partner"] ?? HEADER_SUBTITLES["partner"];
 
-  const modeDecks = allDecks.filter((d) => d.mode.includes(mode as any)); // used for surprise only
-  const visibleDecks = allDecks; // all decks shown for manual selection
+  const modeDecks = allDecks.filter((d) => d.mode.includes(mode as any));
   const [selected, setSelected] = useState<string[]>([]);
   const [randomize, setRandomize] = useState(true);
 
-  const surpriseOpacity = useRef(new Animated.Value(1)).current;
-
-  const toggle = (id: string) => {
+  const toggle = useCallback((id: string) => {
     if (!isPremium && !allDecks.find((d) => d.id === id)?.free) {
       purchasePremium();
       return;
@@ -215,12 +198,14 @@ export default function CategoriesScreen() {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
-  };
+  }, [isPremium, purchasePremium]);
 
-  const handleSurpriseToggle = () => {
-    setRandomize(true);
-    setSelected([]);
-  };
+  const handleSurpriseToggle = useCallback(() => {
+    const eligibleDecks = isPremium ? modeDecks : modeDecks.filter((d) => d.free);
+    const deck = buildDeck(eligibleDecks.map((d) => d.id), mode ?? "partner");
+    startGame(deck, (mode ?? "partner") as any);
+    router.replace(`/play/${deck.id}`);
+  }, [isPremium, modeDecks, mode, startGame, router]);
 
   const canStart = randomize || selected.length > 0;
 
@@ -228,16 +213,22 @@ export default function CategoriesScreen() {
     if (!canStart) return;
     const eligibleDecks = isPremium ? modeDecks : modeDecks.filter((d) => d.free);
     const ids = randomize ? eligibleDecks.map((d) => d.id) : selected;
-    const deck = buildDeck(ids, mode ?? "partner", isPremium);
+    const deck = buildDeck(ids, mode ?? "partner");
     startGame(deck, (mode ?? "partner") as any);
     router.replace(`/play/${deck.id}`);
   };
 
+  const surpriseTileOpacity = useRef(new Animated.Value(1)).current;
+  const onSurprisePressIn = useCallback(() =>
+    Animated.timing(surpriseTileOpacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start(), []);
+  const onSurprisePressOut = useCallback(() =>
+    Animated.timing(surpriseTileOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start(), []);
+
   const startOpacity = useRef(new Animated.Value(1)).current;
-  const onStartPressIn = () =>
-    Animated.timing(startOpacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start();
-  const onStartPressOut = () =>
-    Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start();
+  const onStartPressIn = useCallback(() =>
+    Animated.timing(startOpacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start(), []);
+  const onStartPressOut = useCallback(() =>
+    Animated.timing(startOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start(), []);
 
   return (
     <ModalLayout>
@@ -252,14 +243,10 @@ export default function CategoriesScreen() {
 
         <View style={styles.tileList}>
           {/* Surprise tile */}
-          <Animated.View style={{ opacity: surpriseOpacity }}>
+          <Animated.View style={{ opacity: surpriseTileOpacity }}>
             <Pressable
-              onPressIn={() =>
-                Animated.timing(surpriseOpacity, { toValue: 0.75, duration: animation.press, useNativeDriver: true }).start()
-              }
-              onPressOut={() =>
-                Animated.timing(surpriseOpacity, { toValue: 1, duration: animation.base, useNativeDriver: true }).start()
-              }
+              onPressIn={onSurprisePressIn}
+              onPressOut={onSurprisePressOut}
               onPress={handleSurpriseToggle}
               style={[styles.surpriseTile, randomize && { backgroundColor: colors.accent, borderColor: 'transparent' }]}
             >
@@ -272,15 +259,22 @@ export default function CategoriesScreen() {
                     ÖVERRASKA MIG!
                   </Text>
                   <Text style={[styles.surpriseDesc, { color: randomize ? colors.textOnBrand + '99' : colors.textMuted }]}>
-                    {surpriseDesc}
+                    {SURPRISE_DESC}
                   </Text>
                 </View>
               </View>
             </Pressable>
           </Animated.View>
 
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerLabel}>ELLER VÄLJ SJÄLV</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
           {/* Deck tiles */}
-          {visibleDecks.map((deck) => (
+          {allDecks.map((deck) => (
             <DeckTile
               key={deck.id}
               deck={deck}
@@ -308,7 +302,7 @@ export default function CategoriesScreen() {
           disabled={!canStart}
           style={[styles.startBtn, !canStart && styles.startBtnDisabled]}
         >
-          <PlayArrowSvg width={24} height={24} fill={colors.textOnBrand} />
+          <PlayArrowSvg width={20} height={20} fill={colors.textOnBrand} />
         </Pressable>
       </Animated.View>
     </ModalLayout>
